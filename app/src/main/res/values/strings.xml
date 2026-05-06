@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FlowState</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Willkommen bei FlowState</string>
+    <string name="onboarding_subtitle">Finde deinen Flow. Setze dein Momentum in Gang.</string>
+    <string name="onboarding_name_label">Wie sollen wir dich nennen?</string>
+    <string name="onboarding_cta">Los geht\'s</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_timer">Timer</string>
+    <string name="nav_progress">Fortschritt</string>
+    <string name="nav_routines">Routinen</string>
+    <string name="nav_settings">Einstellungen</string>
+
+    <!-- Timer screen -->
+    <string name="timer_strong_performance">Starke Leistung, %1$s!</string>
+    <string name="timer_motivation_morning">Guten Morgen, %1$s.</string>
+    <string name="timer_motivation_afternoon">Guten Nachmittag, %1$s.</string>
+    <string name="timer_motivation_evening">Guten Abend, %1$s.</string>
+    <string name="timer_motivation_night">Späte Stunde, %1$s.</string>
+    <string name="timer_streak_label">%1$d-Tage-Streak · %2$sx XP</string>
+    <string name="timer_next_label">Nächste: %1$s</string>
+    <string name="timer_xp_format">%1$d XP /%2$dm</string>
+    <string name="timer_intention_set">Intention setzen</string>
+    <string name="timer_intention_hint">Worauf willst du dich fokussieren?</string>
+    <string name="timer_start">Fokus starten</string>
+    <string name="timer_stop">Stoppen</string>
+    <string name="timer_pause">Pause</string>
+    <string name="timer_resume">Fortsetzen</string>
+    <string name="timer_active_routine">Aktive Routine: %1$s</string>
+    <string name="timer_history_today">%1$d Sessions Heute · %2$d Min Fokussiert</string>
+    <string name="timer_no_sessions_today">Noch keine Sessions heute. Zeit zu starten.</string>
+    <string name="timer_daily_quest_banner">Daily Quest: %1$s</string>
+
+    <!-- Progress -->
+    <string name="progress_tab_stats">Stats</string>
+    <string name="progress_tab_trophies">Erfolge</string>
+    <string name="progress_overview_total_time">Gesamtzeit</string>
+    <string name="progress_overview_sessions">Sessions</string>
+    <string name="progress_overview_best_day">Bester Tag</string>
+    <string name="progress_overview_streak">Streak</string>
+    <string name="progress_weekly_momentum">Wöchentliches Momentum</string>
+    <string name="progress_this_week">Diese Woche</string>
+    <string name="progress_last_week">Letzte Woche</string>
+    <string name="progress_path_title">Pfad zur Meisterschaft</string>
+    <string name="progress_inventory_title">Inventar</string>
+    <string name="progress_inventory_full">Inventar voll</string>
+    <string name="progress_inventory_streak_shield">Streak-Schutz</string>
+    <string name="progress_trophies_title">Trophäenschrank</string>
+    <string name="progress_flow_score_title">Flow-Score</string>
+
+    <!-- Routines -->
+    <string name="routines_title">Flow-Routinen</string>
+    <string name="routines_total">Gesamt: %1$dm</string>
+    <string name="routines_steps_count">%1$d Schritte</string>
+    <string name="routines_start">Routine starten</string>
+    <string name="routines_step_focus">Fokus für %1$d Minuten</string>
+    <string name="routines_step_pause">Pause für %1$d Minuten</string>
+    <string name="routines_swipe_hint">Wische eine Routine nach rechts zum Bearbeiten, nach links zum Löschen.</string>
+    <string name="routines_no_routines">Noch keine Routinen. Tippe auf + um eine zu erstellen.</string>
+    <string name="routines_delete_title">Routine löschen?</string>
+    <string name="routines_delete_message">„%1$s" wird unwiderruflich entfernt.</string>
+    <string name="routines_delete_confirm">Löschen</string>
+    <string name="routines_cancel">Abbrechen</string>
+
+    <!-- Routine editor -->
+    <string name="editor_title_new">Neue Routine</string>
+    <string name="editor_title_edit">Routine bearbeiten</string>
+    <string name="editor_name_label">Name</string>
+    <string name="editor_step_focus">Fokus</string>
+    <string name="editor_step_pause">Pause</string>
+    <string name="editor_minutes">%1$d Min</string>
+    <string name="editor_add_step">Schritt hinzufügen</string>
+    <string name="editor_save">Speichern</string>
+    <string name="editor_total_format">Gesamt: %1$d Minuten</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_section_focus_mode">Fokus-Modus</string>
+    <string name="settings_flow_routines">Flow-Routinen</string>
+    <string name="settings_focus_shield">Fokus-Schild konfigurieren</string>
+    <string name="settings_focus_shield_subtitle">Apps, die während Fokus erlaubt sind</string>
+    <string name="settings_auto_dnd">Automatisches Do Not Disturb</string>
+    <string name="settings_auto_dnd_subtitle">DND beim Sessionstart aktivieren</string>
+    <string name="settings_mute_media">Medien stummschalten</string>
+    <string name="settings_mute_media_subtitle">Background-Audio beim Fokusstart pausieren</string>
+    <string name="settings_focus_boost">Fokus verstärken</string>
+    <string name="settings_focus_boost_subtitle">Weitere Anpassungen</string>
+    <string name="settings_confirm_focus">Bestätigung vor Fokus</string>
+    <string name="settings_confirm_focus_subtitle">Bestätigung nach Pause vor nächstem Fokus</string>
+    <string name="settings_lock_timer">Sperrbildschirm-Timer</string>
+    <string name="settings_lock_timer_subtitle">Countdown auf Lock Screen &amp; Always-on-Display</string>
+    <string name="settings_section_floating">Floating-Timer</string>
+    <string name="settings_floating_overlay">Overlay aktivieren</string>
+    <string name="settings_floating_overlay_subtitle">Mini-Timer über anderen Apps. Doppel-Tap öffnet App.</string>
+    <string name="settings_section_customization">Anpassung</string>
+    <string name="settings_change_name">Name ändern</string>
+    <string name="settings_reset_data">Alle Daten zurücksetzen</string>
+    <string name="settings_app_version">App-Version</string>
+    <string name="settings_app_whitelist_title">Erlaubte Apps</string>
+    <string name="settings_accessibility_cta">Accessibility-Service aktivieren</string>
+    <string name="settings_accessibility_active">Accessibility-Service aktiv</string>
+    <string name="settings_overlay_request_title">Berechtigung erforderlich</string>
+    <string name="settings_overlay_request_msg">Für den Floating-Timer benötigt FlowState die Berechtigung, über anderen Apps anzuzeigen.</string>
+    <string name="settings_grant_permission">Berechtigung erteilen</string>
+
+    <!-- Sounds -->
+    <string name="sound_picker_title">Klanglandschaft</string>
+    <string name="sound_locked">Level %1$d erforderlich</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_timer">Fokus-Timer</string>
+    <string name="notification_channel_timer_desc">Zeigt den laufenden Fokus-Timer als Notification.</string>
+    <string name="notification_channel_floating">Floating-Timer</string>
+    <string name="notification_channel_floating_desc">Hintergrund-Service für das Mini-Timer-Overlay.</string>
+    <string name="notification_session_running">Fokus läuft · %1$s verbleibend</string>
+    <string name="notification_session_paused">Fokus pausiert · %1$s</string>
+    <string name="notification_session_complete">Session abgeschlossen — +%1$d XP</string>
+
+    <!-- Accessibility / shield -->
+    <string name="focus_shield_service_name">FlowState Fokus-Schild</string>
+    <string name="focus_shield_service_description">Blockiert nicht erlaubte Apps während einer aktiven Fokus-Session.</string>
+    <string name="focus_shield_blocker_title">App blockiert</string>
+    <string name="focus_shield_blocker_msg">Diese App ist während deines Fokus blockiert.</string>
+    <string name="focus_shield_open_anyway">Trotzdem öffnen</string>
+    <string name="focus_shield_back_to_focus">Zurück zum Fokus</string>
+
+    <!-- Confirm dialog -->
+    <string name="confirm_focus_title">Bereit für den nächsten Fokus?</string>
+    <string name="confirm_focus_message">Die Pause ist vorbei. Tippe „Weiter" um den nächsten Fokus-Schritt zu starten.</string>
+    <string name="confirm_focus_continue">Weiter</string>
+
+    <!-- Reset data -->
+    <string name="reset_dialog_title">Alle Daten zurücksetzen?</string>
+    <string name="reset_dialog_message">Sessions, Trophäen, XP und Streak werden unwiderruflich gelöscht.</string>
+    <string name="reset_dialog_confirm">Zurücksetzen</string>
+
+    <!-- Misc -->
+    <string name="back">Zurück</string>
+    <string name="share">Teilen</string>
+    <string name="close">Schließen</string>
+</resources>
