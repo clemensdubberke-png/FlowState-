@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FlowState</string>
+    <string name="complication_label">FlowState Streak</string>
+    <string name="quickstart_title">Schnellstart</string>
+    <string name="stats_title">Heute</string>
+    <string name="session_running">Fokus</string>
+    <string name="session_pause">Pause</string>
+    <string name="session_summary_title">Stark!</string>
+    <string name="session_summary_format">%1$d Min · +%2$d XP</string>
+    <string name="session_close">Fertig</string>
+    <string name="streak_label">Streak</string>
+    <string name="sessions_label">Sessions</string>
+    <string name="flow_score_label">Flow</string>
+    <string name="quickstart_10">10 Min</string>
+    <string name="quickstart_25">25 Min</string>
+    <string name="quickstart_45">45 Min</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_resume">Weiter</string>
+    <string name="action_stop">Stop</string>
+    <string name="notification_running">Fokus läuft</string>
+</resources>
