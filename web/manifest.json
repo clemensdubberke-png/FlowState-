@@ -1,0 +1,26 @@
+{
+  "name": "FlowState",
+  "short_name": "FlowState",
+  "description": "Finde deinen Flow — Fokus-Timer mit Gamification.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0D0B14",
+  "theme_color": "#0D0B14",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%230D0B14'/%3E%3Ccircle cx='96' cy='96' r='54' fill='none' stroke='%23A78BFA' stroke-width='12'/%3E%3Cpath d='M96 54 L108 84 L138 90 L114 108 L120 138 L96 123 L72 138 L78 108 L54 90 L84 84 Z' fill='%237C3AED'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230D0B14'/%3E%3Ccircle cx='256' cy='256' r='144' fill='none' stroke='%23A78BFA' stroke-width='32'/%3E%3Cpath d='M256 144 L288 224 L368 240 L304 288 L320 368 L256 328 L192 368 L208 288 L144 240 L224 224 Z' fill='%237C3AED'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,2192 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#0D0B14" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="FlowState" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0B14'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%23A78BFA' stroke-width='4'/%3E%3Cpath d='M32 18 L36 28 L46 30 L38 36 L40 46 L32 41 L24 46 L26 36 L18 30 L28 28 Z' fill='%237C3AED'/%3E%3C/svg%3E" />
+<title>FlowState — Finde deinen Flow</title>
+<style>
+  :root {
+    --purple: #A78BFA;
+    --purple-deep: #7C3AED;
+    --bg: #0D0B14;
+    --surface: #12101A;
+    --card: #1C1A26;
+    --card-elevated: #252134;
+    --amber: #F59E0B;
+    --amber-deep: #D97706;
+    --on: #FFFFFF;
+    --muted: #9CA0AE;
+    --dim: #6B6F7E;
+    --divider: #2A2738;
+    --green: #34D399;
+    --red: #B91C1C;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--on);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+    user-select: none;
+  }
+  input, textarea { user-select: text; }
+  button { font-family: inherit; }
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  #root {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+  .screen {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 88px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .screen.no-tabbar { padding-bottom: 32px; }
+
+  /* Top bar of icon buttons */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px 6px;
+  }
+  .topbar .right { display: flex; gap: 8px; }
+  .icon-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--on);
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .icon-btn svg { width: 20px; height: 20px; }
+  .icon-btn:active { transform: scale(0.92); transition: transform 60ms; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 16px;
+    margin: 6px 16px;
+  }
+  .card.compact { padding: 14px; }
+
+  /* User info card */
+  .user-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .user-info .name { font-size: 24px; font-weight: 700; }
+  .user-info .greeting { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .user-info .xp { color: var(--purple); font-weight: 600; font-size: 16px; }
+  .badges { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .streak-badge {
+    background: rgba(124, 58, 237, 0.25);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
+    display: inline-flex; gap: 6px; align-items: center;
+    font-weight: 500;
+  }
+  .next-goal {
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--muted);
+    display: inline-flex; gap: 6px; align-items: center;
+  }
+  .quest-banner {
+    margin: 6px 16px;
+    background: rgba(124, 58, 237, 0.18);
+    border-radius: 20px;
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .quest-banner .icon-circle {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(167, 139, 250, 0.4);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--amber);
+  }
+  .quest-banner .title { font-weight: 600; }
+
+  /* Timer display */
+  .timer-display {
+    text-align: center;
+    padding: 16px 0 8px;
+  }
+  .timer-display .time {
+    font-family: "SF Mono", "JetBrains Mono", "Roboto Mono", monospace;
+    font-size: 88px;
+    font-weight: 500;
+    letter-spacing: -3px;
+    line-height: 1;
+  }
+  .timer-display .time.pause { color: var(--amber); }
+  .timer-display .label {
+    color: var(--muted);
+    margin-top: 4px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Preset chips */
+  .chips {
+    display: flex; gap: 8px; padding: 0 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: 0 0 auto;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+  }
+  .chip.selected { background: var(--purple); color: var(--on); }
+
+  /* Intention */
+  .intention-card {
+    margin: 12px 16px 0;
+    background: var(--card);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .intention-head {
+    display: flex; align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+  }
+  .intention-head .label { flex: 1; font-weight: 600; margin-left: 10px; }
+  .intention-head .chev { color: var(--muted); }
+  .intention-body { padding: 0 16px 14px; }
+  .intention-body textarea {
+    width: 100%;
+    background: var(--bg);
+    color: var(--on);
+    border: 1px solid var(--divider);
+    border-radius: 14px;
+    padding: 12px;
+    resize: vertical;
+    font-family: inherit;
+    min-height: 60px;
+    outline: none;
+  }
+  .intention-body textarea:focus { border-color: var(--purple); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    height: 56px;
+    border-radius: 16px;
+    border: none;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--on);
+  }
+  .btn-primary { background: var(--purple); }
+  .btn-primary:active { background: var(--purple-deep); }
+  .btn-secondary { background: var(--card); color: var(--on); }
+  .btn-outline { background: transparent; border: 1px solid var(--divider); color: var(--muted); }
+  .btn-danger { background: var(--red); }
+  .btn-row { display: flex; gap: 12px; padding: 0 16px; }
+  .btn-row .btn { flex: 1; }
+  .btn.small { height: 44px; font-size: 14px; border-radius: 12px; }
+  .btn:disabled { opacity: 0.5; }
+
+  .start-button-row { padding: 16px; }
+
+  /* Session history */
+  .history-card { margin: 16px; }
+  .history-head { display: flex; align-items: center; gap: 12px; }
+  .history-head .flame {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(245, 158, 11, 0.2);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--amber);
+  }
+  .history-head .title { flex: 1; font-weight: 600; }
+  .history-head .streak { color: var(--amber); font-weight: 700; }
+  .history-list { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .session-row {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .session-row .time { color: var(--muted); font-size: 14px; min-width: 50px; }
+  .session-row .body { flex: 1; }
+  .session-row .body .dur { font-weight: 600; }
+  .session-row .body .intent { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .session-row .xp { color: var(--purple); font-weight: 600; }
+
+  /* Bottom nav */
+  .tabbar {
+    position: sticky; bottom: 0;
+    background: var(--card);
+    display: flex;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    z-index: 10;
+  }
+  .tabbar.hidden { display: none; }
+  .tabitem {
+    flex: 1;
+    background: none; border: none;
+    color: var(--muted);
+    padding: 8px 0;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .tabitem.active { color: var(--purple); }
+  .tabitem svg { width: 22px; height: 22px; }
+
+  /* Headline */
+  .h1 { padding: 16px; font-size: 28px; font-weight: 700; }
+  .h2 { padding: 0 16px; font-size: 22px; font-weight: 700; }
+  .section-label { padding: 12px 16px 4px; color: var(--muted); font-size: 13px; font-weight: 600; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    margin: 0 16px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .tabs button {
+    flex: 1;
+    background: none; border: none; color: var(--muted);
+    padding: 14px 0;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tabs button.active { color: var(--purple); border-bottom-color: var(--purple); }
+
+  /* Flow score gauge */
+  .gauge {
+    display: flex; flex-direction: column; align-items: center;
+    margin: 12px 0;
+  }
+  .gauge svg { width: 220px; height: 220px; }
+  .gauge .center {
+    position: relative; margin-top: -180px; margin-bottom: 60px;
+    text-align: center;
+  }
+  .gauge .score { font-size: 56px; font-weight: 700; }
+  .gauge .delta { font-weight: 600; color: var(--purple); }
+  .gauge .delta.neg { color: var(--muted); }
+  .gauge .motivation { color: var(--muted); margin-top: 8px; font-size: 14px; text-align: center; }
+
+  /* Stats grid */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+  .stats-grid .card { margin: 0; }
+  .stat-tile .head { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+  .stat-tile .head .icon-bg {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(167, 139, 250, 0.2);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--purple);
+  }
+  .stat-tile.amber .head .icon-bg { background: rgba(245, 158, 11, 0.2); color: var(--amber); }
+  .stat-tile .value { font-size: 28px; font-weight: 700; margin-top: 8px; }
+
+  /* Momentum chart */
+  .chart-card { margin: 12px 16px; }
+  .legend { display: flex; gap: 12px; margin: 4px 0 16px; }
+  .legend .dot { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+  .legend .swatch { width: 8px; height: 8px; border-radius: 2px; }
+  .bars {
+    display: flex;
+    height: 160px;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2px;
+  }
+  .day-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .day-col .pair { display: flex; align-items: flex-end; gap: 2px; height: 140px; }
+  .day-col .bar {
+    width: 10px;
+    border-radius: 4px;
+    min-height: 4px;
+  }
+  .day-col .bar.cur { background: var(--purple); }
+  .day-col .bar.prev { background: rgba(124, 58, 237, 0.3); }
+  .day-col .lbl { font-size: 11px; color: var(--muted); }
+
+  /* Mastery path */
+  .mastery-card { margin: 12px 16px; }
+  .mastery-row {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
+  .mastery-row::-webkit-scrollbar { display: none; }
+  .level-node { display: flex; align-items: flex-start; }
+  .level-node .col { width: 96px; display: flex; flex-direction: column; align-items: center; }
+  .level-node .badge {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(124, 58, 237, 0.15);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--muted);
+  }
+  .level-node.unlocked .badge { background: rgba(167, 139, 250, 0.3); color: var(--on); }
+  .level-node.current .badge { background: rgba(167, 139, 250, 0.55); border: 2px solid var(--purple); }
+  .level-node .lvl-label { font-size: 12px; font-weight: 600; margin-top: 8px; color: var(--muted); }
+  .level-node .lvl-name { font-size: 12px; color: var(--muted); text-align: center; padding: 0 4px; }
+  .level-node.unlocked .lvl-label, .level-node.unlocked .lvl-name { color: var(--on); }
+  .level-node .connector {
+    height: 3px; width: 20px;
+    background: rgba(124, 58, 237, 0.2);
+    margin-top: 26px;
+    flex-shrink: 0;
+  }
+  .level-node.unlocked .connector { background: rgba(167, 139, 250, 0.6); }
+
+  /* Inventory */
+  .inventory-card { margin: 12px 16px; }
+  .inv-head { display: flex; align-items: center; }
+  .inv-head .title { flex: 1; font-weight: 700; font-size: 18px; }
+  .inv-full {
+    background: rgba(245, 158, 11, 0.25);
+    color: var(--amber);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .inv-item { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  .inv-item .ico {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--amber);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+
+  /* Trophies */
+  .trophies-card { margin: 12px 16px; }
+  .trophies-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .trophy {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    position: relative;
+  }
+  .trophy .ico-wrap {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--bg);
+    color: var(--muted);
+    display: inline-flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .trophy.unlocked .ico-wrap { background: rgba(167, 139, 250, 0.25); color: var(--purple); }
+  .trophy .name { font-size: 12px; text-align: center; color: var(--muted); font-weight: 600; }
+  .trophy.unlocked .name { color: var(--on); }
+  .trophy .check {
+    position: absolute;
+    bottom: 8px; right: 8px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--green); color: var(--on);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .trophy .lock-overlay {
+    position: absolute; inset: 0;
+    background: rgba(13, 11, 20, 0.5);
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--muted);
+  }
+
+  /* Routines */
+  .routines-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+  }
+  .routine-card { margin: 8px 16px; }
+  .routine-card .head { display: flex; align-items: center; }
+  .routine-card .head .name { flex: 1; font-size: 18px; font-weight: 700; }
+  .routine-card .badge {
+    background: rgba(167, 139, 250, 0.25); color: var(--purple);
+    border-radius: 999px; padding: 2px 8px; font-size: 11px; font-weight: 600;
+  }
+  .routine-card .meta { display: flex; gap: 12px; align-items: center; margin-top: 4px; color: var(--muted); font-size: 13px; }
+  .routine-card .meta .pill { background: var(--bg); padding: 2px 8px; border-radius: 999px; font-size: 11px; color: var(--purple); }
+  .routine-card .timeline { display: flex; align-items: center; margin-top: 12px; }
+  .routine-card .timeline .dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+  .routine-card .timeline .dot.focus { background: var(--purple); }
+  .routine-card .timeline .dot.pause { background: var(--amber); }
+  .routine-card .timeline .line { flex: 1; height: 2px; background: rgba(156, 160, 174, 0.4); margin: 0 4px; }
+  .routine-card .step-list { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; color: var(--muted); font-size: 12px; }
+  .routine-card .actions { display: flex; gap: 8px; margin-top: 14px; }
+  .routine-card .actions .btn { flex: 1; }
+  .swipe-hint { color: var(--muted); font-size: 12px; padding: 16px; text-align: center; }
+
+  /* Editor */
+  .editor-step {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 12px;
+    margin: 8px 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .step-toggle {
+    display: flex; background: var(--bg); border-radius: 999px; padding: 2px;
+  }
+  .step-toggle button {
+    border: none; background: none; color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+  .step-toggle button.active.focus { background: rgba(167, 139, 250, 0.3); color: var(--purple); }
+  .step-toggle button.active.pause { background: rgba(245, 158, 11, 0.3); color: var(--amber); }
+  .stepper { display: flex; align-items: center; gap: 6px; }
+  .stepper button {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--bg); color: var(--on); border: none;
+    font-weight: 700; cursor: pointer;
+  }
+  .stepper .min { min-width: 56px; text-align: center; font-weight: 600; font-size: 13px; }
+  .step-up-down { display: flex; flex-direction: column; gap: 4px; }
+  .step-up-down button {
+    width: 28px; height: 22px; background: var(--bg); border: none; color: var(--muted);
+    border-radius: 6px; cursor: pointer;
+  }
+  .editor-name {
+    margin: 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--muted);
+    color: var(--on);
+    width: calc(100% - 32px);
+    font-size: 18px;
+    padding: 8px 0;
+    outline: none;
+  }
+  .editor-name:focus { border-color: var(--purple); }
+  .editor-total { color: var(--muted); font-size: 14px; padding: 0 16px 8px; }
+
+  /* Settings */
+  .settings-card { margin: 0 16px 8px; background: var(--card); border-radius: 20px; overflow: hidden; }
+  .settings-row {
+    display: flex; align-items: center; padding: 14px 16px;
+    cursor: pointer; gap: 12px;
+  }
+  .settings-row:not(:last-child) { border-bottom: 1px solid rgba(13, 11, 20, 0.5); }
+  .settings-row .body { flex: 1; }
+  .settings-row .title { font-weight: 600; }
+  .settings-row .subtitle { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .toggle { width: 44px; height: 24px; background: rgba(156, 160, 174, 0.4); border-radius: 999px; position: relative; cursor: pointer; transition: background 200ms; }
+  .toggle.on { background: var(--purple); }
+  .toggle::after {
+    content: ""; position: absolute; left: 2px; top: 2px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--on);
+    transition: transform 200ms;
+  }
+  .toggle.on::after { transform: translateX(20px); }
+  .chev-r { color: var(--muted); }
+
+  /* Onboarding */
+  .onboarding {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px;
+    text-align: center;
+  }
+  .onboarding .logo {
+    width: 96px; height: 96px; border-radius: 50%;
+    background: radial-gradient(circle at center, var(--purple), var(--purple-deep));
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+  }
+  .onboarding h1 { font-size: 28px; margin: 0 0 12px; }
+  .onboarding p { color: var(--muted); margin: 0 0 32px; }
+  .onboarding input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--muted);
+    border-radius: 14px;
+    color: var(--on);
+    padding: 14px 16px;
+    font-size: 16px;
+    outline: none;
+    margin-bottom: 24px;
+  }
+  .onboarding input:focus { border-color: var(--purple); }
+  .onboarding .btn { width: 100%; }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 100;
+    animation: fade-in 200ms;
+  }
+  .modal {
+    background: var(--surface);
+    width: 100%; max-width: 480px;
+    border-radius: 28px 28px 0 0;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slide-up 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .modal h3 { margin: 8px 0 16px; font-size: 24px; }
+  .modal-actions { display: flex; gap: 12px; margin-top: 16px; }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  /* Sound row in picker */
+  .sound-row {
+    display: flex; align-items: center; padding: 12px 14px;
+    background: var(--card); border-radius: 16px; gap: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .sound-row.locked { cursor: not-allowed; }
+  .sound-row .ico {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(167, 139, 250, 0.2);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--purple);
+  }
+  .sound-row.locked .ico { background: transparent; color: var(--muted); }
+  .sound-row .body { flex: 1; }
+  .sound-row .name { font-weight: 600; }
+  .sound-row.locked .name { color: var(--muted); }
+  .sound-row .lock-info { color: var(--muted); font-size: 12px; }
+  .sound-row .check { color: var(--purple); }
+
+  /* Routine card swipe wrapper */
+  .swipe-wrap { position: relative; overflow: hidden; border-radius: 20px; margin: 8px 16px; }
+  .swipe-bg { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 24px; border-radius: 20px; }
+  .swipe-bg.left { background: var(--purple); justify-content: flex-start; }
+  .swipe-bg.right { background: var(--red); justify-content: flex-end; }
+  .swipe-card {
+    position: relative;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 16px;
+    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    touch-action: pan-y;
+  }
+  .swipe-card.dragging { transition: none; }
+
+  /* Header (sub-screens) */
+  .sub-header {
+    display: flex; align-items: center; padding: 12px 8px;
+  }
+  .sub-header .title { flex: 1; font-size: 22px; font-weight: 700; }
+
+  /* Active routine pill */
+  .active-routine-pill {
+    margin: 8px 16px 0;
+    background: var(--card);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .active-routine-pill .lbl { color: var(--muted); font-size: 13px; }
+  .active-routine-pill .nm { font-weight: 600; }
+  .active-routine-pill button { background: none; border: none; color: var(--purple); font-weight: 600; cursor: pointer; }
+
+  /* Helpers */
+  .toast {
+    position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%);
+    background: var(--card-elevated);
+    color: var(--on);
+    padding: 12px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 200;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    animation: slide-up 250ms;
+    max-width: 90vw;
+  }
+  .toast.success { color: var(--on); }
+  .toast .x { color: var(--purple); margin-right: 8px; }
+
+  .empty-state {
+    text-align: center; color: var(--muted);
+    padding: 48px 24px;
+  }
+
+  /* Inputs in dialogs */
+  .text-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--divider);
+    color: var(--on);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 16px;
+    outline: none;
+  }
+  .text-input:focus { border-color: var(--purple); }
+
+  /* Animations */
+  @media (prefers-reduced-motion: no-preference) {
+    .pulse { animation: pulse 2s ease-in-out infinite; }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Templates: SVG icon set -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></symbol>
+    <symbol id="i-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h2m4 0h2m4 0h2m4 0h2"/><path d="M6 8v8M14 6v12M10 4v16M18 8v8"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-insights" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-6"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c0 4-3 5-3 8s2 4 3 4 3-1 3-4-3-4-3-8zm-6 9c0 5 3 11 6 11s6-6 6-11c0-3-2-5-3-6 0 4-3 5-3 8s-2 4-3 4-3-1-3-4c0-1 0-2 1-3-1 0-1 1-1 1z"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 13c1 1 2 2 2 4h4c0-2 1-3 2-4a7 7 0 0 0-4-13z"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14"/></symbol>
+    <symbol id="i-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></symbol>
+    <symbol id="i-chev-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></symbol>
+    <symbol id="i-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L13 9 20 10 13 11 12 18 11 11 4 10 11 9 12 2z"/><path d="M19 14L19.5 17 22.5 17.5 19.5 18 19 21 18.5 18 15.5 17.5 18.5 17 19 14z" opacity="0.7"/><path d="M5 4L5.5 6 7.5 6.5 5.5 7 5 9 4.5 7 2.5 6.5 4.5 6 5 4z" opacity="0.7"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></symbol>
+    <symbol id="i-zen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 22v-2"/><path d="M5 12h14"/><circle cx="12" cy="12" r="4"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+    <symbol id="i-run" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M4 22l5-9-2-3 6-3 4 5h3"/><path d="M14 11l-1 6"/></symbol>
+    <symbol id="i-grip" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="15" cy="18" r="1.5"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></symbol>
+  </defs>
+</svg>
+
+<script>
+"use strict";
+
+/* ========================= STATE ========================= */
+const STORAGE_KEY = "flowstate.v1";
+
+const SOUND_DEFS = [
+  { id: "deep_space", name: "Deep Space", level: 1, color: "#7C3AED", desc: "Tiefes, weiches Rauschen" },
+  { id: "tibetan_bowl", name: "Tibetische Klangschale", level: 2, color: "#A78BFA", desc: "Sustained Bell-Loop" },
+  { id: "botanical_zen", name: "Botanischer Zen", level: 3, color: "#34D399", desc: "Naturklänge, gefiltert" },
+  { id: "black_drum", name: "Schwarze Tonne", level: 4, color: "#1E1B2E", desc: "Tiefer Drone" },
+  { id: "aurora", name: "Polarlichter", level: 5, color: "#22D3EE", desc: "Schimmernde Flächen" },
+  { id: "starsea", name: "Sternenmeer", level: 6, color: "#F472B6", desc: "Sternenhafte Pings" },
+];
+
+const LEVELS = [
+  { number: 1, name: "Deep Space", xp: 0, soundId: "deep_space" },
+  { number: 2, name: "Tibetische Klangschale", xp: 200, soundId: "tibetan_bowl" },
+  { number: 3, name: "Botanischer Zen", xp: 600, soundId: "botanical_zen" },
+  { number: 4, name: "Schwarze Tonne", xp: 1500, soundId: "black_drum" },
+  { number: 5, name: "Polarlichter", xp: 3000, soundId: "aurora" },
+  { number: 6, name: "Sternenmeer", xp: 6000, soundId: "starsea" },
+];
+
+const TROPHY_DEFS = [
+  { key: "first_step", name: "Erster Schritt", desc: "Schließe deine erste Fokus-Session ab", icon: "trophy" },
+  { key: "consistent", name: "Konsistent", desc: "Erreiche einen 7-Tage-Streak", icon: "flame" },
+  { key: "devoted", name: "Hingebungsvoll", desc: "30 abgeschlossene Sessions", icon: "star" },
+  { key: "marathon", name: "Marathonläufer", desc: "Eine 60-Minuten-Session", icon: "run" },
+  { key: "early_bird", name: "Frühaufsteher", desc: "5 Sessions vor 8 Uhr", icon: "sun" },
+  { key: "deep_focus", name: "Tiefenfokus", desc: "10 Sessions à 45 Min+", icon: "zen" },
+  { key: "ascended", name: "Vollendet", desc: "Erreiche Level 3", icon: "sparkles" },
+  { key: "endurance", name: "Ausdauer", desc: "14-Tage-Streak", icon: "flame" },
+  { key: "xp_collector", name: "XP-Sammler", desc: "Sammle 1000 XP", icon: "bolt" },
+  { key: "intentional", name: "Mit Absicht", desc: "10 Sessions mit Intention", icon: "bulb" },
+];
+
+const QUEST_POOL = [
+  { id: "morning",     title: "Morgendlicher Flow",  desc: "Fokussiere dich am Morgen 30 Min zwischen 5–11 Uhr.", target: 30, range: [5, 11], xp: 40 },
+  { id: "afternoon",   title: "Nachmittags-Flow",    desc: "Fokussiere dich am Nachmittag 30 Min zwischen 12–18 Uhr.", target: 30, range: [12, 18], xp: 40 },
+  { id: "evening",     title: "Abend-Flow",          desc: "Fokussiere dich am Abend 30 Min zwischen 18–23 Uhr.", target: 30, range: [18, 23], xp: 40 },
+  { id: "marathon",    title: "Marathon",            desc: "Eine ununterbrochene Session von mindestens 60 Min.", target: 60, xp: 80, rewardShield: true },
+  { id: "intentional", title: "Mit Absicht",         desc: "Schließe 3 Sessions mit Intention ab.", target: 3, xp: 50, mode: "intention" },
+  { id: "keeper",      title: "Streak-Hüter",        desc: "Schließe heute mindestens eine Session ab.", target: 1, xp: 20 },
+  { id: "double",      title: "Doppelstunde",        desc: "Mindestens 90 Fokus-Minuten heute insgesamt.", target: 90, xp: 70, mode: "total" },
+  { id: "deep",        title: "Tiefe Konzentration", desc: "Eine Session von mindestens 45 Min.", target: 45, xp: 60 },
+];
+
+const DEFAULT_STATE = {
+  profile: { name: null, totalXp: 0, currentStreak: 0, longestStreak: 0, lastSessionDate: null, currentLevel: 1 },
+  sessions: [],
+  routines: [],
+  quests: [],
+  questsDate: null,
+  trophies: TROPHY_DEFS.map(t => ({ key: t.key, unlocked: false, unlockedDate: null })),
+  inventory: { streakShield: 1 },
+  sounds: SOUND_DEFS.map(s => ({ id: s.id, unlocked: s.level === 1 })),
+  settings: {
+    autoDnd: false, muteMedia: false, confirmBeforeFocus: true,
+    lockScreenTimer: false, floatingTimerEnabled: false,
+    selectedSoundId: "deep_space",
+    activeRoutineId: null,
+  },
+};
+
+let state = load();
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    const parsed = JSON.parse(raw);
+    return mergeDeep(JSON.parse(JSON.stringify(DEFAULT_STATE)), parsed);
+  } catch (e) {
+    console.warn("State load failed:", e);
+    return JSON.parse(JSON.stringify(DEFAULT_STATE));
+  }
+}
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+function mergeDeep(base, overlay) {
+  if (typeof overlay !== "object" || overlay === null || Array.isArray(overlay)) return overlay !== undefined ? overlay : base;
+  const out = { ...base };
+  for (const k of Object.keys(overlay)) out[k] = mergeDeep(base[k], overlay[k]);
+  return out;
+}
+
+/* ========================= GAMIFICATION ========================= */
+function streakMultiplier(streak) {
+  if (streak >= 14) return 2.0;
+  if (streak >= 7) return 1.6;
+  if (streak >= 4) return 1.4;
+  if (streak >= 3) return 1.2;
+  return 1.0;
+}
+function computeXp(durationMin, streak) {
+  return Math.floor(durationMin * streakMultiplier(streak));
+}
+function levelForXp(xp) {
+  let lvl = LEVELS[0];
+  for (const l of LEVELS) if (xp >= l.xp) lvl = l;
+  return lvl;
+}
+function nextLevel(xp) {
+  return LEVELS.find(l => xp < l.xp) || null;
+}
+
+function dayKey(epochMs = Date.now()) {
+  const d = new Date(epochMs);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+function daysBetween(aMs, bMs) {
+  return Math.round((dayKey(bMs) - dayKey(aMs)) / 86400000);
+}
+function weekStart(epochMs = Date.now()) {
+  const d = new Date(epochMs);
+  const dayIdx = (d.getDay() + 6) % 7; // Monday-based
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() - dayIdx).getTime();
+}
+
+function ensureQuestsForToday() {
+  const today = dayKey();
+  if (state.questsDate !== today || (state.quests || []).length === 0) {
+    state.questsDate = today;
+    state.quests = pickRandom(QUEST_POOL, randInt(1, 3)).map(q => ({
+      id: q.id + "-" + today,
+      templateId: q.id,
+      title: q.title,
+      description: q.desc,
+      target: q.target,
+      xpReward: q.xp,
+      rewardShield: !!q.rewardShield,
+      range: q.range || null,
+      mode: q.mode || null,
+      completed: false,
+    }));
+    save();
+  }
+}
+function pickRandom(arr, n) {
+  const a = [...arr]; const r = [];
+  for (let i = 0; i < n && a.length; i++) r.push(a.splice(Math.floor(Math.random() * a.length), 1)[0]);
+  return r;
+}
+function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+
+function evaluateQuests(session, intentionSet) {
+  const today = dayKey();
+  const todays = state.sessions.filter(s => dayKey(s.startTime) === today);
+  const todayMin = todays.reduce((sum, s) => sum + s.durationMin, 0);
+  const intentionalCount = todays.filter(s => !!s.intention).length;
+  const hour = new Date(session.startTime).getHours();
+  let xpBonus = 0; let granted = [];
+  for (const q of state.quests) {
+    if (q.completed) continue;
+    let done = false;
+    switch (q.templateId) {
+      case "marathon":   done = session.durationMin >= 60; break;
+      case "deep":       done = session.durationMin >= 45; break;
+      case "intentional":done = intentionalCount >= 3 && intentionSet; break;
+      case "keeper":     done = session.durationMin >= 1; break;
+      case "double":     done = todayMin >= 90; break;
+      default:
+        const inRange = !q.range || (hour >= q.range[0] && hour <= q.range[1]);
+        done = inRange && session.durationMin >= q.target;
+    }
+    if (done) {
+      q.completed = true;
+      xpBonus += q.xpReward;
+      if (q.rewardShield) {
+        state.inventory.streakShield = Math.min(5, (state.inventory.streakShield || 0) + 1);
+      }
+      granted.push(q.title);
+    }
+  }
+  state.profile.totalXp += xpBonus;
+  return granted;
+}
+
+function evaluateTrophies() {
+  const completed = state.sessions.filter(s => s.completed);
+  const total = completed.length;
+  const totalMin = completed.reduce((s, x) => s + x.durationMin, 0);
+  const intentionalCount = completed.filter(s => !!s.intention).length;
+  const before8 = completed.filter(s => new Date(s.startTime).getHours() < 8).length;
+  const ge45 = completed.filter(s => s.durationMin >= 45).length;
+  const any60 = completed.some(s => s.durationMin >= 60);
+  const lvl = levelForXp(state.profile.totalXp);
+  const newly = [];
+  for (const t of state.trophies) {
+    if (t.unlocked) continue;
+    let ok = false;
+    switch (t.key) {
+      case "first_step":   ok = total >= 1; break;
+      case "consistent":   ok = state.profile.currentStreak >= 7; break;
+      case "devoted":      ok = total >= 30; break;
+      case "marathon":     ok = any60; break;
+      case "early_bird":   ok = before8 >= 5; break;
+      case "deep_focus":   ok = ge45 >= 10; break;
+      case "ascended":     ok = lvl.number >= 3; break;
+      case "endurance":    ok = state.profile.currentStreak >= 14; break;
+      case "xp_collector": ok = state.profile.totalXp >= 1000; break;
+      case "intentional":  ok = intentionalCount >= 10; break;
+    }
+    if (ok) {
+      t.unlocked = true;
+      t.unlockedDate = Date.now();
+      newly.push(TROPHY_DEFS.find(d => d.key === t.key));
+    }
+  }
+  return newly;
+}
+
+function flowScore(now = Date.now()) {
+  const TARGET_MIN = 600, TARGET_SES = 14, TARGET_STR = 14;
+  const ws = weekStart(now);
+  const we = ws + 7 * 86400000;
+  const pws = ws - 7 * 86400000;
+  const cur = state.sessions.filter(s => s.startTime >= ws && s.startTime < we);
+  const prev = state.sessions.filter(s => s.startTime >= pws && s.startTime < ws);
+  const score = (sessions) => {
+    if (!sessions.length) return 0;
+    const min = sessions.reduce((s, x) => s + x.durationMin, 0);
+    const cnt = sessions.length;
+    const mNorm = Math.min(1, min / TARGET_MIN);
+    const sNorm = Math.min(1, cnt / TARGET_SES);
+    const stNorm = Math.min(1, state.profile.currentStreak / TARGET_STR);
+    return Math.max(0, Math.min(100, Math.round((0.5 * mNorm + 0.3 * sNorm + 0.2 * stNorm) * 100)));
+  };
+  const c = score(cur), p = score(prev);
+  let delta = p === 0 ? (c > 0 ? 100 : 0) : Math.round(((c - p) / p) * 100);
+  let motivation = "Setz dein Momentum heute in Gang.";
+  if (c >= 85) motivation = "Du bist im Tiefenflow.";
+  else if (c >= 70) motivation = "Das Momentum ist auf deiner Seite.";
+  else if (c >= 50) motivation = "Solider Rhythmus — bleib dran.";
+  else if (c >= 30) motivation = "Klein anfangen, groß werden.";
+  else if (c > 0) motivation = "Jeder Schritt zählt.";
+  return { score: c, prev: p, delta, motivation };
+}
+
+function checkStreakOnLoad() {
+  // If user has lastSessionDate older than 1 day, possibly consume shield
+  const last = state.profile.lastSessionDate;
+  if (!last) return;
+  const gap = daysBetween(last, Date.now());
+  if (gap >= 2) {
+    if (state.inventory.streakShield > 0) {
+      state.inventory.streakShield -= 1;
+      state.profile.lastSessionDate = Date.now() - 86400000; // shift forward 1 day to forgive
+      save();
+    } else if (state.profile.currentStreak > 0) {
+      state.profile.currentStreak = 0;
+      save();
+    }
+  }
+}
+
+function applyCompletedSession(session, intentionSet) {
+  // Streak update
+  const last = state.profile.lastSessionDate;
+  const today = dayKey();
+  if (last == null) {
+    state.profile.currentStreak = 1;
+  } else {
+    const gap = daysBetween(last, session.startTime);
+    if (gap === 0) state.profile.currentStreak = Math.max(1, state.profile.currentStreak);
+    else if (gap === 1) state.profile.currentStreak += 1;
+    else state.profile.currentStreak = 1;
+  }
+  state.profile.longestStreak = Math.max(state.profile.longestStreak, state.profile.currentStreak);
+  state.profile.lastSessionDate = session.startTime;
+
+  // XP
+  const xp = computeXp(session.durationMin, state.profile.currentStreak);
+  session.xpEarned = xp;
+  state.profile.totalXp += xp;
+
+  // Level + sound unlock
+  const lvl = levelForXp(state.profile.totalXp);
+  const leveledUp = lvl.number > state.profile.currentLevel;
+  state.profile.currentLevel = lvl.number;
+  for (const sd of SOUND_DEFS) {
+    if (sd.level <= lvl.number) {
+      const cur = state.sounds.find(s => s.id === sd.id);
+      if (cur) cur.unlocked = true;
+    }
+  }
+
+  // Save session
+  state.sessions.unshift(session);
+
+  // Quests + trophies
+  const qDone = evaluateQuests(session, intentionSet);
+  const newTrophies = evaluateTrophies();
+
+  save();
+  return { xp, leveledUp, newLevel: lvl, questsCompleted: qDone, newTrophies };
+}
+
+/* ========================= TIMER ========================= */
+const Timer = {
+  running: false, paused: false,
+  totalSec: 0, remainingSec: 0,
+  startTime: 0, intention: "", routineId: null,
+  routineStepIdx: 0, isPauseStep: false,
+  routineSteps: [],
+  _tick: null, _onTick: null, _onComplete: null,
+
+  start({ minutes, intention, routineId, isPauseStep, stepIdx, routineSteps }) {
+    this.running = true; this.paused = false;
+    this.totalSec = minutes * 60; this.remainingSec = minutes * 60;
+    this.startTime = Date.now();
+    this.intention = intention || "";
+    this.routineId = routineId || null;
+    this.routineStepIdx = stepIdx || 0;
+    this.isPauseStep = !!isPauseStep;
+    this.routineSteps = routineSteps || [];
+    this._beginTicker();
+    if (!this.isPauseStep) AmbientSound.play(state.settings.selectedSoundId);
+    if (navigator.vibrate) navigator.vibrate(20);
+    requestWakeLock();
+  },
+
+  pause() { if (this.running) { this.paused = true; AmbientSound.duck(true); } },
+  resume() { if (this.running) { this.paused = false; AmbientSound.duck(false); } },
+
+  stop() {
+    if (this._tick) { clearInterval(this._tick); this._tick = null; }
+    this.running = false; this.paused = false;
+    AmbientSound.stop();
+    releaseWakeLock();
+  },
+
+  _beginTicker() {
+    if (this._tick) clearInterval(this._tick);
+    let lastNow = performance.now();
+    this._tick = setInterval(() => {
+      if (!this.running) return;
+      const now = performance.now();
+      const deltaMs = now - lastNow;
+      lastNow = now;
+      if (this.paused) return;
+      const deltaSec = deltaMs / 1000;
+      this.remainingSec = Math.max(0, this.remainingSec - deltaSec);
+      if (this._onTick) this._onTick();
+      if (this.remainingSec <= 0) {
+        const wasPause = this.isPauseStep;
+        const startedAt = this.startTime;
+        const totalMin = Math.round(this.totalSec / 60);
+        if (this._tick) { clearInterval(this._tick); this._tick = null; }
+
+        if (this.routineId && this.routineStepIdx < this.routineSteps.length - 1) {
+          const nextStep = this.routineSteps[this.routineStepIdx + 1];
+          const nextIsPause = nextStep.type === "pause";
+          if (!wasPause) {
+            // Completion of focus step → save session
+            const sess = {
+              startTime: startedAt,
+              endTime: Date.now(),
+              durationMin: totalMin,
+              intention: this.intention || null,
+              xpEarned: 0,
+              routineId: this.routineId,
+              completed: true,
+            };
+            const result = applyCompletedSession(sess, !!this.intention);
+            if (this._onComplete) this._onComplete({ session: sess, result, isPauseStep: false });
+          }
+          // Continue to next step
+          this.start({
+            minutes: nextStep.minutes,
+            intention: this.intention,
+            routineId: this.routineId,
+            isPauseStep: nextIsPause,
+            stepIdx: this.routineStepIdx + 1,
+            routineSteps: this.routineSteps,
+          });
+        } else {
+          // End of timer or routine
+          if (!wasPause) {
+            const sess = {
+              startTime: startedAt,
+              endTime: Date.now(),
+              durationMin: totalMin,
+              intention: this.intention || null,
+              xpEarned: 0,
+              routineId: this.routineId,
+              completed: true,
+            };
+            const result = applyCompletedSession(sess, !!this.intention);
+            this.stop();
+            if (this._onComplete) this._onComplete({ session: sess, result, isPauseStep: false, finished: true });
+          } else {
+            this.stop();
+            if (this._onComplete) this._onComplete({ session: null, result: null, isPauseStep: true, finished: true });
+          }
+        }
+      }
+    }, 250);
+  },
+};
+
+/* ========================= AMBIENT SOUND (Web Audio API) ========================= */
+const AmbientSound = {
+  ctx: null,
+  gainMaster: null,
+  current: null,
+  currentId: null,
+
+  ensureCtx() {
+    if (!this.ctx) {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return null;
+      this.ctx = new Ctx();
+      this.gainMaster = this.ctx.createGain();
+      this.gainMaster.gain.value = 0.4;
+      this.gainMaster.connect(this.ctx.destination);
+    }
+    if (this.ctx.state === "suspended") this.ctx.resume();
+    return this.ctx;
+  },
+
+  play(soundId) {
+    if (this.currentId === soundId && this.current) return;
+    this.stop();
+    const ctx = this.ensureCtx();
+    if (!ctx) return;
+    this.currentId = soundId;
+    const factory = SOUND_FACTORIES[soundId] || SOUND_FACTORIES.deep_space;
+    const node = factory(ctx, this.gainMaster);
+    this.current = node;
+  },
+
+  duck(on) {
+    if (!this.gainMaster) return;
+    const t = this.ctx.currentTime;
+    this.gainMaster.gain.cancelScheduledValues(t);
+    this.gainMaster.gain.linearRampToValueAtTime(on ? 0.08 : 0.4, t + 0.4);
+  },
+
+  stop() {
+    if (this.current && this.current.stop) this.current.stop();
+    this.current = null;
+    this.currentId = null;
+  },
+};
+
+const SOUND_FACTORIES = {
+  // pink-noise drone
+  deep_space(ctx, dest) {
+    const noise = createPinkNoise(ctx);
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass"; filter.frequency.value = 400; filter.Q.value = 0.5;
+    const g = ctx.createGain(); g.gain.value = 0.55;
+    noise.connect(filter); filter.connect(g); g.connect(dest);
+    return { stop() { try { noise.stop(); } catch(e){} } };
+  },
+  // bell loop
+  tibetan_bowl(ctx, dest) {
+    const g = ctx.createGain(); g.gain.value = 0.15; g.connect(dest);
+    const playBell = () => {
+      if (!AmbientSound.ctx) return;
+      const t = ctx.currentTime;
+      [220, 330, 440, 660].forEach((freq, i) => {
+        const o = ctx.createOscillator(); o.frequency.value = freq + (Math.random() * 4 - 2);
+        o.type = "sine";
+        const env = ctx.createGain();
+        env.gain.setValueAtTime(0, t);
+        env.gain.linearRampToValueAtTime(0.4 / (i + 1), t + 0.05);
+        env.gain.exponentialRampToValueAtTime(0.0001, t + 6 + Math.random() * 2);
+        o.connect(env); env.connect(g);
+        o.start(t); o.stop(t + 8);
+      });
+    };
+    playBell();
+    const intv = setInterval(playBell, 8000);
+    return { stop() { clearInterval(intv); g.disconnect(); } };
+  },
+  // wind/water-like band-passed noise + slow oscillation
+  botanical_zen(ctx, dest) {
+    const noise = createPinkNoise(ctx);
+    const filter = ctx.createBiquadFilter();
+    filter.type = "bandpass"; filter.frequency.value = 800; filter.Q.value = 1.5;
+    const g = ctx.createGain(); g.gain.value = 0.35;
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.07;
+    const lfoGain = ctx.createGain(); lfoGain.gain.value = 350;
+    lfo.connect(lfoGain); lfoGain.connect(filter.frequency);
+    noise.connect(filter); filter.connect(g); g.connect(dest);
+    lfo.start();
+    return { stop() { try { noise.stop(); lfo.stop(); } catch(e){} } };
+  },
+  // very low drone
+  black_drum(ctx, dest) {
+    const o1 = ctx.createOscillator(); o1.frequency.value = 55; o1.type = "sine";
+    const o2 = ctx.createOscillator(); o2.frequency.value = 82; o2.type = "sine";
+    const o3 = ctx.createOscillator(); o3.frequency.value = 110; o3.type = "triangle";
+    const g = ctx.createGain(); g.gain.value = 0.2;
+    [o1, o2, o3].forEach(o => o.connect(g));
+    g.connect(dest);
+    o1.start(); o2.start(); o3.start();
+    return { stop() { try { o1.stop(); o2.stop(); o3.stop(); } catch(e){} } };
+  },
+  // shimmery aurora pads
+  aurora(ctx, dest) {
+    const g = ctx.createGain(); g.gain.value = 0.18; g.connect(dest);
+    const oscs = [];
+    [220, 277, 330, 415].forEach((f, i) => {
+      const o = ctx.createOscillator(); o.frequency.value = f; o.type = "sine";
+      const og = ctx.createGain(); og.gain.value = 0.6;
+      const lfo = ctx.createOscillator(); lfo.frequency.value = 0.1 + i * 0.05; lfo.type = "sine";
+      const lfoGain = ctx.createGain(); lfoGain.gain.value = 0.3;
+      lfo.connect(lfoGain); lfoGain.connect(og.gain);
+      o.connect(og); og.connect(g);
+      o.start(); lfo.start();
+      oscs.push(o, lfo);
+    });
+    return { stop() { oscs.forEach(o => { try { o.stop(); } catch(e){} }); } };
+  },
+  // sparse pings + low drone
+  starsea(ctx, dest) {
+    const g = ctx.createGain(); g.gain.value = 0.15; g.connect(dest);
+    const droneOsc = ctx.createOscillator(); droneOsc.frequency.value = 65; droneOsc.type = "sine";
+    const dg = ctx.createGain(); dg.gain.value = 0.25;
+    droneOsc.connect(dg); dg.connect(g); droneOsc.start();
+    const ping = () => {
+      if (!AmbientSound.ctx) return;
+      const t = ctx.currentTime;
+      const freq = 880 + Math.random() * 1200;
+      const o = ctx.createOscillator(); o.frequency.value = freq; o.type = "sine";
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0, t);
+      env.gain.linearRampToValueAtTime(0.3, t + 0.02);
+      env.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+      o.connect(env); env.connect(g);
+      o.start(t); o.stop(t + 1.6);
+    };
+    ping();
+    const intv = setInterval(() => { if (Math.random() > 0.4) ping(); }, 1800);
+    return { stop() { clearInterval(intv); try { droneOsc.stop(); } catch(e){} } };
+  },
+};
+
+function createPinkNoise(ctx) {
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+  for (let i = 0; i < data.length; i++) {
+    const w = Math.random() * 2 - 1;
+    b0 = 0.99886 * b0 + w * 0.0555179;
+    b1 = 0.99332 * b1 + w * 0.0750759;
+    b2 = 0.96900 * b2 + w * 0.1538520;
+    b3 = 0.86650 * b3 + w * 0.3104856;
+    b4 = 0.55000 * b4 + w * 0.5329522;
+    b5 = -0.7616 * b5 - w * 0.0168980;
+    data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+    b6 = w * 0.115926;
+  }
+  const src = ctx.createBufferSource();
+  src.buffer = buf; src.loop = true; src.start();
+  return src;
+}
+
+/* ========================= WAKE LOCK ========================= */
+let wakeLock = null;
+async function requestWakeLock() {
+  if ("wakeLock" in navigator) {
+    try { wakeLock = await navigator.wakeLock.request("screen"); } catch (e) {}
+  }
+}
+function releaseWakeLock() {
+  if (wakeLock) { try { wakeLock.release(); } catch(e){} wakeLock = null; }
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && Timer.running) requestWakeLock();
+});
+
+/* ========================= UTILITIES ========================= */
+function fmtMMSS(secInput) {
+  const sec = Math.max(0, Math.round(secInput));
+  return `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
+}
+function fmtHM(min) {
+  const h = Math.floor(min / 60); const m = min % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+function fmtTime(epoch) {
+  const d = new Date(epoch);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function icon(id, cls = "") { return `<svg class="${cls}"><use href="#i-${id}"/></svg>`; }
+function uid() { return Math.random().toString(36).slice(2, 10); }
+
+function toast(msg, durationMs = 2200) {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.innerHTML = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), durationMs);
+}
+
+/* ========================= ROUTING ========================= */
+let route = "timer";
+function go(newRoute) { route = newRoute; render(); }
+
+/* ========================= SCREENS ========================= */
+
+function screenOnboarding() {
+  const root = document.getElementById("root");
+  root.innerHTML = `
+    <div class="onboarding screen no-tabbar">
+      <div class="logo">${icon("sparkles")}</div>
+      <h1>Willkommen bei FlowState</h1>
+      <p>Finde deinen Flow. Setze dein Momentum in Gang.</p>
+      <input id="onb-name" type="text" placeholder="Wie sollen wir dich nennen?" autocomplete="off" />
+      <button id="onb-go" class="btn btn-primary" disabled>Los geht's</button>
+    </div>
+  `;
+  const inp = document.getElementById("onb-name");
+  const btn = document.getElementById("onb-go");
+  inp.addEventListener("input", () => { btn.disabled = inp.value.trim().length === 0; });
+  btn.addEventListener("click", () => {
+    state.profile.name = inp.value.trim();
+    save();
+    route = "timer"; render();
+  });
+  setTimeout(() => inp.focus(), 100);
+}
+
+function greetingFor(name) {
+  const h = new Date().getHours();
+  let prefix = "Späte Stunde";
+  if (h >= 5 && h <= 11) prefix = "Guten Morgen";
+  else if (h >= 12 && h <= 17) prefix = "Guten Nachmittag";
+  else if (h >= 18 && h <= 22) prefix = "Guten Abend";
+  return `${prefix}, ${name || "Du"}.`;
+}
+
+function screenTimer() {
+  ensureQuestsForToday();
+  const root = document.getElementById("root");
+  const profile = state.profile;
+  const streak = profile.currentStreak;
+  const mult = streakMultiplier(streak);
+  const xpTotal = profile.totalXp;
+  const next = nextLevel(xpTotal);
+  const today = dayKey();
+  const todays = state.sessions.filter(s => dayKey(s.startTime) === today);
+  const minToday = todays.reduce((s, x) => s + x.durationMin, 0);
+  const activeQuest = (state.quests || []).find(q => !q.completed) || (state.quests || [])[0];
+  const activeRoutine = profile.activeRoutineId ? state.routines.find(r => r.id === state.settings.activeRoutineId) : null;
+
+  let preset = window.__preset || 25;
+  let intentionOpen = window.__intentionOpen || false;
+  let intentionText = window.__intentionText || "";
+
+  const t = Timer;
+  const isRunning = t.running;
+  const remaining = isRunning ? t.remainingSec : preset * 60;
+
+  root.innerHTML = `
+    <div class="screen" id="timer-screen">
+      <div class="topbar">
+        <button class="icon-btn" data-act="open-routines" title="Routinen">${icon("edit")}</button>
+        <div class="right">
+          <button class="icon-btn" data-act="open-progress" title="Stats">${icon("star")}</button>
+          <button class="icon-btn" data-act="open-progress" title="Trophäen">${icon("trophy")}</button>
+          <button class="icon-btn" data-act="open-sounds" title="Sounds">${icon("wave")}</button>
+          <button class="icon-btn" data-act="open-settings" title="Einstellungen">${icon("settings")}</button>
+        </div>
+      </div>
+
+      <div class="card user-info">
+        <div>
+          <div class="name">${escapeHtml(profile.name || "Du")}</div>
+          <div class="greeting">${escapeHtml(greetingFor(profile.name))}</div>
+          <div class="badges">
+            <div class="streak-badge" style="color:#fff">${icon("flame", "")}<span>${streak}-Tage-Streak · ${mult.toFixed(1)}x XP</span></div>
+            ${next ? `<div class="next-goal">${icon("arrow-up-right")}<span>Nächste: ${escapeHtml(next.name)}</span></div>` : ""}
+          </div>
+        </div>
+        <div class="xp">${xpTotal} XP /${preset}m</div>
+      </div>
+
+      ${activeQuest ? `
+        <div class="quest-banner">
+          <div class="icon-circle">${icon("trophy")}</div>
+          <div class="title">Daily Quest: ${escapeHtml(activeQuest.title)}${activeQuest.completed ? " ✓" : ""}</div>
+        </div>
+      ` : ""}
+
+      <div class="timer-display">
+        <div class="time ${t.isPauseStep ? 'pause' : ''}">${fmtMMSS(remaining)}</div>
+        ${t.isPauseStep ? '<div class="label">Pause</div>' : ''}
+      </div>
+
+      ${!isRunning ? `
+        <div class="chips" id="presets">
+          ${[10, 15, 25, 45, 60].map(m => `
+            <button class="chip ${m === preset ? "selected" : ""}" data-min="${m}">${m}m</button>
+          `).join("")}
+        </div>
+
+        <div class="intention-card">
+          <div class="intention-head" data-act="toggle-intention">
+            ${icon("bulb")}<div class="label">Intention setzen</div>
+            <div class="chev">${intentionOpen ? "▴" : "▾"}</div>
+          </div>
+          ${intentionOpen ? `
+            <div class="intention-body">
+              <textarea id="intention-input" placeholder="Worauf willst du dich fokussieren?" rows="2">${escapeHtml(intentionText)}</textarea>
+            </div>
+          ` : ""}
+        </div>
+
+        <div class="start-button-row">
+          <button class="btn btn-primary" data-act="start-session">Fokus starten</button>
+        </div>
+
+        ${activeRoutine ? `
+          <div class="active-routine-pill">
+            <div>
+              <div class="lbl">Aktive Routine</div>
+              <div class="nm">${escapeHtml(activeRoutine.name)} · ${activeRoutine.steps.reduce((s, x) => s + x.minutes, 0)}m</div>
+            </div>
+            <button data-act="clear-routine">Entfernen</button>
+          </div>
+        ` : ""}
+      ` : `
+        <div class="btn-row">
+          <button class="btn btn-secondary" data-act="${t.paused ? 'resume' : 'pause'}">${t.paused ? "Fortsetzen" : "Pause"}</button>
+          <button class="btn btn-danger" data-act="stop-session">Stoppen</button>
+        </div>
+        ${t.intention ? `<div class="card compact" style="font-size:14px;color:#fff"><strong>Intention:</strong> ${escapeHtml(t.intention)}</div>` : ""}
+      `}
+
+      <div class="card history-card">
+        <div class="history-head">
+          <div class="flame">${icon("flame")}</div>
+          <div class="title">${todays.length} Sessions Heute · ${minToday} Min Fokussiert</div>
+          <div class="streak">${streak}🔥</div>
+        </div>
+        ${todays.length === 0 ? `
+          <div class="empty-state" style="padding:20px 0 0">Noch keine Sessions heute. Zeit zu starten.</div>
+        ` : `
+          <div class="history-list">
+            ${todays.slice(0, 8).map(s => `
+              <div class="session-row">
+                <div class="time">${fmtTime(s.startTime)}</div>
+                <div class="body">
+                  <div class="dur">${s.durationMin} Min</div>
+                  ${s.intention ? `<div class="intent">${escapeHtml(s.intention)}</div>` : ""}
+                </div>
+                <div class="xp">+${s.xpEarned} XP</div>
+              </div>
+            `).join("")}
+          </div>
+        `}
+      </div>
+    </div>
+    ${tabbar("timer")}
+  `;
+
+  document.querySelectorAll("[data-min]").forEach(el => {
+    el.addEventListener("click", () => { window.__preset = parseInt(el.dataset.min); render(); });
+  });
+  document.querySelectorAll("[data-act]").forEach(el => {
+    el.addEventListener("click", e => handleTimerAction(el.dataset.act, e));
+  });
+  const ti = document.getElementById("intention-input");
+  if (ti) ti.addEventListener("input", e => { window.__intentionText = e.target.value; });
+}
+
+function handleTimerAction(act, e) {
+  switch (act) {
+    case "open-routines": go("routines"); break;
+    case "open-progress": go("progress"); break;
+    case "open-sounds": showSoundPicker(); break;
+    case "open-settings": go("settings"); break;
+    case "toggle-intention":
+      window.__intentionOpen = !window.__intentionOpen;
+      render();
+      setTimeout(() => {
+        const t = document.getElementById("intention-input");
+        if (t) t.focus();
+      }, 50);
+      break;
+    case "start-session": {
+      const minutes = window.__preset || 25;
+      const intention = (window.__intentionText || "").trim();
+      const activeRoutine = state.settings.activeRoutineId
+        ? state.routines.find(r => r.id === state.settings.activeRoutineId)
+        : null;
+      Timer._onTick = () => {
+        const tEl = document.querySelector(".timer-display .time");
+        if (tEl) tEl.textContent = fmtMMSS(Timer.remainingSec);
+      };
+      Timer._onComplete = ({ session, result, isPauseStep, finished }) => {
+        if (finished) render();
+        else render();
+        if (result) {
+          let msg = `${icon("check", "x")} +${result.xp} XP gesammelt`;
+          if (result.leveledUp) msg += ` · Level ${result.newLevel.number}: ${result.newLevel.name}!`;
+          toast(msg, 3000);
+          if (navigator.vibrate) navigator.vibrate([60, 60, 200]);
+          if (result.newTrophies && result.newTrophies.length) {
+            setTimeout(() => toast(`🏆 Trophäe: ${result.newTrophies[0].name}`, 3000), 800);
+          }
+          if (result.questsCompleted && result.questsCompleted.length) {
+            setTimeout(() => toast(`✨ Quest: ${result.questsCompleted[0]}`, 3000), 1500);
+          }
+        }
+      };
+      if (activeRoutine) {
+        const steps = activeRoutine.steps.map(s => ({ type: s.type, minutes: s.minutes }));
+        const first = steps[0];
+        Timer.start({
+          minutes: first.minutes,
+          intention,
+          routineId: activeRoutine.id,
+          isPauseStep: first.type === "pause",
+          stepIdx: 0,
+          routineSteps: steps,
+        });
+      } else {
+        Timer.start({ minutes, intention });
+      }
+      window.__intentionText = "";
+      window.__intentionOpen = false;
+      render();
+      break;
+    }
+    case "pause": Timer.pause(); render(); break;
+    case "resume": Timer.resume(); render(); break;
+    case "stop-session":
+      if (confirm("Session wirklich stoppen? (Wenn weniger als 1 Minute ist sie verloren)")) {
+        Timer.stop();
+        render();
+      }
+      break;
+    case "clear-routine":
+      state.settings.activeRoutineId = null; save(); render();
+      break;
+  }
+}
+
+function showSoundPicker() {
+  const back = document.createElement("div");
+  back.className = "modal-backdrop";
+  back.innerHTML = `
+    <div class="modal">
+      <h3>Klanglandschaft</h3>
+      <div id="sound-list">
+        ${SOUND_DEFS.map(sd => {
+          const s = state.sounds.find(x => x.id === sd.id);
+          const unlocked = !!s.unlocked;
+          const selected = state.settings.selectedSoundId === sd.id;
+          return `
+            <div class="sound-row ${unlocked ? "" : "locked"}" data-id="${sd.id}" ${unlocked ? "" : "data-locked='1'"}>
+              <div class="ico">${icon(unlocked ? "wave" : "lock")}</div>
+              <div class="body">
+                <div class="name">${escapeHtml(sd.name)}</div>
+                <div class="lock-info">${unlocked ? escapeHtml(sd.desc) : `Level ${sd.level} erforderlich`}</div>
+              </div>
+              ${unlocked && selected ? `<div class="check">${icon("check")}</div>` : ""}
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(back);
+  back.addEventListener("click", e => { if (e.target === back) back.remove(); });
+  back.querySelectorAll(".sound-row").forEach(row => {
+    row.addEventListener("click", () => {
+      if (row.dataset.locked) return;
+      state.settings.selectedSoundId = row.dataset.id;
+      save();
+      if (Timer.running && !Timer.isPauseStep) AmbientSound.play(row.dataset.id);
+      back.remove();
+      render();
+    });
+  });
+}
+
+function tabbar(active) {
+  const items = [
+    { r: "timer",    label: "Timer",       icon: "clock" },
+    { r: "progress", label: "Fortschritt", icon: "insights" },
+    { r: "routines", label: "Routinen",    icon: "list" },
+    { r: "settings", label: "Einstellungen", icon: "settings" },
+  ];
+  return `
+    <div class="tabbar">
+      ${items.map(it => `
+        <button class="tabitem ${active === it.r ? 'active' : ''}" data-go="${it.r}">${icon(it.icon)}<span>${it.label}</span></button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function bindTabbar(root) {
+  root.querySelectorAll("[data-go]").forEach(el => el.addEventListener("click", () => go(el.dataset.go)));
+}
+
+/* -------- PROGRESS SCREEN -------- */
+function screenProgress() {
+  let tab = window.__progressTab || "stats";
+  const root = document.getElementById("root");
+  const fs = flowScore();
+  const profile = state.profile;
+  const sessions = state.sessions;
+  const totalMin = sessions.reduce((s, x) => s + x.durationMin, 0);
+  const byDay = {};
+  sessions.forEach(s => { const k = dayKey(s.startTime); byDay[k] = (byDay[k] || 0) + s.durationMin; });
+  const bestDay = Object.values(byDay).length ? Math.max(...Object.values(byDay)) : 0;
+  const ws = weekStart(); const pws = ws - 7 * 86400000;
+  const cur = []; const prev = [];
+  for (let i = 0; i < 7; i++) {
+    const dStart = ws + i * 86400000;
+    const dStartP = pws + i * 86400000;
+    cur.push(sessions.filter(s => s.startTime >= dStart && s.startTime < dStart + 86400000).reduce((s, x) => s + x.durationMin, 0));
+    prev.push(sessions.filter(s => s.startTime >= dStartP && s.startTime < dStartP + 86400000).reduce((s, x) => s + x.durationMin, 0));
+  }
+  const maxBar = Math.max(1, ...cur, ...prev);
+
+  root.innerHTML = `
+    <div class="screen">
+      <div class="h1">${escapeHtml(greetingFor(profile.name))}</div>
+      <div class="tabs">
+        <button class="${tab === 'stats' ? 'active' : ''}" data-tab="stats">Stats</button>
+        <button class="${tab === 'trophies' ? 'active' : ''}" data-tab="trophies">Erfolge</button>
+      </div>
+
+      ${tab === 'stats' ? `
+        <div class="card chart-card">
+          <div style="font-weight:700;font-size:18px;margin-bottom:8px">Flow-Score</div>
+          ${gaugeSvg(fs)}
+        </div>
+
+        <div class="stats-grid">
+          <div class="card stat-tile">
+            <div class="head"><span class="icon-bg">${icon("clock")}</span>Gesamtzeit</div>
+            <div class="value">${fmtHM(totalMin)}</div>
+          </div>
+          <div class="card stat-tile">
+            <div class="head"><span class="icon-bg">${icon("play")}</span>Sessions</div>
+            <div class="value">${sessions.length}</div>
+          </div>
+          <div class="card stat-tile">
+            <div class="head"><span class="icon-bg">${icon("trending-up")}</span>Bester Tag</div>
+            <div class="value">${fmtHM(bestDay)}</div>
+          </div>
+          <div class="card stat-tile amber">
+            <div class="head"><span class="icon-bg">${icon("flame")}</span>Streak</div>
+            <div class="value">${profile.currentStreak} Tage</div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div style="font-weight:700;font-size:16px">Wöchentliches Momentum</div>
+          <div class="legend">
+            <span class="dot"><span class="swatch" style="background:var(--purple)"></span>Diese Woche</span>
+            <span class="dot"><span class="swatch" style="background:rgba(124,58,237,0.3)"></span>Letzte Woche</span>
+          </div>
+          <div class="bars">
+            ${["Mo","Di","Mi","Do","Fr","Sa","So"].map((lbl, i) => `
+              <div class="day-col">
+                <div class="pair">
+                  <div class="bar cur" style="height:${(cur[i] / maxBar) * 140}px"></div>
+                  <div class="bar prev" style="height:${(prev[i] / maxBar) * 140}px"></div>
+                </div>
+                <div class="lbl">${lbl}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      ` : `
+        <div class="card mastery-card">
+          <div style="font-weight:700;font-size:18px;margin-bottom:14px">Pfad zur Meisterschaft</div>
+          <div class="mastery-row">
+            ${LEVELS.map((lvl, i) => {
+              const unlocked = profile.currentLevel >= lvl.number;
+              const current = profile.currentLevel === lvl.number;
+              return `
+                <div class="level-node ${unlocked ? 'unlocked' : ''} ${current ? 'current' : ''}">
+                  <div class="col">
+                    <div class="badge">${icon(unlocked ? "sparkles" : "lock")}</div>
+                    <div class="lvl-label">LVL ${lvl.number}</div>
+                    <div class="lvl-name">${escapeHtml(lvl.name)}</div>
+                  </div>
+                  ${i < LEVELS.length - 1 ? `<div class="connector" style="background:${unlocked ? 'rgba(167,139,250,0.6)' : 'rgba(124,58,237,0.2)'}"></div>` : ""}
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+
+        <div class="card inventory-card">
+          <div class="inv-head">
+            <div class="title">Inventar</div>
+            ${state.inventory.streakShield >= 5 ? '<span class="inv-full">Inventar voll</span>' : ""}
+          </div>
+          <div class="inv-item">
+            <div class="ico">${icon("shield")}</div>
+            <div>
+              <div style="font-weight:600">Streak-Schutz</div>
+              <div style="color:var(--muted);font-size:12px">${state.inventory.streakShield}/5</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="trophies-card">
+          <div style="font-weight:700;font-size:18px;padding:0 4px">Trophäenschrank</div>
+          <div class="trophies-grid">
+            ${TROPHY_DEFS.map(td => {
+              const t = state.trophies.find(x => x.key === td.key);
+              const unlocked = t && t.unlocked;
+              return `
+                <div class="trophy ${unlocked ? 'unlocked' : ''}">
+                  <div class="ico-wrap">
+                    ${icon(td.icon)}
+                    ${!unlocked ? `<div class="lock-overlay">${icon("lock")}</div>` : ""}
+                  </div>
+                  <div class="name">${escapeHtml(td.name)}</div>
+                  ${unlocked ? `<div class="check">${icon("check")}</div>` : ""}
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+
+        <div style="height:24px"></div>
+      `}
+    </div>
+    ${tabbar("progress")}
+  `;
+  root.querySelectorAll("[data-tab]").forEach(el => el.addEventListener("click", () => { window.__progressTab = el.dataset.tab; render(); }));
+  bindTabbar(root);
+}
+
+function gaugeSvg(fs) {
+  const r = 95, c = 110;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (fs.score / 100) * circ;
+  const deltaText = fs.delta >= 0 ? `+${fs.delta}%` : `${fs.delta}%`;
+  return `
+    <div class="gauge">
+      <svg viewBox="0 0 220 220">
+        <circle cx="${c}" cy="${c}" r="${r}" stroke="rgba(124,58,237,0.25)" stroke-width="18" fill="none"/>
+        <circle cx="${c}" cy="${c}" r="${r}" stroke="var(--purple)" stroke-width="18" fill="none"
+          stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"
+          transform="rotate(-90 ${c} ${c})"/>
+      </svg>
+      <div class="center">
+        <div class="score">${fs.score}</div>
+        <div class="delta ${fs.delta < 0 ? 'neg' : ''}">${deltaText}</div>
+      </div>
+      <div class="motivation">${escapeHtml(fs.motivation)}</div>
+    </div>
+  `;
+}
+
+/* -------- ROUTINES SCREEN -------- */
+function screenRoutines() {
+  const root = document.getElementById("root");
+  root.innerHTML = `
+    <div class="screen">
+      <div class="routines-header">
+        <div style="font-size:28px;font-weight:700">Flow-Routinen</div>
+        <button class="icon-btn" style="background:var(--purple)" data-act="add-routine">${icon("plus")}</button>
+      </div>
+      ${state.routines.length === 0 ? `
+        <div class="empty-state">Noch keine Routinen. Tippe auf <strong>+</strong> um eine zu erstellen.</div>
+      ` : `
+        <div id="routine-list">
+          ${state.routines.map(r => routineCardHtml(r)).join("")}
+        </div>
+        <div class="swipe-hint">Wische eine Routine nach rechts zum Bearbeiten, nach links zum Löschen.</div>
+      `}
+    </div>
+    ${tabbar("routines")}
+  `;
+  document.querySelector("[data-act='add-routine']").addEventListener("click", () => openRoutineEditor(null));
+  bindRoutineCardSwipes();
+  bindTabbar(root);
+}
+
+function routineCardHtml(r) {
+  const total = r.steps.reduce((s, x) => s + x.minutes, 0);
+  const isActive = state.settings.activeRoutineId === r.id;
+  return `
+    <div class="swipe-wrap" data-rid="${r.id}">
+      <div class="swipe-bg left">${icon("edit")}</div>
+      <div class="swipe-bg right">${icon("trash")}</div>
+      <div class="swipe-card">
+        <div class="head">
+          <div class="name">${escapeHtml(r.name)}</div>
+          ${isActive ? '<span class="badge">AKTIV</span>' : ""}
+        </div>
+        <div class="meta">
+          <span>Gesamt: ${total}m</span>
+          <span class="pill">${r.steps.length} Schritte</span>
+        </div>
+        <div class="timeline">
+          ${r.steps.map((s, i) => `
+            <span class="dot ${s.type}"></span>${i < r.steps.length - 1 ? '<span class="line"></span>' : ''}
+          `).join("")}
+        </div>
+        <div class="step-list">
+          ${r.steps.map(s => `<div>${s.type === "focus" ? "Fokus" : "Pause"} für ${s.minutes} Minuten</div>`).join("")}
+        </div>
+        <div class="actions">
+          <button class="btn small btn-primary" data-start="${r.id}">Routine starten</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function bindRoutineCardSwipes() {
+  document.querySelectorAll(".swipe-wrap").forEach(wrap => {
+    const card = wrap.querySelector(".swipe-card");
+    let startX = null, dx = 0;
+    card.addEventListener("touchstart", e => { startX = e.touches[0].clientX; card.classList.add("dragging"); }, { passive: true });
+    card.addEventListener("touchmove", e => {
+      if (startX === null) return;
+      dx = e.touches[0].clientX - startX;
+      card.style.transform = `translateX(${dx}px)`;
+    }, { passive: true });
+    card.addEventListener("touchend", () => {
+      const w = wrap.clientWidth;
+      const id = wrap.dataset.rid;
+      card.classList.remove("dragging");
+      if (dx > w * 0.35) {
+        card.style.transform = `translateX(${w}px)`;
+        setTimeout(() => openRoutineEditor(id), 180);
+      } else if (dx < -w * 0.35) {
+        const r = state.routines.find(x => x.id === id);
+        if (confirm(`Routine "${r ? r.name : ''}" löschen?`)) {
+          state.routines = state.routines.filter(x => x.id !== id);
+          if (state.settings.activeRoutineId === id) state.settings.activeRoutineId = null;
+          save(); render();
+          return;
+        } else {
+          card.style.transform = "translateX(0)";
+        }
+      } else {
+        card.style.transform = "translateX(0)";
+      }
+      startX = null; dx = 0;
+    });
+    wrap.querySelectorAll("[data-start]").forEach(b => b.addEventListener("click", () => {
+      const id = b.dataset.start;
+      state.settings.activeRoutineId = id; save();
+      route = "timer";
+      window.__preset = state.routines.find(r => r.id === id).steps[0].minutes;
+      render();
+    }));
+  });
+}
+
+let editorDraft = null;
+function openRoutineEditor(id) {
+  if (id) {
+    const r = state.routines.find(x => x.id === id);
+    editorDraft = {
+      id: r.id,
+      name: r.name,
+      steps: r.steps.map(s => ({ key: uid(), type: s.type, minutes: s.minutes })),
+    };
+  } else {
+    editorDraft = {
+      id: null,
+      name: "",
+      steps: [
+        { key: uid(), type: "focus", minutes: 25 },
+        { key: uid(), type: "pause", minutes: 5 },
+      ],
+    };
+  }
+  go("editor");
+}
+
+function screenEditor() {
+  const root = document.getElementById("root");
+  const total = editorDraft.steps.reduce((s, x) => s + x.minutes, 0);
+  root.innerHTML = `
+    <div class="screen no-tabbar">
+      <div class="sub-header">
+        <button class="icon-btn" data-act="back">${icon("arrow-left")}</button>
+        <div class="title">${editorDraft.id ? "Routine bearbeiten" : "Neue Routine"}</div>
+        <button class="btn small btn-primary" style="width:auto;padding:0 16px" data-act="save" ${editorDraft.name.trim() && editorDraft.steps.length ? "" : "disabled"}>Speichern</button>
+      </div>
+
+      <input class="editor-name" placeholder="Name der Routine" value="${escapeHtml(editorDraft.name)}" />
+      <div class="editor-total">Gesamt: ${total} Minuten</div>
+
+      <div id="editor-steps">
+        ${editorDraft.steps.map((s, i) => `
+          <div class="editor-step" data-key="${s.key}">
+            <div class="step-up-down">
+              <button data-up="${i}" ${i === 0 ? "disabled" : ""}>▲</button>
+              <button data-down="${i}" ${i === editorDraft.steps.length - 1 ? "disabled" : ""}>▼</button>
+            </div>
+            <div class="step-toggle">
+              <button class="${s.type === 'focus' ? 'active focus' : ''}" data-set-type="focus">Fokus</button>
+              <button class="${s.type === 'pause' ? 'active pause' : ''}" data-set-type="pause">Pause</button>
+            </div>
+            <div class="stepper" style="margin-left:auto">
+              <button data-stepper="-">${icon("minus")}</button>
+              <div class="min">${s.minutes} Min</div>
+              <button data-stepper="+">${icon("plus")}</button>
+            </div>
+            <button class="icon-btn" style="background:transparent" data-rm="1">${icon("x")}</button>
+          </div>
+        `).join("")}
+      </div>
+
+      <div style="padding:8px 16px 24px">
+        <button class="btn btn-secondary" data-act="add-step">+ Schritt hinzufügen</button>
+      </div>
+    </div>
+  `;
+
+  root.querySelector(".editor-name").addEventListener("input", e => { editorDraft.name = e.target.value; render(); });
+  root.querySelector("[data-act='back']").addEventListener("click", () => { go("routines"); });
+  root.querySelector("[data-act='save']").addEventListener("click", () => {
+    if (!editorDraft.name.trim() || !editorDraft.steps.length) return;
+    if (editorDraft.id) {
+      const r = state.routines.find(x => x.id === editorDraft.id);
+      r.name = editorDraft.name.trim();
+      r.steps = editorDraft.steps.map(s => ({ type: s.type, minutes: s.minutes }));
+    } else {
+      state.routines.push({
+        id: uid(),
+        name: editorDraft.name.trim(),
+        steps: editorDraft.steps.map(s => ({ type: s.type, minutes: s.minutes })),
+        createdAt: Date.now(),
+      });
+    }
+    save();
+    go("routines");
+  });
+  root.querySelector("[data-act='add-step']").addEventListener("click", () => {
+    editorDraft.steps.push({ key: uid(), type: "focus", minutes: 25 });
+    render();
+  });
+  root.querySelectorAll(".editor-step").forEach(stepEl => {
+    const key = stepEl.dataset.key;
+    const step = editorDraft.steps.find(s => s.key === key);
+    stepEl.querySelectorAll("[data-set-type]").forEach(b => b.addEventListener("click", () => {
+      step.type = b.dataset.setType; render();
+    }));
+    const up = stepEl.querySelector("[data-up]"); if (up) up.addEventListener("click", () => {
+      const i = parseInt(up.dataset.up); if (i > 0) {
+        const tmp = editorDraft.steps[i - 1];
+        editorDraft.steps[i - 1] = editorDraft.steps[i];
+        editorDraft.steps[i] = tmp; render();
+      }
+    });
+    const dn = stepEl.querySelector("[data-down]"); if (dn) dn.addEventListener("click", () => {
+      const i = parseInt(dn.dataset.down); if (i < editorDraft.steps.length - 1) {
+        const tmp = editorDraft.steps[i + 1];
+        editorDraft.steps[i + 1] = editorDraft.steps[i];
+        editorDraft.steps[i] = tmp; render();
+      }
+    });
+    stepEl.querySelectorAll("[data-stepper]").forEach(b => b.addEventListener("click", () => {
+      const delta = b.dataset.stepper === "+" ? 5 : -5;
+      step.minutes = Math.max(1, Math.min(240, step.minutes + delta));
+      render();
+    }));
+    stepEl.querySelector("[data-rm]").addEventListener("click", () => {
+      editorDraft.steps = editorDraft.steps.filter(s => s.key !== key);
+      render();
+    });
+  });
+}
+
+/* -------- SETTINGS SCREEN -------- */
+function screenSettings() {
+  const root = document.getElementById("root");
+  const s = state.settings;
+  let custOpen = window.__custOpen || false;
+  root.innerHTML = `
+    <div class="screen">
+      <div class="sub-header">
+        <button class="icon-btn" data-go="timer">${icon("arrow-left")}</button>
+        <div class="title">${escapeHtml(state.profile.name || "Einstellungen")}</div>
+        <button class="icon-btn" data-act="share">${icon("share")}</button>
+        <button class="icon-btn" data-act="shield-info">${icon("shield")}</button>
+      </div>
+
+      <div class="section-label">Fokus-Modus</div>
+      <div class="settings-card">
+        <div class="settings-row" data-go="routines">
+          <div class="body"><div class="title">Flow-Routinen</div></div>
+          <div class="chev-r">${icon("chev-r")}</div>
+        </div>
+        <div class="settings-row" data-act="open-shield-info">
+          <div class="body"><div class="title">Fokus-Schild konfigurieren</div><div class="subtitle">Im Browser nicht verfügbar</div></div>
+          <div class="chev-r">${icon("chev-r")}</div>
+        </div>
+        ${toggleRow("Automatisches Do Not Disturb", "DND beim Sessionstart aktivieren", s.autoDnd, "autoDnd")}
+        ${toggleRow("Medien stummschalten", "Background-Audio beim Fokusstart pausieren", s.muteMedia, "muteMedia")}
+        <div class="settings-row" data-act="focus-boost">
+          <div class="body"><div class="title">Fokus verstärken</div><div class="subtitle">Weitere Anpassungen</div></div>
+          <div class="chev-r">${icon("chev-r")}</div>
+        </div>
+        ${toggleRow("Bestätigung vor Fokus", "Bestätigung nach Pause vor nächstem Fokus", s.confirmBeforeFocus, "confirmBeforeFocus")}
+        ${toggleRow("Sperrbildschirm-Timer", "Countdown auf Lock Screen / AOD", s.lockScreenTimer, "lockScreenTimer")}
+      </div>
+
+      <div class="section-label">Floating-Timer</div>
+      <div class="settings-card">
+        ${toggleRow("Overlay aktivieren", "Persistente Notification während Session (PWA)", s.floatingTimerEnabled, "floatingTimerEnabled")}
+      </div>
+
+      <div class="section-label">Anpassung</div>
+      <div class="settings-card">
+        <div class="settings-row" data-act="toggle-cust">
+          <div class="body"><div class="title">Personalisierung</div></div>
+          <div class="chev-r">${icon(custOpen ? "chev-d" : "chev-r")}</div>
+        </div>
+        ${custOpen ? `
+          <div class="settings-row" data-act="rename">
+            <div class="body"><div class="title">Name ändern</div><div class="subtitle">${escapeHtml(state.profile.name || "")}</div></div>
+            <div class="chev-r">${icon("chev-r")}</div>
+          </div>
+          <div class="settings-row" data-act="reset-data">
+            <div class="body"><div class="title" style="color:var(--red)">Alle Daten zurücksetzen</div></div>
+            <div class="chev-r">${icon("chev-r")}</div>
+          </div>
+          <div class="settings-row">
+            <div class="body"><div class="title">App-Version</div><div class="subtitle">1.0.0 (Web)</div></div>
+          </div>
+        ` : ""}
+      </div>
+
+      <div style="padding:24px 16px;color:var(--muted);font-size:12px;text-align:center;line-height:1.5">
+        FlowState läuft komplett offline.<br>
+        Alle Daten werden lokal in deinem Browser gespeichert.<br>
+        Tipp: Tippe in Chrome auf ⋮ → „Zum Startbildschirm hinzufügen"<br>
+        um die App wie eine native App zu öffnen.
+      </div>
+    </div>
+    ${tabbar("settings")}
+  `;
+  root.querySelectorAll("[data-toggle]").forEach(el => el.addEventListener("click", () => {
+    const k = el.dataset.toggle;
+    state.settings[k] = !state.settings[k]; save(); render();
+  }));
+  root.querySelectorAll("[data-go]").forEach(el => el.addEventListener("click", () => go(el.dataset.go)));
+  root.querySelector("[data-act='toggle-cust']").addEventListener("click", () => {
+    window.__custOpen = !window.__custOpen; render();
+  });
+  const r = root.querySelector("[data-act='rename']");
+  if (r) r.addEventListener("click", () => {
+    const name = prompt("Wie sollen wir dich nennen?", state.profile.name || "");
+    if (name && name.trim()) { state.profile.name = name.trim(); save(); render(); }
+  });
+  const rd = root.querySelector("[data-act='reset-data']");
+  if (rd) rd.addEventListener("click", () => {
+    if (confirm("Wirklich alle Daten löschen? Sessions, Trophäen, XP und Streak gehen verloren.")) {
+      localStorage.removeItem(STORAGE_KEY);
+      state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      route = "timer";
+      window.__preset = 25; window.__intentionText = ""; window.__intentionOpen = false;
+      render();
+    }
+  });
+  const fb = root.querySelector("[data-act='focus-boost']");
+  if (fb) fb.addEventListener("click", () => go("focus_boost"));
+  const ssi = root.querySelector("[data-act='shield-info']");
+  if (ssi) ssi.addEventListener("click", () => alert("Streak-Schutz: " + state.inventory.streakShield + "/5\n\nWird automatisch verbraucht, wenn du einen Tag Fokus verpasst — dein Streak bleibt erhalten."));
+  const osi = root.querySelector("[data-act='open-shield-info']");
+  if (osi) osi.addEventListener("click", () => alert("Im Browser kann FlowState andere Apps nicht blockieren — diese Funktion ist der nativen Android-App vorbehalten.\n\nTipp: Aktiviere den Pixel-Fokusmodus in den Android-Einstellungen, um Apps automatisch zu blockieren."));
+  const sh = root.querySelector("[data-act='share']");
+  if (sh) sh.addEventListener("click", async () => {
+    const text = `Mein FlowState: ${state.profile.totalXp} XP · ${state.profile.currentStreak}-Tage-Streak · Level ${levelForXp(state.profile.totalXp).number}`;
+    if (navigator.share) {
+      try { await navigator.share({ text, title: "FlowState" }); } catch(e) {}
+    } else {
+      try { await navigator.clipboard.writeText(text); toast("In Zwischenablage kopiert"); } catch(e){}
+    }
+  });
+  bindTabbar(root);
+}
+
+function toggleRow(title, sub, on, key) {
+  return `
+    <div class="settings-row" data-toggle="${key}">
+      <div class="body">
+        <div class="title">${escapeHtml(title)}</div>
+        <div class="subtitle">${escapeHtml(sub)}</div>
+      </div>
+      <div class="toggle ${on ? 'on' : ''}"></div>
+    </div>
+  `;
+}
+
+function screenFocusBoost() {
+  const root = document.getElementById("root");
+  root.innerHTML = `
+    <div class="screen">
+      <div class="sub-header">
+        <button class="icon-btn" data-go="settings">${icon("arrow-left")}</button>
+        <div class="title">Fokus verstärken</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:600">Bildschirm wachhalten</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:4px">Während einer Session bleibt der Bildschirm an (Wake Lock API).</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:600">Haptisches Feedback</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:4px">Sanfte Vibration zum Session-Start und -Ende (Vibration API).</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:600">Klanglandschaften</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:4px">Tippe oben rechts auf das Wellenform-Icon, um eine Klanglandschaft auszuwählen.</div>
+      </div>
+    </div>
+    ${tabbar("settings")}
+  `;
+  root.querySelectorAll("[data-go]").forEach(el => el.addEventListener("click", () => go(el.dataset.go)));
+  bindTabbar(root);
+}
+
+/* ========================= MAIN RENDER ========================= */
+function render() {
+  if (!state.profile.name) { route = "onboarding"; }
+  if (route === "onboarding") return screenOnboarding();
+  if (route === "timer") return screenTimer();
+  if (route === "progress") return screenProgress();
+  if (route === "routines") return screenRoutines();
+  if (route === "editor") return screenEditor();
+  if (route === "settings") return screenSettings();
+  if (route === "focus_boost") return screenFocusBoost();
+  return screenTimer();
+}
+
+/* ========================= INIT ========================= */
+ensureQuestsForToday();
+checkStreakOnLoad();
+render();
+
+// Re-evaluate quests at midnight
+setInterval(() => {
+  if (state.questsDate !== dayKey()) {
+    ensureQuestsForToday();
+    if (route === "timer") render();
+  }
+}, 60 * 1000);
+
+// Service worker registration (PWA install)
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+
+// Persist tab visibility - keep timer running across tab switches
+window.addEventListener("beforeunload", () => {
+  if (Timer.running) save();
+});
+
+// Tap to enable audio context (required by browsers)
+document.addEventListener("click", () => {
+  if (Timer.running && !AmbientSound.ctx) AmbientSound.ensureCtx();
+}, { once: true, capture: true });
+</script>
+</body>
+</html>
