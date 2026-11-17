@@ -1,0 +1,285 @@
+import * as store from './store.js';
+import * as L from './logic.js';
+import { roomSvg, splatSvg, monsterSvg, MONSTER_NAME } from './art.js';
+import { esc, icons, sheet, toast, vibrate, confetti } from './ui.js';
+import { go, back } from './router.js';
+
+// ---------------- shared layout ----------------
+export function appbar(title, { backTo = null, color = null, actions = '', big = false } = {}) {
+  return `<header class="appbar ${big ? 'big' : ''}" ${color ? `style="--bar:${color}"` : ''}>
+    ${backTo !== null ? `<button class="icon-btn" data-back="${esc(backTo)}" aria-label="Zurück">${icons.back}</button>` : ''}
+    <h1>${esc(title)}</h1>
+    <div class="appbar-actions">${actions}</div>
+  </header>`;
+}
+
+export function bindCommon(root) {
+  root.querySelectorAll('[data-back]').forEach(b => (b.onclick = () => back(b.dataset.back || '/')));
+  root.querySelectorAll('[data-go]').forEach(b => (b.onclick = () => go(b.dataset.go)));
+}
+
+function personChip(id, small = false) {
+  const p = store.get('persons', id);
+  if (!p) return '';
+  return `<span class="pchip ${small ? 'sm' : ''}" style="--pc:${L.personColor(p)}">${esc(p.emoji || '🙂')} ${esc(p.name)}</span>`;
+}
+
+// ---------------- race banner ----------------
+export function raceBanner() {
+  const s = store.settings();
+  if (!s.race) return '';
+  const r = L.race();
+  const line = L.raceLine(r);
+  const max = Math.max(r.goal, r.user, r.monster, 1);
+  const leadText = r.lead < 0 ? `${MONSTER_NAME} führt: ${-r.lead} Pkt.` : r.lead > 0 ? `Ihr führt: ${r.lead} Pkt.` : 'Gleichstand';
+  return `<section class="race-banner" data-race>
+    <div class="race-mon">${monsterSvg(line.mood)}</div>
+    <div class="race-body">
+      <div class="race-line">${s.comments ? esc(line.text) : `Rennen gegen ${MONSTER_NAME}`}</div>
+      <div class="race-meta"><span>Rennen im ${esc(r.monthLabel)}</span><span>${esc(leadText)}</span></div>
+      <div class="race-track">
+        <div class="race-bar you" style="width:${Math.max(1.5, (r.user / max) * 100)}%"></div>
+        <div class="race-bar mon" style="width:${Math.max(1.5, (r.monster / max) * 100)}%"></div>
+        <div class="race-goal" title="Monatsziel"></div>
+      </div>
+    </div>
+  </section>`;
+}
+
+export function raceSheet() {
+  const r = L.race();
+  const s = store.settings();
+  const stats = L.fairStats();
+  const hist = Object.entries(s.raceHistory || {}).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 12);
+  const wins = Object.values(s.raceHistory || {}).filter(h => h.won).length;
+  sheet(`<div class="race-sheet">
+      <div class="race-sheet-mon">${monsterSvg(r.lead < 0 ? 'taunt' : 'sad')}</div>
+      <h3>Rennen im ${esc(r.monthLabel)}</h3>
+      <div class="race-score"><div><b>${r.user}</b><span>Ihr</span></div><div class="vs">:</div><div><b>${r.monster}</b><span>${MONSTER_NAME}</span></div></div>
+      <p class="muted">Monatsziel: ${r.goal} Pkt. · Schwierigkeit: ${L.DIFFICULTY[s.difficulty].label}<br>
+      ${MONSTER_NAME} schafft bis Monatsende ${Math.round(r.goal * L.DIFFICULTY[s.difficulty].f)} Pkt. Ihr bekommt Punkte für jede erledigte Aufgabe (Leicht 1 · Mittel 2 · Schwer 3, +1 wenn sie sehr überfällig war).</p>
+      ${s.multiPerson && stats.length ? `<h4>Punkte diesen Monat</h4><div class="pts-list">${stats.map(x => `<div class="pts-row">${personChip(x.person.id)}<b>${x.points}</b></div>`).join('')}</div>` : ''}
+      <h4>${icons.trophy} Gewonnene Monate: ${wins}</h4>
+      <div class="hist">${hist.length ? hist.map(([k, h]) => `<div class="hist-row ${h.won ? 'won' : 'lost'}"><span>${esc(L.monthName(k))}</span><span>${h.points} : ${h.monster}</span><span>${h.won ? '🏆' : '😈'}</span></div>`).join('') : '<p class="muted">Noch keine abgeschlossenen Monate.</p>'}</div>
+      <div class="btn-row"><button class="btn grey" data-x="set">Einstellungen</button><button class="btn orange" data-x="ok">Weiter putzen</button></div>
+    </div>`, (el, close) => {
+    el.querySelector('[data-x=ok]').onclick = close;
+    el.querySelector('[data-x=set]').onclick = () => { close(); go('/settings/monster'); };
+  });
+}
+
+// ---------------- home: areas ----------------
+export function homeView() {
+  const areas = store.all('areas').sort((a, b) => (a.order || 0) - (b.order || 0));
+  const s = store.settings();
+  const tiles = areas.map(a => {
+    const st = L.areaState(a.id);
+    const splats = Array.from({ length: st.dirt }, (_, i) => `<span class="tile-splat s${i}">${splatSvg(i)}</span>`).join('');
+    return `<button class="tile" style="--c:${a.color}" data-go="/area/${a.id}">
+      <span class="tile-name">${esc(a.name)}</span>
+      <span class="dot ${st.dot}"></span>
+      ${roomSvg(a.type, 'tile-art')}
+      ${splats}
+    </button>`;
+  }).join('');
+  const vac = s.vacation ? `<div class="vac-banner" data-go="/settings/vacation">🏖️ Urlaubsmodus aktiv – Aufgaben sind pausiert</div>` : '';
+  return {
+    html: `${appbar('Bereiche', { big: true, actions: s.kidsMode ? `<button class="icon-btn kids-btn" data-go="/kids" aria-label="Kindermodus">${icons.kids}<span>Kinder</span></button>` : '' })}
+      <main class="content home">
+        ${vac}${raceBanner()}
+        <div class="tiles">${tiles}<button class="tile add" data-go="/area-new" aria-label="Bereich hinzufügen">${icons.plus}</button></div>
+      </main>
+      ${bottomNav()}`,
+    bind(root) {
+      bindCommon(root);
+      const rb = root.querySelector('[data-race]');
+      if (rb) rb.onclick = raceSheet;
+    },
+  };
+}
+
+export function bottomNav() {
+  return `<nav class="bottom-nav">
+    <button data-go="/timer" aria-label="Timer">${icons.timer}</button>
+    <div class="mid"><button data-go="/todo" aria-label="Heute fällig">${icons.check}</button><i></i><button data-go="/list" aria-label="Alle Aufgaben">${icons.list}</button></div>
+    <button data-go="/settings" aria-label="Einstellungen">${icons.gear}</button>
+  </nav>`;
+}
+
+// ---------------- task rows ----------------
+function bar(t) {
+  const fill = L.barFill(t) * 100;
+  return `<div class="cbar"><div class="cbar-fill" style="width:${fill}%;background:${L.barColor(t)}"></div><i style="left:47%"></i><i style="left:59%"></i><i style="left:71%"></i></div>`;
+}
+
+export function taskRow(t, { showArea = false, quick = false } = {}) {
+  const doneToday = L.todayCount(t) > 0;
+  const dirt = L.dirtLevel(t);
+  const resp = L.responsible(t);
+  const area = showArea ? store.get('areas', t.areaId) : null;
+  const under = [
+    doneToday ? `<span class="done-ic">${icons.done}</span>` : '',
+    !doneToday && dirt ? `<span class="row-splats">${Array.from({ length: dirt }, (_, i) => splatSvg(i + 1)).join('')}</span>` : '',
+    resp ? personChip(resp, true) : '',
+    area ? `<span class="area-tag" style="--c:${area.color}">${esc(area.name)}</span>` : '',
+    t.kid?.enabled ? `<span class="kid-tag" title="Kinder können mitmachen">${esc(t.kid.emoji || '⭐')}</span>` : '',
+  ].join('');
+  const right = t.anytime
+    ? `<div class="anytime"><span class="count">${L.todayCount(t)}</span><small>Jederzeit</small></div>`
+    : `<div class="cond">${bar(t)}<small>${esc(L.dueText(t))}</small></div>`;
+  return `<div class="task-row" data-task="${t.id}">
+    ${quick ? `<button class="quick-check" data-quick="${t.id}" aria-label="Erledigt">✓</button>` : ''}
+    <div class="task-main"><div class="task-name">${esc(t.name)}</div><div class="task-under">${under}</div></div>
+    ${right}
+  </div>`;
+}
+
+// ---------------- complete flow ----------------
+export function doComplete(t, personId) {
+  const prev = t.lastDone;
+  const pts = L.completeTask(t, personId);
+  vibrate(25);
+  const comp = store.all('completions').filter(c => c.taskId === t.id).sort((a, b) => b.at - a.at)[0];
+  const s = store.settings();
+  const who = personId && s.multiPerson ? store.get('persons', personId)?.name + ': ' : '';
+  const msg = s.comments && s.race ? `${who}+${pts} Pkt. · ${MONSTER_NAME}: „${L.randomLine('done')}“` : `${who}Erledigt! +${pts} Pkt.`;
+  toast(msg, { action: 'Rückgängig', onAction: () => L.undoCompletion(comp, prev), ms: 4000 });
+  const r = L.race();
+  if (s.race && r.user >= r.goal && r.user - pts < r.goal) { confetti(); toast('Monatsziel erreicht! 🎉'); }
+}
+
+export function taskSheet(id) {
+  const t = store.get('tasks', id);
+  if (!t) return;
+  const s = store.settings();
+  const area = store.get('areas', t.areaId);
+  const ps = L.persons();
+  let chosen = L.suggestedPerson(t);
+  const hist = store.all('completions').filter(c => c.taskId === t.id).sort((a, b) => b.at - a.at).slice(0, 5);
+  const fmt = ts => new Date(ts).toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' });
+  const resp = L.responsible(t);
+  sheet(`<div class="task-sheet">
+      <div class="ts-head" style="--c:${area?.color || '#1677f2'}"><small>${esc(area?.name || '')}</small><h3>${t.kid?.enabled ? esc(t.kid.emoji) + ' ' : ''}${esc(t.name)}</h3>
+        <div class="ts-meta">${esc(L.freqText(t))} · ${L.EFFORT_LABEL[t.effort || 1]} (${L.pointsFor(t)} Pkt.)</div></div>
+      ${t.anytime ? `<p class="muted">Heute ${L.todayCount(t)}× erledigt.</p>` : `<div class="ts-cond">${bar(t)}<span>${esc(L.dueText(t))}</span></div>`}
+      ${resp ? `<p class="muted">Zuständig: ${personChip(resp)}</p>` : ''}
+      ${t.notes ? `<p class="notes">${esc(t.notes)}</p>` : ''}
+      ${s.multiPerson && ps.length ? `<div class="who"><span class="muted">Wer hat's gemacht?</span><div class="chips">${ps.map(p => `<button class="pchip sel ${p.id === chosen ? 'on' : ''}" data-p="${p.id}" style="--pc:${L.personColor(p)}">${esc(p.emoji || '🙂')} ${esc(p.name)}</button>`).join('')}</div></div>` : ''}
+      <button class="btn orange big" data-x="done">✓ Erledigt</button>
+      <div class="btn-grid">
+        ${t.anytime ? '' : '<button class="btn light" data-x="later">Morgen erinnern</button><button class="btn light" data-x="cond">Zustand setzen</button>'}
+        <button class="btn light" data-x="edit">Bearbeiten</button>
+      </div>
+      ${hist.length ? `<h4>Zuletzt erledigt</h4><div class="hist">${hist.map(c => `<div class="hist-row"><span>${fmt(c.at)}</span><span>${c.personId ? personChip(c.personId, true) : ''}</span><span>+${c.points}</span></div>`).join('')}</div>` : ''}
+    </div>`, (el, close) => {
+    el.querySelectorAll('[data-p]').forEach(b => (b.onclick = () => {
+      chosen = b.dataset.p;
+      el.querySelectorAll('[data-p]').forEach(x => x.classList.toggle('on', x === b));
+    }));
+    el.querySelector('[data-x=done]').onclick = () => { close(); doComplete(t, chosen); };
+    el.querySelector('[data-x=edit]').onclick = () => { close(); go('/task/' + t.id); };
+    const later = el.querySelector('[data-x=later]');
+    if (later) later.onclick = () => { close(); L.postpone(t, 1); toast('Auf morgen verschoben'); };
+    const cond = el.querySelector('[data-x=cond]');
+    if (cond) cond.onclick = () => { close(); conditionSheet(t); };
+  });
+}
+
+function conditionSheet(t) {
+  const opts = [[0, '✨ Blitzeblank (gerade erledigt)'], [0.5, '🙂 Halb fällig'], [0.85, '😐 Bald fällig'], [1, '⏰ Heute fällig'], [1.4, '😬 Überfällig'], [2, '🤢 Sehr schmutzig']];
+  sheet(`<h3>Zustand von „${esc(t.name)}“</h3><p class="muted">Ändert nur den Zustand, zählt nicht als erledigt.</p>
+    <div class="opt-list">${opts.map(([p, l]) => `<button class="opt" data-c="${p}">${l}</button>`).join('')}</div>`,
+  (el, close) => el.querySelectorAll('[data-c]').forEach(b => (b.onclick = () => { L.setCondition(t, Number(b.dataset.c)); close(); })));
+}
+
+function bindRows(root) {
+  root.querySelectorAll('[data-task]').forEach(r => (r.onclick = e => {
+    if (e.target.closest('[data-quick]')) return;
+    taskSheet(r.dataset.task);
+  }));
+  root.querySelectorAll('[data-quick]').forEach(b => (b.onclick = () => {
+    const t = store.get('tasks', b.dataset.quick);
+    if (!t) return;
+    const s = store.settings();
+    if (s.multiPerson && L.persons().length > 1) taskSheet(t.id);
+    else doComplete(t, L.suggestedPerson(t));
+  }));
+}
+
+// ---------------- area view ----------------
+export function areaView(id) {
+  const a = store.get('areas', id);
+  if (!a) return { html: appbar('Bereich', { backTo: '/' }) + '<main class="content"><p class="empty">Bereich nicht gefunden.</p></main>', bind: bindCommon };
+  const s = store.settings();
+  const tasks = L.sortTasks(L.tasksOfArea(id), s.sortArea);
+  const done = tasks.filter(t => L.todayCount(t) > 0).length;
+  const due = tasks.filter(t => L.isDue(t)).length;
+  return {
+    html: `${appbar(a.name, { backTo: '/', color: a.color, actions: `<button class="icon-btn" data-go="/area/${a.id}/new-task" aria-label="Aufgabe hinzufügen">${icons.plus}</button><button class="icon-btn" data-go="/area/${a.id}/edit" aria-label="Bereich bearbeiten">${icons.edit}</button>` })}
+      <main class="content area-list" style="--c:${a.color}">
+        ${tasks.length ? tasks.map(t => taskRow(t)).join('') : `<div class="empty"><p>Noch keine Aufgaben.</p><button class="btn orange" data-go="/area/${a.id}/new-task">Aufgabe hinzufügen</button></div>`}
+        <div class="spacer"></div>
+      </main>
+      <footer class="area-foot" style="--c:${a.color}">
+        <button class="icon-btn" data-top aria-label="Nach oben">${icons.up}</button>
+        <span>${done} <i class="ok">${icons.done}</i></span>
+        <span>${due} ${splatSvg(0, 'foot-splat')}</span>
+        <button class="sort-btn" data-sort>${s.sortArea === 'name' ? 'A–Z' : 'Fällig'}</button>
+      </footer>`,
+    bind(root) {
+      bindCommon(root);
+      bindRows(root);
+      root.querySelector('[data-top]').onclick = () => root.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+      root.querySelector('[data-sort]').onclick = () => store.setSettings({ sortArea: s.sortArea === 'name' ? 'due' : 'name' });
+    },
+  };
+}
+
+// ---------------- today / todo ----------------
+export function todoView(filter = 'all') {
+  const s = store.settings();
+  const meId = L.me()?.id;
+  let tasks = store.all('tasks').filter(t => !t.anytime);
+  if (filter === 'mine' && meId) tasks = tasks.filter(t => !L.responsible(t) || L.responsible(t) === meId);
+  const due = L.sortTasks(tasks.filter(t => L.isDue(t)));
+  const soon = L.sortTasks(tasks.filter(t => !L.isDue(t) && L.daysUntilDue(t) <= 3));
+  const doneToday = store.all('completions').filter(c => c.at >= L.startOfDay(Date.now())).sort((a, b) => b.at - a.at);
+  const showFilter = s.multiPerson && s.responsibility && meId;
+  return {
+    html: `${appbar('Heute', { backTo: '/' })}
+      <main class="content list-page">
+        ${showFilter ? `<div class="seg"><button class="${filter === 'all' ? 'on' : ''}" data-go="/todo">Alle</button><button class="${filter === 'mine' ? 'on' : ''}" data-go="/todo/mine">Meine</button></div>` : ''}
+        <h2 class="sec">Fällig (${due.length})</h2>
+        <div class="card-list">${due.length ? due.map(t => taskRow(t, { showArea: true, quick: true })).join('') : `<div class="empty-ok">${monsterSvg('sad', 'mini-mon')}<p>Alles erledigt! ${MONSTER_NAME} ist beleidigt.</p></div>`}</div>
+        ${soon.length ? `<h2 class="sec">Bald fällig</h2><div class="card-list">${soon.map(t => taskRow(t, { showArea: true, quick: true })).join('')}</div>` : ''}
+        ${doneToday.length ? `<h2 class="sec">Heute erledigt (${doneToday.length})</h2><div class="card-list done-list">${doneToday.map(c => `<div class="task-row slim"><span class="done-ic">${icons.done}</span><div class="task-main"><div class="task-name">${esc(c.taskName)}</div></div>${c.personId ? personChip(c.personId, true) : ''}<b class="pts">+${c.points}</b></div>`).join('')}</div>` : ''}
+      </main>`,
+    bind(root) { bindCommon(root); bindRows(root); },
+  };
+}
+
+// ---------------- all tasks list ----------------
+let listQuery = '';
+export function listView() {
+  const q = listQuery.toLowerCase();
+  const tasks = L.sortTasks(store.all('tasks').filter(t => !q || t.name.toLowerCase().includes(q) || (store.get('areas', t.areaId)?.name || '').toLowerCase().includes(q)));
+  return {
+    html: `${appbar('Alle Aufgaben', { backTo: '/', actions: `<button class="icon-btn" data-go="/manager" aria-label="Aufgaben-Manager">${icons.edit}</button>` })}
+      <main class="content list-page">
+        <input class="search" type="search" placeholder="Suchen…" value="${esc(listQuery)}" data-search>
+        <div class="card-list" data-results>${tasks.map(t => taskRow(t, { showArea: true })).join('') || '<p class="empty">Keine Aufgaben.</p>'}</div>
+      </main>`,
+    bind(root) {
+      bindCommon(root); bindRows(root);
+      const inp = root.querySelector('[data-search]');
+      inp.oninput = () => {
+        listQuery = inp.value;
+        const q2 = listQuery.toLowerCase();
+        const res = L.sortTasks(store.all('tasks').filter(t => !q2 || t.name.toLowerCase().includes(q2) || (store.get('areas', t.areaId)?.name || '').toLowerCase().includes(q2)));
+        const box = root.querySelector('[data-results]');
+        box.innerHTML = res.map(t => taskRow(t, { showArea: true })).join('') || '<p class="empty">Keine Treffer.</p>';
+        bindRows(box);
+      };
+    },
+  };
+}

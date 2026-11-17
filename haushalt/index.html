@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1677f2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Blitzeblank">
+<meta name="description" content="Haushalts-Putzplan für die ganze Familie – mit Zuständen, Monatsrennen gegen Schmuddel und Kindermodus.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Fredoka:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="css/app.css">
+<title>Blitzeblank</title>
+</head>
+<body>
+<div id="app"></div>
+<div id="overlay-root"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script type="module" src="js/app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js', { scope: './' }).then(reg => {
+        setInterval(() => reg.update(), 60 * 60 * 1000);
+      }).catch(() => {});
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+    });
+  }
+</script>
+</body>
+</html>
