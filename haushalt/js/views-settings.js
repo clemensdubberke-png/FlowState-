@@ -4,6 +4,7 @@ import * as sync from './sync.js';
 import { monsterSvg, MONSTER_NAME } from './art.js';
 import { esc, icons, sheet, toast, confirmSheet, infoSheet, toggle, native } from './ui.js';
 import { go } from './router.js';
+import * as mascot from './mascot.js';
 import { appbar, bindCommon } from './views-main.js';
 
 const INFO = {
@@ -61,7 +62,7 @@ export function settingsView() {
           row('Daten importieren', '<input type="file" accept="application/json" data-import hidden>').replace('class="grow', 'data-act="import" class="grow'),
           row('<span class="red-text">Alles zurücksetzen</span>', '').replace('class="grow', 'data-act="reset" class="grow'),
         ], 'Blitzeblank speichert alles auf diesem Gerät. Mit der Synchronisation teilt ihr den Haushalt zwischen mehreren Handys.')}
-        <div class="about">${monsterSvg('wave', 'about-mon')}<p><b>Blitzeblank</b> · Version 1.0<br><span class="muted">Ein Putzplan für die ganze Familie.</span></p></div>
+        <div class="about">${monsterSvg('wave', 'about-mon', { tickle: true })}<p><b>Blitzeblank</b> · Version 1.0<br><span class="muted">Ein Putzplan für die ganze Familie.</span></p></div>
       </main>`,
     bind(root) {
       bindSettings(root);
@@ -268,10 +269,20 @@ export function monsterView() {
           <div class="race-track demo"><div class="race-bar you"></div><div class="race-bar mon"></div></div>
         </div>
         ${group(`Kommentare von ${MONSTER_NAME}`, [row('Aktivieren', toggle('comments', s.comments), { info: 'comments' })])}
-        <div class="mon-show">${monsterSvg('wave', 'mon-big')}</div>
+        <div class="mon-show">${monsterSvg('wave', 'mon-big', { tickle: true, say: '[data-monsay]' })}<p class="mon-say" data-monsay>Tipp mich an!</p>
+          <div class="chips center mood-demo">${[['taunt', '😈 Frech'], ['happy', '😄 Freut sich'], ['shock', '😱 Schock'], ['angry', '😠 Wütend'], ['sad', '😢 Traurig'], ['wave', '👋 Winkt']].map(([m, l]) => `<button class="chip" data-mood="${m}">${l}</button>`).join('')}</div>
+          <button class="btn light" data-sample>Zufälligen Spruch zeigen</button></div>
       </main>`,
     bind(root) {
       bindSettings(root);
+      root.querySelectorAll('[data-mood]').forEach(b => (b.onclick = () => {
+        const box = root.querySelector('.mon-show svg');
+        box.outerHTML = monsterSvg(b.dataset.mood, 'mon-big', { tickle: true, say: '[data-monsay]' });
+      }));
+      root.querySelector('[data-sample]').onclick = () => {
+        const kinds = ['aheadBig', 'behindBig', 'done', 'doneOverdue', 'postpone', 'tickle', 'undo', 'timerStart', 'greetAway'];
+        mascot.react(kinds[Math.floor(Math.random() * kinds.length)], { force: true });
+      };
       root.querySelectorAll('[data-toggle]').forEach(i => (i.onchange = () => store.setSettings(i.dataset.toggle === 'race' && i.checked && !s.race ? { race: true, raceStart: Date.now() } : { [i.dataset.toggle]: i.checked })));
       root.querySelector('[data-diff]').onclick = () => sheet(`<h3>Schwierigkeitsstufe</h3><div class="opt-list">${Object.entries(L.DIFFICULTY).map(([k, v]) => `<button class="opt ${k === s.difficulty ? 'on' : ''}" data-d="${k}">${v.label} <small>– ${MONSTER_NAME} schafft ${Math.round(v.f * 100)} % des Monatsziels</small></button>`).join('')}</div>`,
         (el, close) => el.querySelectorAll('[data-d]').forEach(b => (b.onclick = () => { store.setSettings({ difficulty: b.dataset.d }); close(); })));
@@ -302,7 +313,7 @@ export function vacationView() {
       </main>`,
     bind(root) {
       bindSettings(root);
-      root.querySelector('[data-toggle]').onchange = e => { e.target.checked ? L.startVacation() : L.endVacation(); toast(e.target.checked ? 'Schönen Urlaub! 🏖️' : 'Willkommen zurück!'); };
+      root.querySelector('[data-toggle]').onchange = e => { e.target.checked ? L.startVacation() : L.endVacation(); toast(e.target.checked ? 'Schönen Urlaub! 🏖️' : 'Willkommen zurück!'); mascot.react(e.target.checked ? 'vacationOn' : 'vacationOff', { delay: 300 }); };
     },
   };
 }

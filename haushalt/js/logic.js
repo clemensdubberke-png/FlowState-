@@ -229,7 +229,7 @@ export function raceLine(r = race(), seed = 0) {
   else key = 'behindBig';
   const list = MONSTER_LINES[key];
   const idx = (seed + new Date().getHours()) % list.length;
-  return { text: list[idx], mood: key.startsWith('ahead') || key === 'start' ? 'taunt' : key === 'tied' ? 'angry' : key === 'behindBig' ? 'sad' : 'shock' };
+  return { key, text: list[idx], mood: key.startsWith('ahead') || key === 'start' ? 'taunt' : key === 'tied' ? 'angry' : key === 'behindBig' ? 'sad' : 'shock' };
 }
 export function randomLine(key) { const l = MONSTER_LINES[key]; return l[Math.floor(Math.random() * l.length)]; }
 

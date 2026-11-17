@@ -249,15 +249,4 @@ export function guessEmoji(name) {
   return '⭐';
 }
 
-export const MONSTER_LINES = {
-  start: ['Neuer Monat, neuer Dreck! Diesmal gewinne ich!', 'Hehe, ich hab schon Krümel unters Sofa gelegt…', 'Bereit für unser Rennen? Ich bin schon losgeschleimt!'],
-  aheadBig: ['Juhu! Na, willst du aufgeben?', 'Schau mal, wie schön staubig es hier wird!', 'Ich bin sooo weit vorne. Mach doch mal Pause… für immer!', 'Mmmh, dieser Geruch nach Mülleimer… herrlich!'],
-  aheadSmall: ['Knapp vor dir! Aber ich bleib dran.', 'Ein bisschen Vorsprung hab ich schon. Hihi!', 'Die Krümel stehen auf meiner Seite.'],
-  tied: ['Gleichstand?! Das gefällt mir gar nicht.', 'Kopf an Kopf… ich schleime schneller!'],
-  behindSmall: ['Hey! Nicht so schnell mit dem Lappen!', 'Grrr, du holst auf…', 'Na warte, ich verteile gleich neuen Staub!'],
-  behindBig: ['Neeein! Mein schöner Dreck!', 'Das ist unfair, ihr seid zu viele!', 'Ich schrumpfe… Hör auf zu putzen!', 'Okay, okay, ihr seid gut. Aber nur diesen Monat!'],
-  done: ['Pfui, das glänzt ja!', 'Schon wieder sauber? Menno!', 'Iiih, frische Luft!', 'Musste das wirklich sein?', 'Nicht mein schöner Fleck!'],
-  won: ['Monat gewonnen! Schmuddel hat sich verkrümelt.'],
-  lost: ['Schmuddel hat den letzten Monat gewonnen. Revanche!'],
-  kids: ['Oh nein, ein Putz-Held! Hilfe!', 'Du bist viel zu schnell für mich!', 'Wenn du aufräumst, werde ich ganz klein…', 'Psst… lass doch das Spielzeug liegen! Bitteee!'],
-};
+export { LINES as MONSTER_LINES } from './lines.js';

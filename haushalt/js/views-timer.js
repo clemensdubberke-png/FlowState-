@@ -4,6 +4,7 @@ import * as L from './logic.js';
 import { monsterSvg, MONSTER_NAME } from './art.js';
 import { esc, beep, vibrate, confetti, native } from './ui.js';
 import { appbar, bindCommon, taskRow, taskSheet } from './views-main.js';
+import * as mascot from './mascot.js';
 
 const KEY = 'blitzeblank.timer';
 function getT() { try { return JSON.parse(localStorage.getItem(KEY)) || { mins: 15 }; } catch (e) { return { mins: 15 }; } }
@@ -23,7 +24,7 @@ export function startTimerWatcher() {
     const t = getT();
     if (t.endAt && Date.now() >= t.endAt) {
       setT({ mins: t.mins });
-      beep(); vibrate([200, 100, 200]); confetti(50);
+      beep(); vibrate([200, 100, 200]); confetti(50); mascot.react('timerDone');
       try { if (!native && Notification.permission === 'granted') new Notification('Blitzeblank', { body: `Zeit um! ${MONSTER_NAME} ist beeindruckt.`, icon: 'icons/icon-192.png' }); } catch (e) { /* ignore */ }
       window.dispatchEvent(new Event('bb:render'));
     }
@@ -50,7 +51,7 @@ export function timerView() {
           ${running ? '<button class="btn grey" data-pause>Pause</button>' : `<button class="btn orange big" data-start>${t.pausedLeft != null ? 'Weiter' : 'Start'}</button>`}
           ${running || t.pausedLeft != null ? '<button class="btn light" data-reset>Zurücksetzen</button>' : ''}
         </div>
-        <div class="timer-tip">${monsterSvg(running ? 'shock' : 'taunt', 'mini-mon')}<p>${running ? `${MONSTER_NAME}: „Wie, ihr putzt jetzt einfach drauflos?!“` : `Schnapp dir ein paar fällige Aufgaben und erledige sie, bevor der Timer abläuft.`}</p></div>
+        <div class="timer-tip">${monsterSvg(running ? 'shock' : 'taunt', 'mini-mon', { tickle: true, say: '.timer-tip p' })}<p>${running ? `${MONSTER_NAME}: „Wie, ihr putzt jetzt einfach drauflos?!“` : `Schnapp dir ein paar fällige Aufgaben und erledige sie, bevor der Timer abläuft.`}</p></div>
         ${due.length ? `<h2 class="sec">Jetzt fällig</h2><div class="card-list">${due.map(x => taskRow(x, { showArea: true, quick: true })).join('')}</div>` : ''}
       </main>`,
     bind(root) {
@@ -61,6 +62,7 @@ export function timerView() {
         const cur = getT();
         const endAt = Date.now() + remaining(cur);
         setT({ mins: cur.mins, endAt });
+        mascot.react('timerStart');
         if (native) native.scheduleAlarm(endAt, 'Putz-Timer: Zeit um! ⏰', `${MONSTER_NAME} ist beeindruckt. Gut gemacht!`);
         try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch (e) { /* ignore */ }
         window.dispatchEvent(new Event('bb:render'));

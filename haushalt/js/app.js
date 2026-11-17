@@ -9,6 +9,7 @@ import { areaEditView, taskEditView, managerView } from './views-edit.js';
 import * as S from './views-settings.js';
 import { kidsView } from './views-kids.js';
 import { timerView, startTimerWatcher } from './views-timer.js';
+import * as mascot from './mascot.js';
 
 const routes = [
   [/^\/$/, () => homeView()],
@@ -94,7 +95,7 @@ function welcomeView() {
   return {
     static: true,
     html: `<main class="content welcome">
-      <div class="wel-hero">${monsterSvg('taunt', 'wel-mon')}<h1>Willkommen bei Blitzeblank!</h1>
+      <div class="wel-hero">${monsterSvg('taunt', 'wel-mon', { tickle: true })}<h1>Willkommen bei Blitzeblank!</h1>
         <p>Ich bin <b>${MONSTER_NAME}</b> und mache euer Zuhause jeden Tag ein bisschen schmutziger. Wetten, ihr kommt nicht hinterher? 😈</p></div>
       <h2 class="sec">Welche Bereiche habt ihr?</h2>
       <div class="wel-grid">${all.map(([k, n], i) => `<button class="wel-room ${preset.has(k) ? 'on' : ''}" data-r="${k}" style="--c:${AREA_COLORS[i % AREA_COLORS.length]}">${roomSvg(k, 'wel-art')}<span>${esc(n)}</span></button>`).join('')}</div>
@@ -127,3 +128,4 @@ L.finalizeRaces();
 render(true);
 startTimerWatcher();
 sync.start();
+if (store.settings().setupDone && !sessionStorage.getItem('bb.kids')) mascot.greet();

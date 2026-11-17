@@ -1,10 +1,10 @@
 // Blitzeblank service worker: network-first for HTML, cache-first for static assets.
-const CACHE_VERSION = 'blitzeblank-v1';
+const CACHE_VERSION = 'blitzeblank-v2';
 const PRECACHE_URLS = [
   './', './index.html', './manifest.json', './css/app.css',
   './js/app.js', './js/art.js', './js/logic.js', './js/router.js', './js/store.js', './js/sync.js',
   './js/templates.js', './js/ui.js', './js/views-edit.js', './js/views-kids.js', './js/views-main.js',
-  './js/views-settings.js', './js/views-timer.js',
+  './js/views-settings.js', './js/views-timer.js', './js/lines.js', './js/mascot.js',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png',
 ];
 

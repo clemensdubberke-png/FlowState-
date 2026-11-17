@@ -5,6 +5,7 @@ import { monsterSvg, MONSTER_NAME } from './art.js';
 import { esc, icons, sheet, toast, confetti, speak, vibrate } from './ui.js';
 import { go } from './router.js';
 import { guessEmoji } from './templates.js';
+import * as mascot from './mascot.js';
 
 const GROUP_KID = '_kids';
 
@@ -46,7 +47,7 @@ export function kidsView(kidId) {
 
   if (!kidId) {
     return {
-      html: `${header}<main class="content kids"><div class="kid-pick-title">${monsterSvg('shock', 'kid-mon')}<h2>Wer hilft heute mit?</h2></div>
+      html: `${header}<main class="content kids"><div class="kid-pick-title">${monsterSvg('shock', 'kid-mon', { tickle: true })}<h2>Wer hilft heute mit?</h2></div>
         <div class="kid-pick">${kids.map(k => `<button class="kid-card" data-go="/kids/${k.id}" style="--pc:${L.personColor(k)}"><span class="kid-emo">${esc(k.emoji)}</span><b>${esc(k.name)}</b><small>⭐ ${starsOf(k.id)}</small></button>`).join('')}</div></main>`,
       bind: bindKids,
     };
@@ -65,7 +66,7 @@ export function kidsView(kidId) {
           <div class="star-track"><div style="width:${Math.min(100, ((stars % goal) / goal) * 100)}%"></div></div>
           <small>${reward?.text ? `Noch ${goal - (stars % goal)} ⭐ bis: ${esc(reward.text)}` : `Noch ${goal - (stars % goal)} ⭐ bis zum nächsten Pokal 🏆`}</small>
         </section>
-        <div class="kid-mon-talk">${monsterSvg('taunt', 'kid-mon')}<div class="bubble">${esc(L.randomLine(lines[0]))}</div></div>
+        <div class="kid-mon-talk">${monsterSvg('taunt', 'kid-mon', { tickle: true, say: '.kid-mon-talk .bubble' })}<div class="bubble">${esc(mascot.line('kids'))}</div></div>
         <div class="kid-tasks">${tasks.map(t => {
           const due = rank(t) === 0;
           const done = L.todayCount(t) > 0;
@@ -109,7 +110,7 @@ function kidTaskSheet(id, kid) {
       box.querySelector('[data-read]').onclick = readAll;
       box.querySelectorAll('[data-s]').forEach(b => (b.onclick = () => {
         const i = Number(b.dataset.s);
-        if (checked.has(i)) checked.delete(i); else { checked.add(i); vibrate(20); speak(checked.size === steps.length ? 'Super! Alles geschafft!' : 'Prima!'); }
+        if (checked.has(i)) checked.delete(i); else { checked.add(i); vibrate(20); if (checked.size === steps.length) speak('Super! Alles geschafft!'); else if (Math.random() < 0.6) mascot.react('kidStep', { force: true }); else speak('Prima!'); }
         box.innerHTML = draw(); bind();
       }));
       box.querySelector('[data-done]').onclick = () => {
@@ -129,9 +130,9 @@ function kidTaskSheet(id, kid) {
 }
 
 function celebrate(stars, kid) {
-  sheet(`<div class="celebrate">${monsterSvg('sad', 'kid-mon big')}
+  sheet(`<div class="celebrate">${monsterSvg('sad', 'kid-mon big a-melt-loop', { tickle: true })}
       <h2>Super, ${esc(kid.name)}!</h2><div class="stars-won">${'⭐'.repeat(stars)}</div>
-      <p>${esc(MONSTER_NAME)}: „${esc(L.randomLine('behindBig'))}“</p>
+      <p>${esc(MONSTER_NAME)}: „${esc(mascot.line('kidDone'))}“</p>
       <button class="btn orange big" data-ok>Weiter</button></div>`, (el, close) => { el.querySelector('[data-ok]').onclick = close; }, { cls: 'kid' });
   toast(`+${stars} ⭐`);
 }

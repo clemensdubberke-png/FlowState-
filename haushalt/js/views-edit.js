@@ -5,6 +5,7 @@ import { TEMPLATES, guessEmoji } from './templates.js';
 import { esc, icons, sheet, toast, confirmSheet } from './ui.js';
 import { go, back } from './router.js';
 import { appbar, bindCommon } from './views-main.js';
+import * as mascot from './mascot.js';
 
 const ALL_TYPES = [...ROOM_TYPES.innen, ...ROOM_TYPES.aussen];
 const typeName = t => (ALL_TYPES.find(x => x[0] === t) || [, 'Bereich'])[1];
@@ -85,6 +86,7 @@ export function areaEditView(id) {
             const area = L.createArea({ name, type: st.type, color: st.color, withTasks: false });
             L.addTemplateTasks(area, (TEMPLATES[st.type] || []).filter(t => st.picked.has(t[0])));
             go('/area/' + area.id, { replace: true });
+            mascot.react('areaCreated', { delay: 400 });
           }
         };
         const del = box.querySelector('[data-del]');
@@ -218,6 +220,7 @@ export function taskEditView(id, areaId) {
           if (!t.anytime) t.lastDone = L.now() - cond * iv * L.DAY;
           const rec = store.put('tasks', t);
           toast(existing ? 'Gespeichert' : 'Aufgabe hinzugefügt');
+          if (!existing) mascot.react('taskCreated', { delay: 400 });
           go('/area/' + rec.areaId, { replace: true });
         };
         const del = box.querySelector('[data-del]');
@@ -225,6 +228,7 @@ export function taskEditView(id, areaId) {
           if (!(await confirmSheet('Aufgabe löschen?', `„${existing.name}“ wird gelöscht.`, 'Löschen', { danger: true }))) return;
           store.remove('tasks', existing.id);
           go('/area/' + existing.areaId, { replace: true });
+          mascot.react('taskDeleted', { delay: 400 });
         };
       };
       rebind();

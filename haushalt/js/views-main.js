@@ -3,6 +3,7 @@ import * as L from './logic.js';
 import { roomSvg, splatSvg, monsterSvg, MONSTER_NAME } from './art.js';
 import { esc, icons, sheet, toast, vibrate, confetti } from './ui.js';
 import { go, back } from './router.js';
+import * as mascot from './mascot.js';
 
 // ---------------- shared layout ----------------
 export function appbar(title, { backTo = null, color = null, actions = '', big = false } = {}) {
@@ -33,7 +34,7 @@ export function raceBanner() {
   const max = Math.max(r.goal, r.user, r.monster, 1);
   const leadText = r.lead < 0 ? `${MONSTER_NAME} führt: ${-r.lead} Pkt.` : r.lead > 0 ? `Ihr führt: ${r.lead} Pkt.` : 'Gleichstand';
   return `<section class="race-banner" data-race>
-    <div class="race-mon">${monsterSvg(line.mood)}</div>
+    <div class="race-mon">${monsterSvg(line.mood, 'monster', { tickle: true, say: '.race-line' })}</div>
     <div class="race-body">
       <div class="race-line">${s.comments ? esc(line.text) : `Rennen gegen ${MONSTER_NAME}`}</div>
       <div class="race-meta"><span>Rennen im ${esc(r.monthLabel)}</span><span>${esc(leadText)}</span></div>
@@ -53,7 +54,7 @@ export function raceSheet() {
   const hist = Object.entries(s.raceHistory || {}).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 12);
   const wins = Object.values(s.raceHistory || {}).filter(h => h.won).length;
   sheet(`<div class="race-sheet">
-      <div class="race-sheet-mon">${monsterSvg(r.lead < 0 ? 'taunt' : 'sad')}</div>
+      <div class="race-sheet-mon">${monsterSvg(r.lead < 0 ? 'taunt' : 'sad', 'monster', { tickle: true })}</div>
       <h3>Rennen im ${esc(r.monthLabel)}</h3>
       <div class="race-score"><div><b>${r.user}</b><span>Ihr</span></div><div class="vs">:</div><div><b>${r.monster}</b><span>${MONSTER_NAME}</span></div></div>
       <p class="muted">Monatsziel: ${r.goal} Pkt. · Schwierigkeit: ${L.DIFFICULTY[s.difficulty].label}<br>
@@ -93,7 +94,20 @@ export function homeView() {
     bind(root) {
       bindCommon(root);
       const rb = root.querySelector('[data-race]');
-      if (rb) rb.onclick = raceSheet;
+      if (rb) {
+        rb.onclick = raceSheet;
+        // Schmuddel keeps chatting in the banner every ~18 s
+        const key = L.raceLine().key;
+        const lineEl = rb.querySelector('.race-line');
+        const iv = setInterval(() => {
+          if (!lineEl.isConnected) { clearInterval(iv); return; }
+          if (document.hidden || !s.comments) return;
+          lineEl.textContent = mascot.line(Math.random() < 0.75 ? key : 'tickle');
+          lineEl.classList.remove('pop'); void lineEl.offsetWidth; lineEl.classList.add('pop');
+          const mon = rb.querySelector('.monster');
+          mon.classList.remove('a-wiggle'); void mon.getBoundingClientRect(); mon.classList.add('a-wiggle');
+        }, 18000);
+      }
     },
   };
 }
@@ -137,15 +151,24 @@ export function taskRow(t, { showArea = false, quick = false } = {}) {
 // ---------------- complete flow ----------------
 export function doComplete(t, personId) {
   const prev = t.lastDone;
+  const before = { status: L.status(t), race: L.race() };
   const pts = L.completeTask(t, personId);
   vibrate(25);
   const comp = store.all('completions').filter(c => c.taskId === t.id).sort((a, b) => b.at - a.at)[0];
   const s = store.settings();
   const who = personId && s.multiPerson ? store.get('persons', personId)?.name + ': ' : '';
-  const msg = s.comments && s.race ? `${who}+${pts} Pkt. · ${MONSTER_NAME}: „${L.randomLine('done')}“` : `${who}Erledigt! +${pts} Pkt.`;
-  toast(msg, { action: 'Rückgängig', onAction: () => L.undoCompletion(comp, prev), ms: 4000 });
+  toast(`${who}Erledigt! +${pts} Pkt.`, { action: 'Rückgängig', onAction: () => { L.undoCompletion(comp, prev); mascot.react('undo'); }, ms: 4000 });
+  // pick the most fitting reaction
   const r = L.race();
-  if (s.race && r.user >= r.goal && r.user - pts < r.goal) { confetti(); toast('Monatsziel erreicht! 🎉'); }
+  const anyDue = store.all('tasks').some(x => !x.anytime && L.isDue(x));
+  let kind = 'done';
+  if (s.race && r.user >= r.goal && before.race.user < r.goal) { kind = 'goal'; confetti(); }
+  else if (s.race && before.race.lead < 0 && r.lead >= 0) kind = 'leadFlip';
+  else if (!anyDue && !t.anytime && L.isDue({ ...t, lastDone: prev })) kind = 'allDone';
+  else if (before.status === 'overdue' || before.status === 'bad') kind = 'doneOverdue';
+  else if ((t.effort || 1) >= 3) kind = 'doneHard';
+  else if (t.anytime) kind = 'doneAnytime';
+  mascot.react(kind, { delay: 250 });
 }
 
 export function taskSheet(id) {
@@ -179,7 +202,7 @@ export function taskSheet(id) {
     el.querySelector('[data-x=done]').onclick = () => { close(); doComplete(t, chosen); };
     el.querySelector('[data-x=edit]').onclick = () => { close(); go('/task/' + t.id); };
     const later = el.querySelector('[data-x=later]');
-    if (later) later.onclick = () => { close(); L.postpone(t, 1); toast('Auf morgen verschoben'); };
+    if (later) later.onclick = () => { close(); L.postpone(t, 1); toast('Auf morgen verschoben'); mascot.react('postpone'); };
     const cond = el.querySelector('[data-x=cond]');
     if (cond) cond.onclick = () => { close(); conditionSheet(t); };
   });
@@ -189,7 +212,7 @@ function conditionSheet(t) {
   const opts = [[0, '✨ Blitzeblank (gerade erledigt)'], [0.5, '🙂 Halb fällig'], [0.85, '😐 Bald fällig'], [1, '⏰ Heute fällig'], [1.4, '😬 Überfällig'], [2, '🤢 Sehr schmutzig']];
   sheet(`<h3>Zustand von „${esc(t.name)}“</h3><p class="muted">Ändert nur den Zustand, zählt nicht als erledigt.</p>
     <div class="opt-list">${opts.map(([p, l]) => `<button class="opt" data-c="${p}">${l}</button>`).join('')}</div>`,
-  (el, close) => el.querySelectorAll('[data-c]').forEach(b => (b.onclick = () => { L.setCondition(t, Number(b.dataset.c)); close(); })));
+  (el, close) => el.querySelectorAll('[data-c]').forEach(b => (b.onclick = () => { const p = Number(b.dataset.c); L.setCondition(t, p); close(); if (p >= 1.4) mascot.react('dirty'); })));
 }
 
 function bindRows(root) {
@@ -250,7 +273,7 @@ export function todoView(filter = 'all') {
       <main class="content list-page">
         ${showFilter ? `<div class="seg"><button class="${filter === 'all' ? 'on' : ''}" data-go="/todo">Alle</button><button class="${filter === 'mine' ? 'on' : ''}" data-go="/todo/mine">Meine</button></div>` : ''}
         <h2 class="sec">Fällig (${due.length})</h2>
-        <div class="card-list">${due.length ? due.map(t => taskRow(t, { showArea: true, quick: true })).join('') : `<div class="empty-ok">${monsterSvg('sad', 'mini-mon')}<p>Alles erledigt! ${MONSTER_NAME} ist beleidigt.</p></div>`}</div>
+        <div class="card-list">${due.length ? due.map(t => taskRow(t, { showArea: true, quick: true })).join('') : `<div class="empty-ok">${monsterSvg('sad', 'mini-mon', { tickle: true })}<p>Alles erledigt! ${MONSTER_NAME} ist beleidigt.</p></div>`}</div>
         ${soon.length ? `<h2 class="sec">Bald fällig</h2><div class="card-list">${soon.map(t => taskRow(t, { showArea: true, quick: true })).join('')}</div>` : ''}
         ${doneToday.length ? `<h2 class="sec">Heute erledigt (${doneToday.length})</h2><div class="card-list done-list">${doneToday.map(c => `<div class="task-row slim"><span class="done-ic">${icons.done}</span><div class="task-main"><div class="task-name">${esc(c.taskName)}</div></div>${c.personId ? personChip(c.personId, true) : ''}<b class="pts">+${c.points}</b></div>`).join('')}</div>` : ''}
       </main>`,
