@@ -4,6 +4,7 @@ import { roomSvg, splatSvg, monsterSvg, MONSTER_NAME } from './art.js';
 import { esc, icons, sheet, toast, vibrate, confetti } from './ui.js';
 import { go, back } from './router.js';
 import * as mascot from './mascot.js';
+import { conditionPicker, bindConditionPickers } from './condition.js';
 
 // ---------------- shared layout ----------------
 export function appbar(title, { backTo = null, color = null, actions = '', big = false } = {}) {
@@ -85,7 +86,7 @@ export function homeView() {
   }).join('');
   const vac = s.vacation ? `<div class="vac-banner" data-go="/settings/vacation">🏖️ Urlaubsmodus aktiv – Aufgaben sind pausiert</div>` : '';
   return {
-    html: `${appbar('Bereiche', { big: true, actions: s.kidsMode ? `<button class="icon-btn kids-btn" data-go="/kids" aria-label="Kindermodus">${icons.kids}<span>Kinder</span></button>` : '' })}
+    html: `${appbar('Bereiche', { big: true, actions: s.kidsMode ? `<button class="icon-btn kids-btn" data-kids aria-label="Kindermodus">${icons.kids}<span>Kinder</span></button>` : '' })}
       <main class="content home">
         ${vac}${areas.length ? raceBanner() : ''}
         ${areas.length ? '' : `<div class="home-empty"><span class="he-ic">👇</span><p><b>Noch ist alles leer.</b><br>Tippe auf das <b>+</b>, um deinen ersten Bereich anzulegen – zum Beispiel die Küche.</p></div>`}
@@ -94,6 +95,8 @@ export function homeView() {
       ${bottomNav()}`,
     bind(root) {
       bindCommon(root);
+      const kb = root.querySelector('[data-kids]');
+      if (kb) kb.onclick = () => import('./views-kids.js').then(m => m.enterKids());
       const rb = root.querySelector('[data-race]');
       if (rb) {
         rb.onclick = raceSheet;
@@ -210,10 +213,19 @@ export function taskSheet(id) {
 }
 
 function conditionSheet(t) {
-  const opts = [[0, '✨ Blitzeblank (gerade erledigt)'], [0.5, '🙂 Halb fällig'], [0.85, '😐 Bald fällig'], [1, '⏰ Heute fällig'], [1.4, '😬 Überfällig'], [2, '🤢 Sehr schmutzig']];
-  sheet(`<h3>Zustand von „${esc(t.name)}“</h3><p class="muted">Ändert nur den Zustand, zählt nicht als erledigt.</p>
-    <div class="opt-list">${opts.map(([p, l]) => `<button class="opt" data-c="${p}">${l}</button>`).join('')}</div>`,
-  (el, close) => el.querySelectorAll('[data-c]').forEach(b => (b.onclick = () => { const p = Number(b.dataset.c); L.setCondition(t, p); close(); if (p >= 1.4) mascot.react('dirty'); })));
+  let sel = L.currentConditionKey(t);
+  const draw = () => `<h3>Wie sieht „${esc(t.name)}“ gerade aus?</h3><p class="muted">Ändert nur den Zustand, zählt nicht als erledigt.</p>
+    ${conditionPicker(t, sel, 'sheet')}
+    <div class="btn-row"><button class="btn grey" data-x="no">Abbrechen</button><button class="btn orange" data-x="ok" ${sel ? '' : 'disabled'}>Übernehmen</button></div>`;
+  sheet(`<div data-cs>${draw()}</div>`, (el, close) => {
+    const box = el.querySelector('[data-cs]');
+    const bind = () => {
+      bindConditionPickers(box, (_, key) => { sel = key; box.innerHTML = draw(); bind(); });
+      box.querySelector('[data-x=no]').onclick = close;
+      box.querySelector('[data-x=ok]').onclick = () => { L.setConditionKey(t, sel); close(); if (sel === 'over' || sel === 'bad') mascot.react('dirty'); };
+    };
+    bind();
+  });
 }
 
 function bindRows(root) {

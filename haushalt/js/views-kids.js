@@ -24,7 +24,15 @@ function kidTasks(kidId) {
 }
 function rank(t) { return t.anytime ? 1 : L.isDue(t) ? 0 : L.daysUntilDue(t) <= 1 ? 1 : 2; }
 
-function exitGate() {
+export function enterKids() {
+  sessionStorage.setItem('bb.kids', '1');
+  go('/kids');
+}
+
+let gateOpen = false;
+export function exitGate() {
+  if (gateOpen) return;
+  gateOpen = true;
   const a = 2 + Math.floor(Math.random() * 7), b = 3 + Math.floor(Math.random() * 7);
   sheet(`<h3>Nur für Erwachsene 🔒</h3><p class="muted">Wie viel ist ${a} × ${b}?</p>
     <input class="gate" inputmode="numeric" data-ans autocomplete="off">
@@ -32,18 +40,27 @@ function exitGate() {
   (el, close) => {
     const inp = el.querySelector('[data-ans]');
     setTimeout(() => inp.focus(), 250);
-    const ok = () => { if (Number(inp.value) === a * b) { close(); sessionStorage.removeItem('bb.kids'); go('/', { replace: true }); } else { inp.value = ''; inp.placeholder = 'Leider falsch'; vibrate(80); } };
+    const done = () => { gateOpen = false; close(); };
+    const ok = () => {
+      if (Number(String(inp.value).trim()) === a * b) {
+        sessionStorage.removeItem('bb.kids');
+        done();
+        go('/', { replace: true });
+        window.dispatchEvent(new Event('bb:render'));
+      } else { inp.value = ''; inp.placeholder = 'Leider falsch – nochmal'; vibrate(80); }
+    };
     el.querySelector('[data-x=ok]').onclick = ok;
     inp.onkeydown = e => { if (e.key === 'Enter') ok(); };
-    el.querySelector('[data-x=no]').onclick = close;
+    inp.oninput = () => { if (Number(inp.value) === a * b) ok(); };
+    el.querySelector('[data-x=no]').onclick = done;
+    el.parentElement.querySelector('.sheet-bg').addEventListener('click', () => (gateOpen = false));
   });
 }
 
 export function kidsView(kidId) {
   const kids = kidList();
-  sessionStorage.setItem('bb.kids', '1');
   if (!kidId && kids.length === 1) kidId = kids[0].id;
-  const header = `<header class="kids-bar"><button class="icon-btn" data-exit aria-label="Kindermodus verlassen">🔒</button><h1>Putz-Helden</h1>${kidId && kids.length > 1 ? '<button class="icon-btn" data-go="/kids" aria-label="Kind wechseln">👥</button>' : '<span></span>'}</header>`;
+  const header = `<header class="kids-bar"><button class="exit-btn" data-exit aria-label="Kindermodus verlassen">🔒 Eltern</button><h1>Putz-Helden</h1>${kidId && kids.length > 1 ? '<button class="icon-btn" data-go="/kids" aria-label="Kind wechseln">👥</button>' : '<span></span>'}</header>`;
 
   if (!kidId) {
     return {
@@ -78,6 +95,7 @@ export function kidsView(kidId) {
             <span class="kt-stars">${'⭐'.repeat(t.effort || 1)}</span>
           </button>`;
         }).join('') || `<p class="empty">Gerade gibt es keine Kinder-Aufgaben. Frag Mama oder Papa! 🙂</p>`}</div>
+        <button class="btn light big kids-exit" data-exit>🔒 Zurück zum Hauptmenü (für Eltern)</button>
       </main>`,
     bind(root) {
       bindKids(root);
@@ -88,8 +106,7 @@ export function kidsView(kidId) {
 
 function bindKids(root) {
   root.querySelectorAll('[data-go]').forEach(b => (b.onclick = () => go(b.dataset.go)));
-  const ex = root.querySelector('[data-exit]');
-  if (ex) ex.onclick = exitGate;
+  root.querySelectorAll('[data-exit]').forEach(ex => (ex.onclick = exitGate));
 }
 
 function kidTaskSheet(id, kid) {

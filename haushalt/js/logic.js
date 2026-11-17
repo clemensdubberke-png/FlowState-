@@ -191,6 +191,38 @@ export function postpone(t, days = 1) {
   store.put('tasks', { id: t.id, lastDone: base + days * DAY });
 }
 
+// ---------------- current condition when creating a task ----------------
+// dueIn(iv) = days until the task is due, measured from today
+export const CONDITIONS = [
+  { key: 'fresh', emoji: '✨', label: 'Gerade erledigt', dueIn: iv => iv },
+  { key: 'ok', emoji: '🙂', label: 'Hat noch Zeit', dueIn: iv => Math.max(1, Math.round(iv * 0.55)) },
+  { key: 'soon', emoji: '😐', label: 'Bald fällig', dueIn: iv => Math.min(iv, Math.max(1, Math.min(3, Math.round(iv * 0.15)))) },
+  { key: 'due', emoji: '⏰', label: 'Heute fällig', dueIn: () => 0 },
+  { key: 'over', emoji: '😬', label: 'Überfällig', dueIn: iv => -Math.max(1, Math.round(iv * 0.3)) },
+  { key: 'bad', emoji: '🤢', label: 'Sehr schmutzig', dueIn: iv => -Math.max(2, Math.round(iv * 0.8)) },
+];
+/** lastDone timestamp so that the task (with its cycle) ends up in the chosen condition */
+export function lastDoneFor(t, key, at = now()) {
+  const c = CONDITIONS.find(x => x.key === key) || CONDITIONS[0];
+  const iv = intervalDays(t);
+  return startOfDay(at) + 12 * 3600000 - (iv - c.dueIn(iv)) * DAY;
+}
+/** Short preview of what a condition means for this task, e.g. "Fällig in 4 Tg." */
+export function conditionPreview(t, key) {
+  if (t.anytime) return 'Jederzeit';
+  return dueText({ ...t, lastDone: lastDoneFor(t, key) });
+}
+/** Which condition best describes a task right now */
+export function currentConditionKey(t) {
+  if (t.anytime || !t.lastDone) return null;
+  const d = daysUntilDue(t), iv = intervalDays(t);
+  if (d >= iv) return 'fresh';
+  if (d === 0) return 'due';
+  if (d < 0) return -d >= Math.max(2, Math.round(iv * 0.8)) ? 'bad' : 'over';
+  return d <= Math.max(1, Math.min(3, Math.round(iv * 0.15))) ? 'soon' : 'ok';
+}
+export function setConditionKey(t, key) { store.put('tasks', { id: t.id, lastDone: lastDoneFor(t, key) }); }
+
 /** Set the condition manually: 0 = clean, 1 = due today, 1.5 = overdue */
 export function setCondition(t, p) {
   store.put('tasks', { id: t.id, lastDone: now() - p * intervalDays(t) * DAY });
@@ -308,7 +340,7 @@ export function templateToTask(areaId, tpl, i = 0, level = intensity()) {
 }
 
 /** Adds catalogue tasks. overrides: name -> { freqN, freqUnit } chosen by the user. */
-export function addTemplateTasks(area, list, overrides = {}) {
+export function addTemplateTasks(area, list, overrides = {}, conditions = {}) {
   const n = Date.now();
   const start = tasksOfArea(area.id).length;
   const tasks = list.map((tpl, i) => {
@@ -318,7 +350,7 @@ export function addTemplateTasks(area, list, overrides = {}) {
     // spread the initial state so not everything is due on day one (nothing starts overdue)
     const iv = intervalDays(t);
     const r = ((i * 37) % 100) / 100; // deterministic pseudo-random 0..1
-    t.lastDone = t.anytime ? null : n - iv * DAY * (0.1 + r * 0.85);
+    t.lastDone = t.anytime ? null : conditions[tpl[0]] ? lastDoneFor(t, conditions[tpl[0]]) : n - iv * DAY * (0.1 + r * 0.85);
     return t;
   });
   store.putMany('tasks', tasks);

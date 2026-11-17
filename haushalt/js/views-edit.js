@@ -6,6 +6,7 @@ import { esc, icons, sheet, toast, confirmSheet } from './ui.js';
 import { go, back } from './router.js';
 import { appbar, bindCommon } from './views-main.js';
 import * as mascot from './mascot.js';
+import { conditionPicker, bindConditionPickers } from './condition.js';
 
 const ALL_TYPES = [...ROOM_TYPES.innen, ...ROOM_TYPES.aussen];
 const typeName = t => (ALL_TYPES.find(x => x[0] === t) || [, 'Bereich'])[1];
@@ -105,7 +106,8 @@ export function taskEditView(id, areaId) {
   };
   t.kid = t.kid || { enabled: false, emoji: guessEmoji(t.name), steps: [] };
   t.assignees = t.assignees || [];
-  let cond = existing ? Math.min(2, Math.max(0, L.progress(existing))) : 0;
+  let cond = existing ? L.currentConditionKey(existing) : null;
+  let condChanged = false;
 
   const existingNames = new Set(L.tasksOfArea(area?.id).map(x => x.name));
   const sugg = existing ? [] : (TEMPLATES[area?.type] || []).filter(x => !existingNames.has(x[0]));
@@ -130,9 +132,9 @@ export function taskEditView(id, areaId) {
       </div>
       <h2 class="sec">Aufwand</h2>
       <div class="seg">${[1, 2, 3].map(e => `<button class="${t.effort === e ? 'on' : ''}" data-effort="${e}">${L.EFFORT_LABEL[e]} · ${e} Pkt.</button>`).join('')}</div>
-      ${t.anytime ? '' : `<h2 class="sec">Aktueller Zustand</h2>
-      <div class="form-card"><input type="range" min="0" max="2" step="0.05" value="${cond}" data-cond class="cond-range">
-        <div class="row-between small muted"><span>✨ Sauber</span><span>⏰ Fällig</span><span>🤢 Schmutzig</span></div></div>`}
+      ${t.anytime ? '' : `<h2 class="sec" data-cond-sec>Wie sieht es gerade aus?</h2>
+      <div class="form-card cond-card ${!cond ? 'need' : ''}">${conditionPicker(t, cond, 'task')}
+        <p class="muted small">Daraus und aus der Frequenz ergibt sich, ob die Aufgabe heute fällig ist, noch Zeit hat oder überfällig ist.</p></div>`}
       ${s.multiPerson && s.responsibility && ps.length ? `<h2 class="sec">Zuständig ${s.rotation ? '(Rotation: der Erste ist dran)' : ''}</h2>
         <div class="chips wrap">${ps.map(p => {
           const idx = t.assignees.indexOf(p.id);
@@ -175,8 +177,7 @@ export function taskEditView(id, areaId) {
         box.querySelectorAll('[data-step]').forEach(b => (b.onclick = () => { t.freqN = Math.min(99, Math.max(1, t.freqN + Number(b.dataset.step))); t.customFreq = true; redraw(); }));
         box.querySelectorAll('[data-unit]').forEach(b => (b.onclick = () => { t.freqUnit = b.dataset.unit; t.customFreq = true; redraw(); }));
         box.querySelectorAll('[data-effort]').forEach(b => (b.onclick = () => { t.effort = Number(b.dataset.effort); redraw(); }));
-        const cr = box.querySelector('[data-cond]');
-        if (cr) cr.oninput = () => { cond = Number(cr.value); };
+        bindConditionPickers(box, (_, key) => { cond = key; condChanged = true; redraw(); });
         box.querySelectorAll('[data-assign]').forEach(b => (b.onclick = () => {
           const pid = b.dataset.assign, i = t.assignees.indexOf(pid);
           i > -1 ? t.assignees.splice(i, 1) : t.assignees.push(pid);
@@ -201,8 +202,12 @@ export function taskEditView(id, areaId) {
           t.name = (t.name || '').trim();
           if (!t.name) { toast('Bitte einen Namen eingeben'); return; }
           t.kid.steps = t.kid.steps.filter(x => x.text.trim());
-          const iv = L.intervalDays(t);
-          if (!t.anytime) t.lastDone = L.now() - cond * iv * L.DAY;
+          if (!t.anytime && !cond) {
+            toast('Bitte wähle, wie es gerade aussieht');
+            box.querySelector('[data-cond-sec]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          if (!t.anytime && (condChanged || !existing || !t.lastDone)) t.lastDone = L.lastDoneFor(t, cond);
           const rec = store.put('tasks', t);
           toast(existing ? 'Gespeichert' : 'Aufgabe hinzugefügt');
           if (!existing) mascot.react('taskCreated', { delay: 400 });
@@ -298,6 +303,8 @@ export function catalogView(areaId) {
   };
   const selectable = st.tab === 'fit' ? own : otherGroups.flatMap(g => g[1]);
   const count = st.sel.size;
+  if (st.step === 'cond' && count) return conditionStep(area, st, findTpl, level);
+  st.step = 'pick';
   return {
     html: `${appbar(area.name, { backTo: '/area/' + areaId, color: area.color })}
       <main class="content catalog" style="--c:${area.color}">
@@ -310,7 +317,7 @@ export function catalogView(areaId) {
           : otherGroups.filter(g => g[1].length).map(([n, list]) => `<h2 class="sec">${esc(n)}</h2><div class="cat-list">${list.map(item).join('')}</div>`).join('')}
         <div class="spacer"></div>
       </main>
-      <footer class="cat-foot"><button class="btn orange big" data-add ${count ? '' : 'disabled'}>${count ? `${count} Aufgabe${count > 1 ? 'n' : ''} hinzufügen` : 'Aufgaben auswählen'}</button></footer>`,
+      <footer class="cat-foot"><button class="btn orange big" data-next ${count ? '' : 'disabled'}>${count ? `Weiter: Zustand festlegen (${count})` : 'Aufgaben auswählen'}</button></footer>`,
     bind(root) {
       bindCommon(root);
       const rerender = () => window.dispatchEvent(new Event('bb:render'));
@@ -336,13 +343,48 @@ export function catalogView(areaId) {
       };
       const none = root.querySelector('[data-none]');
       if (none) none.onclick = () => { st.sel.clear(); rerender(); };
+      root.querySelector('[data-next]').onclick = () => { st.step = 'cond'; rerender(); root.querySelector('.content').scrollTop = 0; };
+    },
+  };
+}
+
+// step 2: "Wie sieht es gerade aus?" for every selected task
+function conditionStep(area, st, findTpl, level) {
+  st.cond = st.cond || new Map();
+  const items = [...st.sel.entries()].map(([name, f]) => {
+    const tpl = findTpl(name);
+    const t = { ...L.templateToTask(area.id, tpl, 0, level), ...(f || {}) };
+    return { name, t };
+  });
+  const need = items.filter(x => !x.t.anytime);
+  const missing = need.filter(x => !st.cond.get(x.name)).length;
+  return {
+    html: `${appbar(area.name, { backTo: '/area/' + area.id, color: area.color })}
+      <main class="content catalog" style="--c:${area.color}">
+        <div class="cat-head"><div><b>Wie sieht es gerade aus?</b><small>Gebt für jede Aufgabe den aktuellen Zustand an. Zusammen mit der Frequenz ergibt sich daraus, ob sie heute fällig ist, noch Zeit hat oder überfällig ist.</small></div></div>
+        ${need.length > 1 ? `<div class="cond-all"><span>Für alle setzen:</span><div class="chips">${L.CONDITIONS.map(c => `<button class="chip" data-allc="${c.key}" title="${esc(c.label)}">${c.emoji} ${esc(c.label)}</button>`).join('')}</div></div>` : ''}
+        <div class="cond-list">${items.map(({ name, t }) => `<div class="cond-item ${t.anytime || st.cond.get(name) ? '' : 'need'}">
+            <div class="ci-head"><b>${esc(name)}</b><small>${esc(L.freqText(t))}</small></div>
+            ${conditionPicker(t, st.cond.get(name), name)}
+          </div>`).join('')}</div>
+        <button class="btn link" data-backpick>← Auswahl ändern</button>
+        <div class="spacer"></div>
+      </main>
+      <footer class="cat-foot"><button class="btn orange big" data-add ${missing ? 'disabled' : ''}>${missing ? `Noch ${missing} ${missing > 1 ? 'Zustände' : 'Zustand'} wählen` : `${items.length} Aufgabe${items.length > 1 ? 'n' : ''} hinzufügen`}</button></footer>`,
+    bind(root) {
+      bindCommon(root);
+      const rerender = () => window.dispatchEvent(new Event('bb:render'));
+      bindConditionPickers(root, (name, key) => { st.cond.set(name, key); rerender(); });
+      root.querySelectorAll('[data-allc]').forEach(b => (b.onclick = () => { need.forEach(x => st.cond.set(x.name, b.dataset.allc)); rerender(); }));
+      root.querySelector('[data-backpick]').onclick = () => { st.step = 'pick'; rerender(); };
       root.querySelector('[data-add]').onclick = () => {
-        const list = [...st.sel.keys()].map(findTpl).filter(Boolean);
+        const list = items.map(x => findTpl(x.name)).filter(Boolean);
         const overrides = {}; st.sel.forEach((f, n) => { if (f) overrides[n] = f; });
-        const n = L.addTemplateTasks(area, list, overrides);
-        delete catState[areaId];
+        const conds = Object.fromEntries(st.cond);
+        const n = L.addTemplateTasks(area, list, overrides, conds);
+        delete catState[area.id];
         toast(`${n} Aufgabe${n > 1 ? 'n' : ''} hinzugefügt`);
-        go('/area/' + areaId, { replace: true });
+        go('/area/' + area.id, { replace: true });
         if (n >= 3) mascot.react('catalogAdd', { delay: 500 });
       };
     },

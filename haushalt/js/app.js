@@ -86,7 +86,7 @@ window.bbBack = () => {
   const sheets = document.querySelectorAll('#overlay-root .sheet-wrap');
   if (sheets.length) { sheets[sheets.length - 1].querySelector('.sheet-bg').click(); return true; }
   const p = path();
-  if (p.startsWith('/kids')) return true; // kids can't leave without the grown-up gate
+  if (p.startsWith('/kids')) { if (sessionStorage.getItem('bb.kids') === '1') import('./views-kids.js').then(m => m.exitGate()); else go('/', { replace: true }); return true; }
   if (p !== '/' && p !== '/welcome') { history.length > 1 ? history.back() : go('/', { replace: true }); return true; }
   return false;
 };

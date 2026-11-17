@@ -328,7 +328,7 @@ export function kidsSettingsView() {
     static: true,
     html: `${appbar('Kindermodus', { backTo: '/settings' })}
       <main class="content settings">
-        ${group('Kindermodus', [row('Aktivieren', toggle('kidsMode', s.kidsMode), { info: 'kids' }), row('Kindermodus öffnen', '', { go: '/kids' })],
+        ${group('Kindermodus', [row('Aktivieren', toggle('kidsMode', s.kidsMode), { info: 'kids' }), row('Kindermodus öffnen', '').replace('class="grow', 'data-kidsopen class="grow link')],
           'Kinder sehen nur Aufgaben, die als „Kinder können mitmachen“ markiert sind – mit Bild, Schritt-für-Schritt-Liste und Vorlesen. Zum Verlassen muss eine kleine Rechenaufgabe gelöst werden.')}
         <h2 class="sec">Kinder & Belohnungen</h2>
         <div class="group pad">${kids.length ? kids.map(k => `<div class="reward-row"><span class="avatar" style="--pc:${L.personColor(k)}">${esc(k.emoji)}</span><b>${esc(k.name)}</b>
@@ -342,6 +342,7 @@ export function kidsSettingsView() {
     bind(root) {
       bindSettings(root);
       root.querySelector('[data-toggle]').onchange = e => store.setSettings({ kidsMode: e.target.checked });
+      root.querySelector('[data-kidsopen]').onclick = () => import('./views-kids.js').then(m => m.enterKids());
       const save = root.querySelector('[data-save]');
       if (save) save.onclick = () => {
         const r = { ...rewards };

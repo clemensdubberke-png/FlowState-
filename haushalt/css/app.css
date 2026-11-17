@@ -593,3 +593,30 @@ h2.sec:first-child { margin-top: 8px; }
 .cat-foot { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 16px calc(12px + var(--safe-b)); background: linear-gradient(180deg, rgba(219, 241, 245, 0), var(--bg) 30%); }
 .cat-foot .btn { box-shadow: 0 4px 12px rgba(255, 149, 0, .35); }
 .he-ic { font-size: 34px; }
+.exit-btn { background: rgba(255, 255, 255, .28); color: #fff; font-weight: 700; border-radius: 20px; padding: 8px 12px; font-size: 15px; font-family: var(--font); }
+.kids-exit { margin-top: 24px; color: #8a5a10; background: #ffe9c4; }
+
+/* ---------- condition picker ---------- */
+.cond-pick { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.cp { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px 6px; border-radius: 12px; background: #f1f6f9; border: 2px solid transparent; color: var(--text); }
+.cp span { font-size: 24px; line-height: 1; }
+.cp small { font-size: 10.5px; line-height: 1.15; text-align: center; color: var(--muted); }
+.cp.on { background: #fff4e0; border-color: var(--orange); }
+.cp.on small { color: var(--text); font-weight: 500; }
+.cp-fresh.on { background: #e7f8dc; border-color: #7ccf5c; }
+.cp-ok.on { background: #eef8d8; border-color: #b4dc3c; }
+.cp-over.on, .cp-bad.on { background: #fde7e4; border-color: #ef4b3a; }
+.cp-preview { margin-top: 8px; font-size: 15px; color: var(--muted); }
+.cp-preview.set { color: var(--blue-2); font-weight: 700; }
+.cond-card.need, .cond-item.need { box-shadow: 0 0 0 2px var(--orange) inset; }
+.cond-list { display: flex; flex-direction: column; gap: 10px; }
+.cond-item { background: #fff; border-radius: 16px; padding: 12px; }
+.ci-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.ci-head b { font-size: 16px; }
+.ci-head small { color: var(--muted); white-space: nowrap; }
+.cond-all { background: #fff; border-radius: 16px; padding: 10px 12px; margin-bottom: 10px; }
+.cond-all > span { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.cond-all .chips { gap: 6px; }
+.cond-all .chip { padding: 6px 10px; font-size: 13px; }
+@media (max-width: 360px) { .cond-pick { grid-template-columns: repeat(3, 1fr); } }
+.kid-tasks .empty { grid-column: 1 / -1; }
