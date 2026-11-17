@@ -2,7 +2,7 @@ import * as store from './store.js';
 import * as L from './logic.js';
 import * as sync from './sync.js';
 import { monsterSvg, MONSTER_NAME } from './art.js';
-import { esc, icons, sheet, toast, confirmSheet, infoSheet, toggle } from './ui.js';
+import { esc, icons, sheet, toast, confirmSheet, infoSheet, toggle, native } from './ui.js';
 import { go } from './router.js';
 import { appbar, bindCommon } from './views-main.js';
 
@@ -66,6 +66,8 @@ export function settingsView() {
     bind(root) {
       bindSettings(root);
       root.querySelector('[data-act=export]').onclick = () => {
+        const fname = `blitzeblank-backup-${new Date().toISOString().slice(0, 10)}.json`;
+        if (native) { const where = native.saveFile(fname, store.exportJson()); toast(where ? 'Gespeichert in ' + where : 'Speichern fehlgeschlagen'); return; }
         const blob = new Blob([store.exportJson()], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -355,7 +357,7 @@ export function syncView() {
           <div class="group pad">
             <p class="small">Öffnet diesen Link auf dem Handy eurer Partnerin / eures Partners. Danach teilt ihr denselben Haushalt – Änderungen erscheinen sofort auf beiden Geräten.</p>
             <textarea readonly rows="3" class="mono" data-link>${esc(link)}</textarea>
-            <div class="btn-row"><button class="btn light" data-copy>Link kopieren</button>${navigator.share ? '<button class="btn orange" data-share>Teilen…</button>' : ''}</div>
+            <div class="btn-row"><button class="btn light" data-copy>Link kopieren</button>${navigator.share || native ? '<button class="btn orange" data-share>Teilen…</button>' : ''}</div>
             <p class="muted small">Haushalts-Code: <code>${esc(code)}</code><br>Den Link nur an Personen geben, die mitputzen sollen 😉</p>
           </div>
           <div class="btn-row"><button class="btn grey" data-off>Synchronisation trennen</button></div>` : `
@@ -379,7 +381,10 @@ service cloud.firestore {
           <h2 class="sec">Firebase-Konfiguration</h2>
           <div class="group pad"><textarea rows="7" class="mono" data-cfg placeholder='const firebaseConfig = {&#10;  apiKey: "…",&#10;  authDomain: "…",&#10;  projectId: "…",&#10;  …&#10;};'></textarea>
             <div class="btn-row"><button class="btn orange" data-connect>Haushalt erstellen & verbinden</button></div></div>
-          <p class="group-foot">Du hast schon einen Einladungslink? Dann öffne ihn einfach auf diesem Handy.</p>`}
+          <h2 class="sec">Einladung erhalten?</h2>
+          <div class="group pad"><p class="small">Füge hier den Einladungslink ein, den du bekommen hast:</p>
+            <textarea rows="3" class="mono" data-inv placeholder="https://…#/join/…"></textarea>
+            <div class="btn-row"><button class="btn orange" data-joinlink>Haushalt beitreten</button></div></div>`}
       </main>`,
     bind(root) {
       bindSettings(root);
@@ -394,12 +399,18 @@ service cloud.firestore {
         toast(ok ? 'Verbunden! Jetzt das zweite Handy einladen.' : 'Verbindung fehlgeschlagen – Konfiguration prüfen.');
         window.dispatchEvent(new Event('bb:render'));
       };
+      const jl = root.querySelector('[data-joinlink]');
+      if (jl) jl.onclick = () => {
+        const m = root.querySelector('[data-inv]').value.trim().match(/join\/([A-Za-z0-9+/=_%-]+)/);
+        if (!m) { toast('Das sieht nicht nach einem Einladungslink aus'); return; }
+        go('/join/' + m[1]);
+      };
       const copy = root.querySelector('[data-copy]');
       if (copy) copy.onclick = async () => {
         try { await navigator.clipboard.writeText(link); toast('Link kopiert'); } catch (e) { root.querySelector('[data-link]').select(); document.execCommand('copy'); toast('Link kopiert'); }
       };
       const share = root.querySelector('[data-share]');
-      if (share) share.onclick = () => navigator.share({ title: 'Blitzeblank – unser Haushalt', text: 'Tritt unserem Putzplan bei:', url: link }).catch(() => {});
+      if (share) share.onclick = () => native ? native.share('Blitzeblank – unser Haushalt', 'Tritt unserem Putzplan bei! Link in der Blitzeblank-App unter Einstellungen → Synchronisation → „Einladungslink einfügen“ einfügen (oder antippen):\n' + link) : navigator.share({ title: 'Blitzeblank – unser Haushalt', text: 'Tritt unserem Putzplan bei:', url: link }).catch(() => {});
       const offBtn = root.querySelector('[data-off]');
       if (offBtn) offBtn.onclick = async () => {
         if (!(await confirmSheet('Synchronisation trennen?', 'Die Daten bleiben auf diesem Gerät, werden aber nicht mehr geteilt.', 'Trennen'))) return;

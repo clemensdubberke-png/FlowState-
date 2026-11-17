@@ -4,6 +4,8 @@
 import * as store from './store.js';
 
 const V = '10.12.2';
+// public web version (GitHub Pages) – used for invite links created inside the Android app
+export const PUBLIC_URL = 'https://clemensdubberke-png.github.io/FlowState-/haushalt/';
 const BASE = `https://www.gstatic.com/firebasejs/${V}`;
 
 let fs = null, db = null, household = null;
@@ -36,7 +38,7 @@ export function parseConfig(text) {
 
 export function inviteLink(cfg, code) {
   const payload = btoa(unescape(encodeURIComponent(JSON.stringify({ c: cfg, h: code }))));
-  const base = location.href.split('#')[0];
+  const base = location.hostname === 'appassets.androidplatform.net' ? PUBLIC_URL : location.href.split('#')[0];
   return `${base}#/join/${payload}`;
 }
 export function decodeInvite(payload) {

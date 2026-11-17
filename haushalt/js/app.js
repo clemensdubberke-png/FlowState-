@@ -66,8 +66,26 @@ function render(force = false) {
   current = { path: p, view };
   const bar = app.querySelector('.appbar');
   const meta = document.querySelector('meta[name=theme-color]');
-  if (meta) meta.content = bar ? getComputedStyle(bar).backgroundColor : '#1677f2';
+  const barColor = bar ? getComputedStyle(bar).backgroundColor : (app.querySelector('.kids-bar') ? '#ff9500' : '#1677f2');
+  if (meta) meta.content = barColor;
+  if (window.BlitzeblankAndroid) { try { window.BlitzeblankAndroid.setBarColor(rgbToHex(barColor)); } catch (e) { /* ignore */ } }
 }
+
+function rgbToHex(c) {
+  const m = String(c).match(/\d+/g);
+  if (!m || c.startsWith('#')) return c;
+  return '#' + m.slice(0, 3).map(n => Number(n).toString(16).padStart(2, '0')).join('');
+}
+
+// Android back button: close a sheet first, then go back inside the app
+window.bbBack = () => {
+  const sheets = document.querySelectorAll('#overlay-root .sheet-wrap');
+  if (sheets.length) { sheets[sheets.length - 1].querySelector('.sheet-bg').click(); return true; }
+  const p = path();
+  if (p.startsWith('/kids')) return true; // kids can't leave without the grown-up gate
+  if (p !== '/' && p !== '/welcome') { history.length > 1 ? history.back() : go('/', { replace: true }); return true; }
+  return false;
+};
 
 // ---------------- first start ----------------
 function welcomeView() {

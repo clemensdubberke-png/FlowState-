@@ -1,0 +1,58 @@
+plugins {
+    id 'com.android.application'
+}
+
+def buildNumber = (System.getenv("BUILD_NUMBER") ?: "1").toInteger()
+
+android {
+    namespace 'de.blitzeblank.app'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'de.blitzeblank.app'
+        minSdk 24
+        targetSdk 35
+        versionCode buildNumber
+        versionName "1.0.${buildNumber}"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("KEYSTORE_FILE") ?: "release.keystore")
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: "blitzeblank"
+            keyAlias System.getenv("KEY_ALIAS") ?: "blitzeblank"
+            keyPassword System.getenv("KEY_PASSWORD") ?: "blitzeblank"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs += ["$buildDir/generated/www-assets"]
+        }
+    }
+}
+
+// The web app in ../../haushalt is bundled unchanged into the APK (assets/www).
+tasks.register('copyWebApp', Copy) {
+    from("${rootDir}/../haushalt") {
+        exclude 'README.md', 'sw.js'
+    }
+    into("$buildDir/generated/www-assets/www")
+}
+preBuild.dependsOn 'copyWebApp'
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.12.1'
+}

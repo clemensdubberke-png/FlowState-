@@ -2,7 +2,7 @@
 import * as store from './store.js';
 import * as L from './logic.js';
 import { monsterSvg, MONSTER_NAME } from './art.js';
-import { esc, beep, vibrate, confetti } from './ui.js';
+import { esc, beep, vibrate, confetti, native } from './ui.js';
 import { appbar, bindCommon, taskRow, taskSheet } from './views-main.js';
 
 const KEY = 'blitzeblank.timer';
@@ -24,7 +24,7 @@ export function startTimerWatcher() {
     if (t.endAt && Date.now() >= t.endAt) {
       setT({ mins: t.mins });
       beep(); vibrate([200, 100, 200]); confetti(50);
-      try { if (Notification.permission === 'granted') new Notification('Blitzeblank', { body: `Zeit um! ${MONSTER_NAME} ist beeindruckt.`, icon: 'icons/icon-192.png' }); } catch (e) { /* ignore */ }
+      try { if (!native && Notification.permission === 'granted') new Notification('Blitzeblank', { body: `Zeit um! ${MONSTER_NAME} ist beeindruckt.`, icon: 'icons/icon-192.png' }); } catch (e) { /* ignore */ }
       window.dispatchEvent(new Event('bb:render'));
     }
   }, 1000);
@@ -59,14 +59,16 @@ export function timerView() {
       const start = root.querySelector('[data-start]');
       if (start) start.onclick = () => {
         const cur = getT();
-        setT({ mins: cur.mins, endAt: Date.now() + remaining(cur) });
+        const endAt = Date.now() + remaining(cur);
+        setT({ mins: cur.mins, endAt });
+        if (native) native.scheduleAlarm(endAt, 'Putz-Timer: Zeit um! ⏰', `${MONSTER_NAME} ist beeindruckt. Gut gemacht!`);
         try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch (e) { /* ignore */ }
         window.dispatchEvent(new Event('bb:render'));
       };
       const pause = root.querySelector('[data-pause]');
-      if (pause) pause.onclick = () => { const cur = getT(); setT({ mins: cur.mins, pausedLeft: remaining(cur) }); window.dispatchEvent(new Event('bb:render')); };
+      if (pause) pause.onclick = () => { if (native) native.cancelAlarm(); const cur = getT(); setT({ mins: cur.mins, pausedLeft: remaining(cur) }); window.dispatchEvent(new Event('bb:render')); };
       const reset = root.querySelector('[data-reset]');
-      if (reset) reset.onclick = () => { setT({ mins: getT().mins }); window.dispatchEvent(new Event('bb:render')); };
+      if (reset) reset.onclick = () => { if (native) native.cancelAlarm(); setT({ mins: getT().mins }); window.dispatchEvent(new Event('bb:render')); };
       root.querySelectorAll('[data-task]').forEach(r => (r.onclick = e => { if (!e.target.closest('[data-quick]')) taskSheet(r.dataset.task); }));
       root.querySelectorAll('[data-quick]').forEach(b => (b.onclick = () => taskSheet(b.dataset.quick)));
       clearInterval(ticker);

@@ -87,8 +87,11 @@ export function confetti(n = 70) {
   setTimeout(() => box.remove(), 3500);
 }
 
+export const native = window.BlitzeblankAndroid || null;
+
 export function speak(text) {
   try {
+    if (native && native.speak(text)) return true;
     if (!('speechSynthesis' in window)) return false;
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
@@ -102,7 +105,7 @@ export function speak(text) {
   } catch (e) { return false; }
 }
 
-export function vibrate(p = 30) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) { /* ignore */ } }
+export function vibrate(p = 30) { try { if (native) { native.vibrate(Array.isArray(p) ? p.reduce((a, b) => a + b, 0) : p); return; }  navigator.vibrate && navigator.vibrate(p); } catch (e) { /* ignore */ } }
 
 export function beep() {
   try {
