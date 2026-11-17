@@ -48,7 +48,7 @@ jobs:
             keytool -genkeypair -keystore haushalt-android/app/release.keystore \
               -storepass blitzeblank -keypass blitzeblank -alias blitzeblank \
               -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Blitzeblank"
-            echo "::warning::No BLITZEBLANK_KEYSTORE_BASE64 secret – using a temporary signing key (no release is published)"
+            echo "::warning::No BLITZEBLANK_KEYSTORE_BASE64 secret – using a temporary signing key (uninstall the old app before installing)"
             echo "stable=false" >> "$GITHUB_OUTPUT"
           fi
 
@@ -70,9 +70,9 @@ jobs:
           name: Blitzeblank-1.0.${{ github.run_number }}
           path: dist/*.apk
 
-      # Only APKs signed with the permanent key are published, so every release installs as an update.
+      # With the permanent key (repository secrets) every release installs as an update.
+      # Without it the release is still published, but must be installed after uninstalling the old app.
       - name: Publish release
-        if: steps.key.outputs.stable == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: blitzeblank-v1.0.${{ github.run_number }}

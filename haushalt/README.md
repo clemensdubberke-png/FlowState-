@@ -69,4 +69,4 @@ Der Schlüssel liegt als Repository-Secret in GitHub (*Settings → Secrets and 
 | `BLITZEBLANK_KEYSTORE_BASE64` | Keystore-Datei (`blitzeblank-release.jks`), Base64-kodiert |
 | `BLITZEBLANK_KEYSTORE_PASSWORD` | Passwort des Keystores |
 
-**Wichtig:** Bewahrt die Keystore-Datei und das Passwort gut auf (z. B. im Passwort-Manager). Geht der Schlüssel verloren, lassen sich keine Updates mehr über die installierte App spielen. Ohne Secrets baut der Workflow nur eine Test-APK und veröffentlicht kein Release.
+**Wichtig:** Bewahrt die Keystore-Datei und das Passwort gut auf (z. B. im Passwort-Manager). Geht der Schlüssel verloren, lassen sich keine Updates mehr über die installierte App spielen. Ohne Secrets wird bei jedem Build ein neuer, temporärer Schlüssel verwendet. Dann muss die alte App vor dem Installieren deinstalliert werden.
