@@ -5,10 +5,11 @@ import { ROOM_TYPES, AREA_COLORS, monsterSvg, roomSvg, MONSTER_NAME } from './ar
 import { esc } from './ui.js';
 import { go } from './router.js';
 import { homeView, areaView, todoView, listView } from './views-main.js';
-import { areaEditView, taskEditView, managerView } from './views-edit.js';
+import { areaEditView, taskEditView, managerView, catalogView } from './views-edit.js';
 import * as S from './views-settings.js';
 import { kidsView } from './views-kids.js';
 import { timerView, startTimerWatcher } from './views-timer.js';
+import { intensityWidget, bindIntensity, intensityView } from './views-intensity.js';
 import * as mascot from './mascot.js';
 
 const routes = [
@@ -32,6 +33,8 @@ const routes = [
   [/^\/settings\/vacation$/, () => S.vacationView()],
   [/^\/settings\/kids$/, () => S.kidsSettingsView()],
   [/^\/settings\/sync$/, () => S.syncView()],
+  [/^\/settings\/intensity$/, () => intensityView()],
+  [/^\/area\/(\w+)\/catalog$/, id => catalogView(id)],
   [/^\/join\/(.+)$/, p => S.joinView(p)],
   [/^\/stats$/, () => S.statsView()],
   [/^\/kids$/, () => kidsView(null)],
@@ -48,7 +51,7 @@ function render(force = false) {
   let p = path();
   // kids are locked into kids mode until a grown-up solves the gate
   if (sessionStorage.getItem('bb.kids') === '1' && !p.startsWith('/kids')) { go('/kids', { replace: true }); return; }
-  if (!store.settings().setupDone && !store.all('areas').length && !p.startsWith('/join') && p !== '/welcome') { go('/welcome', { replace: true }); return; }
+  if (!store.settings().setupDone && !store.all('areas').length && !p.startsWith('/join') && !p.startsWith('/settings/sync') && p !== '/welcome') { go('/welcome', { replace: true }); return; }
   const same = current.path === p;
   if (same && current.view?.static && !force) return;
   const scroller = app.querySelector('.content');
@@ -90,27 +93,26 @@ window.bbBack = () => {
 
 // ---------------- first start ----------------
 function welcomeView() {
-  const preset = new Set(['kueche', 'wohnzimmer', 'schlafzimmer', 'badezimmer', 'flur', 'allgemein']);
-  const all = [...ROOM_TYPES.innen, ...ROOM_TYPES.aussen];
+  let level = 2;
   return {
     static: true,
     html: `<main class="content welcome">
-      <div class="wel-hero">${monsterSvg('taunt', 'wel-mon', { tickle: true })}<h1>Willkommen bei Blitzeblank!</h1>
+      <div class="wel-hero"><h1>Willkommen bei Blitzeblank!</h1>
         <p>Ich bin <b>${MONSTER_NAME}</b> und mache euer Zuhause jeden Tag ein bisschen schmutziger. Wetten, ihr kommt nicht hinterher? 😈</p></div>
-      <h2 class="sec">Welche Bereiche habt ihr?</h2>
-      <div class="wel-grid">${all.map(([k, n], i) => `<button class="wel-room ${preset.has(k) ? 'on' : ''}" data-r="${k}" style="--c:${AREA_COLORS[i % AREA_COLORS.length]}">${roomSvg(k, 'wel-art')}<span>${esc(n)}</span></button>`).join('')}</div>
-      <p class="group-foot">Für jeden Bereich schlage ich passende Aufgaben vor. Ihr könnt alles später ändern.</p>
+      <h2 class="sec">Wie intensiv wollt ihr putzen?</h2>
+      ${intensityWidget(level)}
+      <p class="group-foot">Danach richten sich die vorgeschlagenen Frequenzen. Ihr könnt das später unter <i>Einstellungen → Putz-Intensität</i> ändern und jede Aufgabe einzeln anpassen.</p>
       <div class="btn-row"><button class="btn orange big" data-start>Los geht's</button></div>
-      <p class="group-foot center">Schon ein Haushalt auf einem anderen Handy? Öffne dort <i>Einstellungen → Synchronisation</i> und dann den Einladungslink hier.</p>
+      <p class="group-foot center small">Schon ein Haushalt auf einem anderen Handy? Dann dort unter <i>Einstellungen → Synchronisation</i> den Einladungslink holen und hier einfügen: <a href="#/settings/sync" data-later>Einladung einfügen</a></p>
     </main>`,
     bind(root) {
-      root.querySelectorAll('[data-r]').forEach(b => (b.onclick = () => { b.classList.toggle('on'); preset.has(b.dataset.r) ? preset.delete(b.dataset.r) : preset.add(b.dataset.r); }));
+      bindIntensity(root, l => (level = l));
       root.querySelector('[data-start]').onclick = () => {
-        let i = 0;
-        all.forEach(([k, n]) => { if (preset.has(k)) L.createArea({ name: n, type: k, color: AREA_COLORS[i++ % AREA_COLORS.length] }); });
-        store.setSettings({ setupDone: true, raceStart: Date.now() });
+        store.setSettings({ setupDone: true, raceStart: Date.now(), intensity: level });
         go('/', { replace: true });
+        mascot.react('areaHint', { delay: 700, force: true });
       };
+      root.querySelector('[data-later]').onclick = e => { e.preventDefault(); store.setSettings({ setupDone: true, raceStart: Date.now(), intensity: level }); go('/settings/sync'); };
     },
   };
 }

@@ -87,8 +87,9 @@ export function homeView() {
   return {
     html: `${appbar('Bereiche', { big: true, actions: s.kidsMode ? `<button class="icon-btn kids-btn" data-go="/kids" aria-label="Kindermodus">${icons.kids}<span>Kinder</span></button>` : '' })}
       <main class="content home">
-        ${vac}${raceBanner()}
-        <div class="tiles">${tiles}<button class="tile add" data-go="/area-new" aria-label="Bereich hinzufügen">${icons.plus}</button></div>
+        ${vac}${areas.length ? raceBanner() : ''}
+        ${areas.length ? '' : `<div class="home-empty"><span class="he-ic">👇</span><p><b>Noch ist alles leer.</b><br>Tippe auf das <b>+</b>, um deinen ersten Bereich anzulegen – zum Beispiel die Küche.</p></div>`}
+        <div class="tiles">${tiles}<button class="tile add ${areas.length ? '' : 'pulse'}" data-go="/area-new" aria-label="Bereich hinzufügen">${icons.plus}</button></div>
       </main>
       ${bottomNav()}`,
     bind(root) {
@@ -238,9 +239,11 @@ export function areaView(id) {
   const done = tasks.filter(t => L.todayCount(t) > 0).length;
   const due = tasks.filter(t => L.isDue(t)).length;
   return {
-    html: `${appbar(a.name, { backTo: '/', color: a.color, actions: `<button class="icon-btn" data-go="/area/${a.id}/new-task" aria-label="Aufgabe hinzufügen">${icons.plus}</button><button class="icon-btn" data-go="/area/${a.id}/edit" aria-label="Bereich bearbeiten">${icons.edit}</button>` })}
+    html: `${appbar(a.name, { backTo: '/', color: a.color, actions: `<button class="icon-btn" data-go="/area/${a.id}/catalog" aria-label="Aufgaben hinzufügen">${icons.plus}</button><button class="icon-btn" data-go="/area/${a.id}/edit" aria-label="Bereich bearbeiten">${icons.edit}</button>` })}
       <main class="content area-list" style="--c:${a.color}">
-        ${tasks.length ? tasks.map(t => taskRow(t)).join('') : `<div class="empty"><p>Noch keine Aufgaben.</p><button class="btn orange" data-go="/area/${a.id}/new-task">Aufgabe hinzufügen</button></div>`}
+        ${tasks.length ? tasks.map(t => taskRow(t)).join('') : `<div class="empty area-empty">${roomSvg(a.type, 'empty-art')}<p>Noch keine Aufgaben in „${esc(a.name)}“.</p>
+          <button class="btn orange big" data-go="/area/${a.id}/catalog">📋 Aus dem Aufgaben-Katalog wählen</button>
+          <button class="btn light big" data-go="/area/${a.id}/new-task">✏️ Eigene Aufgabe erstellen</button></div>`}
         <div class="spacer"></div>
       </main>
       <footer class="area-foot" style="--c:${a.color}">

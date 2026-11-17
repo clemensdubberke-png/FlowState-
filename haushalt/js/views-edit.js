@@ -20,7 +20,6 @@ export function areaEditView(id) {
     color: existing?.color || AREA_COLORS.find(c => !usedColors.includes(c)) || AREA_COLORS[0],
     tab: ROOM_TYPES.aussen.some(x => x[0] === existing?.type) ? 'aussen' : 'innen',
     nameTouched: !!existing,
-    picked: null,
   };
   const tplNames = () => (TEMPLATES[st.type] || []).map(t => t[0]);
 
@@ -35,20 +34,13 @@ export function areaEditView(id) {
     return `<div class="tabs"><button class="${st.tab === 'innen' ? 'on' : ''}" data-tab="innen">Innenräume</button><button class="${st.tab === 'aussen' ? 'on' : ''}" data-tab="aussen">Außenbereich</button></div>
       <div class="wheel">${ROOM_TYPES[st.tab].map(([k, n]) => `<button class="${k === st.type ? 'on' : ''}" data-type="${k}">${esc(n)}</button>`).join('')}</div>`;
   }
-  function suggestions() {
-    if (existing) return '';
-    const names = tplNames();
-    if (!st.picked) st.picked = new Set(names);
-    return `<div class="suggest"><h2 class="sec">Vorgeschlagene Aufgaben (${st.picked.size}/${names.length})</h2>
-      <div class="chips wrap">${names.map(n => `<button class="chip ${st.picked.has(n) ? 'on' : ''}" data-tpl="${esc(n)}">${esc(n)}</button>`).join('')}</div></div>`;
-  }
   function body() {
     return `<div class="area-edit-card">${preview()}
         <div class="btn-row"><button class="btn grey" data-cancel>Abbrechen</button><button class="btn orange" data-save>${existing ? 'Speichern' : 'Erstellen'}</button></div>
         ${existing ? '<button class="btn link red" data-del>Bereich löschen</button>' : ''}
       </div>
       <div class="wheel-box">${wheel()}</div>
-      ${suggestions()}`;
+      ${existing ? '' : '<p class="group-foot">Nach dem Erstellen wählt ihr Aufgaben aus dem Katalog oder legt eigene an.</p>'}`;
   }
 
   return {
@@ -66,14 +58,8 @@ export function areaEditView(id) {
         box.querySelectorAll('[data-type]').forEach(b => (b.onclick = () => {
           st.type = b.dataset.type;
           if (!st.nameTouched || ALL_TYPES.some(x => x[1] === st.name)) { st.name = typeName(st.type); st.nameTouched = false; }
-          st.picked = null;
           redraw();
           box.querySelector('.wheel .on')?.scrollIntoView({ block: 'nearest', inline: 'center' });
-        }));
-        box.querySelectorAll('[data-tpl]').forEach(b => (b.onclick = () => {
-          const n = b.dataset.tpl;
-          st.picked.has(n) ? st.picked.delete(n) : st.picked.add(n);
-          redraw();
         }));
         box.querySelector('[data-cancel]').onclick = () => back('/');
         box.querySelector('[data-save]').onclick = () => {
@@ -83,9 +69,8 @@ export function areaEditView(id) {
             toast('Gespeichert');
             go('/area/' + existing.id, { replace: true });
           } else {
-            const area = L.createArea({ name, type: st.type, color: st.color, withTasks: false });
-            L.addTemplateTasks(area, (TEMPLATES[st.type] || []).filter(t => st.picked.has(t[0])));
-            go('/area/' + area.id, { replace: true });
+            const area = L.createArea({ name, type: st.type, color: st.color });
+            go('/area/' + area.id + '/catalog', { replace: true });
             mascot.react('areaCreated', { delay: 400 });
           }
         };
@@ -187,8 +172,8 @@ export function taskEditView(id, areaId) {
             if (f === 'name' && t.kid && !t.kid.enabled) t.kid.emoji = guessEmoji(t.name);
           };
         });
-        box.querySelectorAll('[data-step]').forEach(b => (b.onclick = () => { t.freqN = Math.min(99, Math.max(1, t.freqN + Number(b.dataset.step))); redraw(); }));
-        box.querySelectorAll('[data-unit]').forEach(b => (b.onclick = () => { t.freqUnit = b.dataset.unit; redraw(); }));
+        box.querySelectorAll('[data-step]').forEach(b => (b.onclick = () => { t.freqN = Math.min(99, Math.max(1, t.freqN + Number(b.dataset.step))); t.customFreq = true; redraw(); }));
+        box.querySelectorAll('[data-unit]').forEach(b => (b.onclick = () => { t.freqUnit = b.dataset.unit; t.customFreq = true; redraw(); }));
         box.querySelectorAll('[data-effort]').forEach(b => (b.onclick = () => { t.effort = Number(b.dataset.effort); redraw(); }));
         const cr = box.querySelector('[data-cond]');
         if (cr) cr.oninput = () => { cond = Number(cr.value); };
@@ -265,14 +250,101 @@ export function managerView() {
       root.querySelector('[data-sort]').onchange = e => { managerSort = e.target.value; window.dispatchEvent(new Event('bb:render')); };
       root.querySelectorAll('[data-n]').forEach(b => (b.onclick = () => {
         const t = store.get('tasks', b.dataset.n);
-        store.put('tasks', { id: t.id, freqN: Math.max(1, Math.min(99, t.freqN + Number(b.dataset.d))) });
+        store.put('tasks', { id: t.id, freqN: Math.max(1, Math.min(99, t.freqN + Number(b.dataset.d))), customFreq: true });
       }));
       root.querySelectorAll('[data-u]').forEach(b => (b.onclick = () => {
         const t = store.get('tasks', b.dataset.u);
         const i = unitOrder.indexOf(t.freqUnit) + Number(b.dataset.d);
-        if (i >= 0 && i < 3) store.put('tasks', { id: t.id, freqUnit: unitOrder[i] });
+        if (i >= 0 && i < 3) store.put('tasks', { id: t.id, freqUnit: unitOrder[i], customFreq: true });
       }));
       root.querySelectorAll('[data-edit]').forEach(b => (b.onclick = () => go('/task/' + b.dataset.edit)));
+    },
+  };
+}
+
+// ---------------- task catalogue per area ----------------
+const catState = {}; // areaId -> { tab, sel: Map(name -> {freqN, freqUnit}) }
+export function catalogView(areaId) {
+  const area = store.get('areas', areaId);
+  if (!area) return { html: appbar('Katalog', { backTo: '/' }) + '<main class="content"><p class="empty">Bereich nicht gefunden.</p></main>', bind: bindCommon };
+  const st = catState[areaId] || (catState[areaId] = { tab: 'fit', sel: new Map() });
+  const level = L.intensity();
+  const have = new Set(L.tasksOfArea(areaId).map(t => t.name.toLowerCase()));
+  const own = TEMPLATES[area.type] || [];
+  const ownNames = new Set(own.map(t => t[0]));
+  // "Weitere": every other catalogue task once, grouped by room type
+  const otherGroups = ALL_TYPES.filter(([k]) => k !== area.type).map(([k, n]) => [n, (TEMPLATES[k] || []).filter(t => !ownNames.has(t[0]))]);
+  const seen = new Set();
+  otherGroups.forEach(g => { g[1] = g[1].filter(t => (seen.has(t[0]) ? false : (seen.add(t[0]), true))); });
+  const findTpl = name => own.find(t => t[0] === name) || otherGroups.flatMap(g => g[1]).find(t => t[0] === name);
+
+  const item = tpl => {
+    const [name] = tpl;
+    const exists = have.has(name.toLowerCase());
+    const on = st.sel.has(name);
+    const base = L.tplDays(tpl);
+    const f = on ? st.sel.get(name) : (base ? L.scaledFreq(base, level) : null);
+    const kid = tpl[4];
+    const freq = !base ? '<span class="cat-any">Jederzeit</span>'
+      : `<div class="cat-freq ${on ? '' : 'dim'}">
+          <button data-n="${esc(name)}" data-d="-1" ${!on || f.freqN <= 1 ? 'disabled' : ''}>−</button><b>${f.freqN}</b><button data-n="${esc(name)}" data-d="1" ${!on ? 'disabled' : ''}>+</button>
+          <button class="unit" data-u="${esc(name)}" ${!on ? 'disabled' : ''}>${L.UNIT_LABEL[f.freqUnit][f.freqN === 1 ? 0 : 1]}</button></div>`;
+    return `<div class="cat-row ${on ? 'on' : ''} ${exists ? 'have' : ''}">
+      <button class="cat-check" data-pick="${esc(name)}" ${exists ? 'disabled' : ''} aria-label="${esc(name)} auswählen">${exists ? '✓' : on ? '✓' : ''}</button>
+      <div class="cat-main" data-pick="${esc(name)}"><span class="cat-name">${esc(name)}</span>
+        <small>${exists ? 'Schon vorhanden' : `${L.EFFORT_LABEL[tpl[3]]}${kid ? ` · ${kid === true ? '👧 Kinder' : esc(kid.e) + ' Kinder'}` : ''}`}</small></div>
+      ${exists ? '' : freq}
+    </div>`;
+  };
+  const selectable = st.tab === 'fit' ? own : otherGroups.flatMap(g => g[1]);
+  const count = st.sel.size;
+  return {
+    html: `${appbar(area.name, { backTo: '/area/' + areaId, color: area.color })}
+      <main class="content catalog" style="--c:${area.color}">
+        <div class="cat-head"><div><b>Aufgaben-Katalog</b><small>Frequenzen für <a href="#/settings/intensity">„${esc(L.INTENSITY[level].label)}“</a> – antippen zum Auswählen, dann mit − / + anpassen.</small></div></div>
+        <button class="btn light own-btn" data-go="/area/${areaId}/new-task">✏️ Eigene Aufgabe erstellen</button>
+        <div class="seg cat-tabs"><button class="${st.tab === 'fit' ? 'on' : ''}" data-tab="fit">Passend (${own.length})</button><button class="${st.tab === 'more' ? 'on' : ''}" data-tab="more">Weitere Aufgaben</button></div>
+        <div class="row-between cat-tools"><button class="link-btn" data-all>Alle auswählen</button>${count ? '<button class="link-btn" data-none>Auswahl leeren</button>' : ''}</div>
+        ${st.tab === 'fit'
+          ? (own.length ? `<div class="cat-list">${own.map(item).join('')}</div>` : '<p class="empty">Für diesen Bereich gibt es keine Vorschläge. Schaut unter „Weitere Aufgaben“ oder legt eigene an.</p>')
+          : otherGroups.filter(g => g[1].length).map(([n, list]) => `<h2 class="sec">${esc(n)}</h2><div class="cat-list">${list.map(item).join('')}</div>`).join('')}
+        <div class="spacer"></div>
+      </main>
+      <footer class="cat-foot"><button class="btn orange big" data-add ${count ? '' : 'disabled'}>${count ? `${count} Aufgabe${count > 1 ? 'n' : ''} hinzufügen` : 'Aufgaben auswählen'}</button></footer>`,
+    bind(root) {
+      bindCommon(root);
+      const rerender = () => window.dispatchEvent(new Event('bb:render'));
+      root.querySelectorAll('[data-tab]').forEach(b => (b.onclick = () => { st.tab = b.dataset.tab; rerender(); root.querySelector('.content').scrollTop = 0; }));
+      root.querySelectorAll('[data-pick]').forEach(b => (b.onclick = () => {
+        const name = b.dataset.pick;
+        if (have.has(name.toLowerCase())) return;
+        if (st.sel.has(name)) st.sel.delete(name);
+        else { const tpl = findTpl(name); const base = L.tplDays(tpl); st.sel.set(name, base ? L.scaledFreq(base, level) : null); }
+        rerender();
+      }));
+      root.querySelectorAll('[data-n]').forEach(b => (b.onclick = () => {
+        const f = st.sel.get(b.dataset.n); if (!f) return;
+        f.freqN = Math.max(1, Math.min(99, f.freqN + Number(b.dataset.d))); rerender();
+      }));
+      root.querySelectorAll('[data-u]').forEach(b => (b.onclick = () => {
+        const f = st.sel.get(b.dataset.u); if (!f) return;
+        const order = ['d', 'w', 'm']; f.freqUnit = order[(order.indexOf(f.freqUnit) + 1) % 3]; rerender();
+      }));
+      root.querySelector('[data-all]').onclick = () => {
+        selectable.forEach(tpl => { if (!have.has(tpl[0].toLowerCase()) && !st.sel.has(tpl[0])) { const base = L.tplDays(tpl); st.sel.set(tpl[0], base ? L.scaledFreq(base, level) : null); } });
+        rerender();
+      };
+      const none = root.querySelector('[data-none]');
+      if (none) none.onclick = () => { st.sel.clear(); rerender(); };
+      root.querySelector('[data-add]').onclick = () => {
+        const list = [...st.sel.keys()].map(findTpl).filter(Boolean);
+        const overrides = {}; st.sel.forEach((f, n) => { if (f) overrides[n] = f; });
+        const n = L.addTemplateTasks(area, list, overrides);
+        delete catState[areaId];
+        toast(`${n} Aufgabe${n > 1 ? 'n' : ''} hinzugefügt`);
+        go('/area/' + areaId, { replace: true });
+        if (n >= 3) mascot.react('catalogAdd', { delay: 500 });
+      };
     },
   };
 }

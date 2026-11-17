@@ -207,6 +207,14 @@ export const LINES = {
     'Du warst weg und ich bin gewachsen. Schau mal, ich hab jetzt Muckis!',
   ],
 
+  areaHint: [
+    'Noch alles leer hier! Tippt auf das große Plus und legt euren ersten Bereich an. Ich warte… und krümel schon mal vor.',
+  ],
+  catalogAdd: [
+    'So viele Aufgaben auf einmal? Ihr wollt mich wohl loswerden!',
+    'Ein ganzer Putzplan! Ich krieg Schüttelfrost.',
+    'Hübsche Liste. Mal sehen, wie viel davon ihr wirklich schafft. Hehe.',
+  ],
   // ---- kids ----
   kids: [
     'Oh nein, ein Putz-Held! Hilfe!',

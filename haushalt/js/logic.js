@@ -267,34 +267,69 @@ export function endVacation() {
   store.putMany('tasks', store.all('tasks').filter(t => t.lastDone).map(t => ({ id: t.id, lastDone: t.lastDone + shift })));
 }
 
+// ---------------- cleaning intensity ----------------
+// factor multiplies the suggested interval: >1 = less often, <1 = more often
+export const INTENSITY = [
+  { label: 'Sehr locker', f: 2, mood: 'happy', hint: 'Nur das Nötigste – Hauptsache, es stinkt nicht.' },
+  { label: 'Locker', f: 1.5, mood: 'happy', hint: 'Entspannt putzen, ohne Stress.' },
+  { label: 'Normal', f: 1, mood: 'taunt', hint: 'Ein gepflegtes Zuhause im Alltag.' },
+  { label: 'Ordentlich', f: 0.7, mood: 'shock', hint: 'Es soll richtig sauber sein.' },
+  { label: 'Intensiv', f: 0.5, mood: 'sad', hint: 'Blitzeblank, immer. Besuch kann jederzeit kommen.' },
+];
+export function intensity() { const l = store.settings().intensity; return Number.isInteger(l) ? l : 2; }
+
+const TPL_UNIT_DAYS = { d: 1, w: 7, m: 30 };
+export function tplDays(tpl) { return tpl[1] ? tpl[1] * TPL_UNIT_DAYS[tpl[2]] : 0; }
+
+/** Turns a number of days into a "nice" frequency (Tage / Wochen / Monate). */
+export function niceFreq(days) {
+  const d = Math.max(1, Math.round(days));
+  if (d < 14) return { freqN: d, freqUnit: 'd' };
+  if (d < 63) return { freqN: Math.max(2, Math.round(d / 7)), freqUnit: 'w' };
+  return { freqN: Math.max(2, Math.round(d / 30)), freqUnit: 'm' };
+}
+export function scaledFreq(baseDays, level = intensity()) { return niceFreq(baseDays * INTENSITY[level].f); }
+
 // ---------------- areas from templates ----------------
-export function createArea({ name, type, color, withTasks = true }) {
+export function createArea({ name, type, color }) {
   const order = store.all('areas').length;
-  const area = store.put('areas', { name, type, color, order });
-  if (withTasks) addTemplateTasks(area, TEMPLATES[type] || []);
-  return area;
+  return store.put('areas', { name, type, color, order });
 }
 
-export function templateToTask(areaId, tpl, i = 0) {
+export function templateToTask(areaId, tpl, i = 0, level = intensity()) {
   const [name, n, unit, effort, kid] = tpl;
-  const t = { areaId, name, anytime: n === 0, freqN: n || 1, freqUnit: unit, effort, order: i, assignees: [] };
+  const base = tplDays(tpl);
+  const t = { areaId, name, anytime: n === 0, freqN: 1, freqUnit: unit, effort, order: i, assignees: [], tplDays: base || null };
+  if (base) Object.assign(t, scaledFreq(base, level));
   if (kid) {
     t.kid = { enabled: true, emoji: kid.e || guessEmoji(name), steps: (kid.steps || []).map(([e, text]) => ({ e, text })) };
   }
   return t;
 }
 
-export function addTemplateTasks(area, list) {
+/** Adds catalogue tasks. overrides: name -> { freqN, freqUnit } chosen by the user. */
+export function addTemplateTasks(area, list, overrides = {}) {
   const n = Date.now();
+  const start = tasksOfArea(area.id).length;
   const tasks = list.map((tpl, i) => {
-    const t = templateToTask(area.id, tpl, i);
-    // spread the initial state so not everything is due on day one
+    const t = templateToTask(area.id, tpl, start + i);
+    const o = overrides[tpl[0]];
+    if (o && !t.anytime && (o.freqN !== t.freqN || o.freqUnit !== t.freqUnit)) Object.assign(t, o, { customFreq: true });
+    // spread the initial state so not everything is due on day one (nothing starts overdue)
     const iv = intervalDays(t);
     const r = ((i * 37) % 100) / 100; // deterministic pseudo-random 0..1
-    t.lastDone = t.anytime ? null : n - iv * DAY * (0.15 + r * 0.9);
+    t.lastDone = t.anytime ? null : n - iv * DAY * (0.1 + r * 0.85);
     return t;
   });
   store.putMany('tasks', tasks);
+  return tasks.length;
+}
+
+/** Re-scales all catalogue tasks the user did not adjust by hand. Returns count. */
+export function applyIntensity(level = intensity()) {
+  const list = store.all('tasks').filter(t => t.tplDays && !t.customFreq && !t.anytime);
+  store.putMany('tasks', list.map(t => ({ id: t.id, ...scaledFreq(t.tplDays, level) })));
+  return list.length;
 }
 
 export function personColor(p) { return p?.color || '#7a8aa0'; }

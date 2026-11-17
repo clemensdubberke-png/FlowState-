@@ -6,6 +6,8 @@ Eine installierbare Web-App (PWA) für Android, iPhone und PC. Sie läuft komple
 
 | Bereich | Was die App kann |
 |---|---|
+| **Erster Start** | Die App startet leer. Ihr wählt per Schieberegler die Putz-Intensität (Sehr locker → Intensiv), und Schmuddel reagiert live darauf. Danach legt ihr Bereiche an. |
+| **Aufgaben-Katalog** | Pro Bereich wählt ihr passende Aufgaben aus dem Katalog (oder aus allen anderen Räumen) oder legt eigene an. Die vorgeschlagene Frequenz richtet sich nach der Intensität und lässt sich vor dem Hinzufügen und jederzeit danach anpassen. Ändert ihr die Intensität später, werden nur Frequenzen angepasst, die ihr nicht selbst geändert habt. |
 | **Bereiche** | Raum-Kacheln mit Illustration, Farbe und Ampel-Punkt (rot / orange / gelb / grün). Je schmutziger ein Raum, desto mehr Flecken sind auf der Kachel. 13 Innenräume und 5 Außenbereiche als Vorlage. |
 | **Aufgaben** | Zustandsbalken pro Aufgabe („Heute fällig“, „Fällig in 6 Tg.“, „Überfällig seit 2 Tg.“), Rhythmus in Tagen, Wochen oder Monaten, „Jederzeit“-Aufgaben mit Zähler, Aufwand (Leicht / Mittel / Schwer), Notizen, Zustand manuell setzen, „Morgen erinnern“, Verlauf. Über 130 vorgeschlagene Aufgaben. |
 | **Aufgaben-Manager** | Alle Rhythmen auf einen Blick mit +/−, sortiert nach Frequenz, Name oder Fälligkeit. |

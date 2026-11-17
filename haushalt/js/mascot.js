@@ -24,6 +24,8 @@ const REACT = {
   taskCreated: { mood: 'taunt', anim: 'a-sigh' },
   taskDeleted: { mood: 'happy', anim: 'a-dance' },
   tickle: { mood: 'happy', anim: 'a-wiggle' },
+  areaHint: { mood: 'wave', anim: 'a-jump' },
+  catalogAdd: { mood: 'shock', anim: 'a-shrink' },
   tickleMany: { mood: 'angry', anim: 'a-stomp' },
   greetMorning: { mood: 'wave', anim: 'a-jump' },
   greetDay: { mood: 'wave', anim: 'a-jump' },

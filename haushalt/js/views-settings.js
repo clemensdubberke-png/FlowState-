@@ -49,6 +49,7 @@ export function settingsView() {
           row('Synchronisation', esc(sync.syncStatus()), { go: '/settings/sync' }),
         ])}
         ${group('Aufgaben', [
+          row('Putz-Intensität', esc(L.INTENSITY[L.intensity()].label), { go: '/settings/intensity' }),
           row('Aufgaben-Manager', '', { go: '/manager' }),
           row('Statistik', '', { go: '/stats' }),
           row('Urlaubsmodus', s.vacation ? 'Aktiv' : 'Aus', { go: '/settings/vacation', info: 'vacation' }),
