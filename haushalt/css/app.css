@@ -620,3 +620,6 @@ h2.sec:first-child { margin-top: 8px; }
 .cond-all .chip { padding: 6px 10px; font-size: 13px; }
 @media (max-width: 360px) { .cond-pick { grid-template-columns: repeat(3, 1fr); } }
 .kid-tasks .empty { grid-column: 1 / -1; }
+/* bar slides back to a small dark-green stub after completing a task */
+.cbar-fill.anim-reset { animation: bar-reset 1.1s cubic-bezier(.3, .9, .3, 1); }
+@keyframes bar-reset { from { width: var(--from); background: var(--from-c); } }

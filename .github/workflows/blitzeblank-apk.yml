@@ -36,17 +36,20 @@ jobs:
       # Without secrets a throw-away key is generated – the APK works, but updates then
       # require uninstalling first.
       - name: Prepare signing key
+        id: key
         env:
           KS_B64: ${{ secrets.BLITZEBLANK_KEYSTORE_BASE64 }}
         run: |
           if [ -n "$KS_B64" ]; then
             echo "$KS_B64" | base64 -d > haushalt-android/app/release.keystore
             echo "Using keystore from secrets"
+            echo "stable=true" >> "$GITHUB_OUTPUT"
           else
             keytool -genkeypair -keystore haushalt-android/app/release.keystore \
               -storepass blitzeblank -keypass blitzeblank -alias blitzeblank \
               -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Blitzeblank"
-            echo "::warning::No BLITZEBLANK_KEYSTORE_BASE64 secret – using a temporary signing key"
+            echo "::warning::No BLITZEBLANK_KEYSTORE_BASE64 secret – using a temporary signing key (no release is published)"
+            echo "stable=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build APK
@@ -67,7 +70,9 @@ jobs:
           name: Blitzeblank-1.0.${{ github.run_number }}
           path: dist/*.apk
 
+      # Only APKs signed with the permanent key are published, so every release installs as an update.
       - name: Publish release
+        if: steps.key.outputs.stable == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: blitzeblank-v1.0.${{ github.run_number }}
@@ -80,3 +85,4 @@ jobs:
 
             Installation: APK unten auf dem Handy antippen → herunterladen → öffnen.
             Beim ersten Mal fragt Android, ob Installationen aus dieser Quelle erlaubt sind → „Zulassen“.
+            Ab Version mit festem Schlüssel installiert sich jede neue Version einfach über die alte – alle Daten bleiben erhalten.

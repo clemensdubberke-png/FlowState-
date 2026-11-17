@@ -125,9 +125,13 @@ export function bottomNav() {
 }
 
 // ---------------- task rows ----------------
+// tasks just completed: id -> { width, color } of the bar before, so it can slide back to the left
+const justDone = new Map();
 function bar(t) {
   const fill = L.barFill(t) * 100;
-  return `<div class="cbar"><div class="cbar-fill" style="width:${fill}%;background:${L.barColor(t)}"></div><i style="left:47%"></i><i style="left:59%"></i><i style="left:71%"></i></div>`;
+  const prev = justDone.get(t.id);
+  const anim = prev ? ` anim-reset" style="--from:${prev.width}%;--from-c:${prev.color};width:${fill}%;background:${L.barColor(t)}` : `" style="width:${fill}%;background:${L.barColor(t)}`;
+  return `<div class="cbar"><div class="cbar-fill${anim}"></div><i style="left:47%"></i><i style="left:59%"></i><i style="left:71%"></i></div>`;
 }
 
 export function taskRow(t, { showArea = false, quick = false } = {}) {
@@ -155,6 +159,10 @@ export function taskRow(t, { showArea = false, quick = false } = {}) {
 // ---------------- complete flow ----------------
 export function doComplete(t, personId) {
   const prev = t.lastDone;
+  if (!t.anytime) {
+    justDone.set(t.id, { width: L.barFill(t) * 100, color: L.barColor(t) });
+    setTimeout(() => justDone.delete(t.id), 1500);
+  }
   const before = { status: L.status(t), race: L.race() };
   const pts = L.completeTask(t, personId);
   vibrate(25);

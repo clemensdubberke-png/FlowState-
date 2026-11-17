@@ -61,13 +61,24 @@ export function dueText(t, at = now()) {
 }
 
 /** Fill fraction for the condition bar: ~0.25 when fresh, 0.59 at due day, 1.0 when very overdue. */
+/** Fill of the condition capsule: a small dark-green stub right after completion,
+ *  growing steadily until the due day (0.59 = middle tick), then on to full when very overdue. */
+export const BAR_MIN = 0.06;
 export function barFill(t, at = now()) {
   const p = Math.max(0, progress(t, at));
-  if (p <= 1) return 0.22 + 0.37 * p;
+  if (p <= 1) return BAR_MIN + (0.59 - BAR_MIN) * p;
   return Math.min(1, 0.59 + 0.41 * Math.min(1, (p - 1) / 0.8));
 }
+// colour runs from dark green (just done) via light green and yellow to orange and red
+const BAR_STOPS = [[0, [30, 132, 58]], [0.35, [76, 175, 60]], [0.7, [180, 220, 60]], [0.92, [234, 213, 59]], [1.0, [245, 194, 43]], [1.35, [245, 154, 35]], [1.7, [239, 75, 58]]];
 export function barColor(t, at = now()) {
-  return { fresh: '#b4dc3c', ok: '#cde04a', soon: '#ead53b', due: '#f5c22b', overdue: '#f59a23', bad: '#ef4b3a' }[status(t, at)] || '#b4dc3c';
+  const p = Math.max(0, progress(t, at));
+  let i = BAR_STOPS.findIndex(s => s[0] > p);
+  if (i === -1) i = BAR_STOPS.length - 1;
+  if (i === 0) i = 1;
+  const [p0, c0] = BAR_STOPS[i - 1], [p1, c1] = BAR_STOPS[i];
+  const k = Math.max(0, Math.min(1, (p - p0) / (p1 - p0)));
+  return '#' + c0.map((v, j) => Math.round(v + (c1[j] - v) * k).toString(16).padStart(2, '0')).join('');
 }
 
 /** Dirt splats shown next to a task: 0..3 */

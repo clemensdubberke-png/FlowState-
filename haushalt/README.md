@@ -57,3 +57,16 @@ Die Daten liegen unter `households/<zufälliger Code>/…`. Jede Aufgabe, jede E
 - `js/templates.js`: Aufgaben-Vorlagen, Kinder-Schritte und Monster-Sprüche.
 - `js/art.js`: alle Illustrationen und das Monster als SVG (eigene Zeichnungen).
 - `sw.js`: HTML, JS und CSS laden network-first, damit Updates sofort ankommen. Bilder kommen cache-first.
+
+## Android-APK und Updates
+
+Jede Änderung an `haushalt/` oder `haushalt-android/` baut per GitHub Actions eine neue APK. Ist der feste Signatur-Schlüssel hinterlegt, wird sie als Release veröffentlicht und installiert sich als Update über die alte Version. Die Daten bleiben dabei erhalten.
+
+Der Schlüssel liegt als Repository-Secret in GitHub (*Settings → Secrets and variables → Actions*):
+
+| Secret | Inhalt |
+|---|---|
+| `BLITZEBLANK_KEYSTORE_BASE64` | Keystore-Datei (`blitzeblank-release.jks`), Base64-kodiert |
+| `BLITZEBLANK_KEYSTORE_PASSWORD` | Passwort des Keystores |
+
+**Wichtig:** Bewahrt die Keystore-Datei und das Passwort gut auf (z. B. im Passwort-Manager). Geht der Schlüssel verloren, lassen sich keine Updates mehr über die installierte App spielen. Ohne Secrets baut der Workflow nur eine Test-APK und veröffentlicht kein Release.
