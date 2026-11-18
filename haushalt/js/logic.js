@@ -382,9 +382,9 @@ export function niceFreq(days) {
 export function scaledFreq(baseDays, level = intensity()) { return niceFreq(baseDays * INTENSITY[level].f); }
 
 // ---------------- areas from templates ----------------
-export function createArea({ name, type, color }) {
+export function createArea({ name, type, color, art = null }) {
   const order = store.all('areas').length;
-  return store.put('areas', { name, type, color, order });
+  return store.put('areas', { name, type, color, art, order });
 }
 
 export function templateToTask(areaId, tpl, i = 0, level = intensity()) {

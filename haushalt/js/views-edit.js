@@ -1,6 +1,6 @@
 import * as store from './store.js';
 import * as L from './logic.js';
-import { roomSvg, ROOM_TYPES, AREA_COLORS } from './art.js';
+import { roomSvg, ROOM_TYPES, AREA_COLORS, CUSTOM_TYPES, ART_CHOICES } from './art.js';
 import { TEMPLATES, guessEmoji } from './templates.js';
 import { esc, icons, sheet, toast, confirmSheet } from './ui.js';
 import { go, back } from './router.js';
@@ -9,7 +9,7 @@ import * as mascot from './mascot.js';
 import { conditionPicker, bindConditionPickers } from './condition.js';
 
 const ALL_TYPES = [...ROOM_TYPES.innen, ...ROOM_TYPES.aussen];
-const typeName = t => (ALL_TYPES.find(x => x[0] === t) || [, 'Bereich'])[1];
+const typeName = t => CUSTOM_TYPES.includes(t) ? '' : (ALL_TYPES.find(x => x[0] === t) || [, 'Bereich'])[1];
 
 // ---------------- new / edit area ----------------
 export function areaEditView(id) {
@@ -21,14 +21,15 @@ export function areaEditView(id) {
     color: existing?.color || AREA_COLORS.find(c => !usedColors.includes(c)) || AREA_COLORS[0],
     tab: ROOM_TYPES.aussen.some(x => x[0] === existing?.type) ? 'aussen' : 'innen',
     nameTouched: !!existing,
+    art: existing?.art || null,
   };
   const tplNames = () => (TEMPLATES[st.type] || []).map(t => t[0]);
 
   function preview() {
     return `<div class="area-preview" style="--c:${st.color}">
-      <div class="ap-top"><label><small>Name des Bereichs</small><input data-name value="${esc(st.name)}" maxlength="30"></label>
+      <div class="ap-top"><label><small>Name des Bereichs</small><input data-name value="${esc(st.name)}" maxlength="30" placeholder="${CUSTOM_TYPES.includes(st.type) ? (st.type === 'eigen_aussen' ? 'z. B. Gartenhaus' : 'z. B. Hobbyraum') : 'Name'}"></label>
         <label class="ap-color"><small>Farbe</small><button data-color style="background:${st.color}" aria-label="Farbe wählen"></button></label></div>
-      ${roomSvg(st.type, 'ap-art')}
+      <button class="ap-artbtn" data-art aria-label="Bild ändern">${roomSvg(st.art || st.type, 'ap-art')}<span>🖼️ Bild ändern</span></button>
     </div>`;
   }
   function wheel() {
@@ -55,22 +56,27 @@ export function areaEditView(id) {
         inp.oninput = () => { st.name = inp.value; st.nameTouched = true; };
         box.querySelector('[data-color]').onclick = () => sheet(`<h3>Farbe</h3><div class="swatches">${AREA_COLORS.map(c => `<button style="background:${c}" data-c="${c}" class="${c === st.color ? 'on' : ''}"></button>`).join('')}</div>`,
           (el, close) => el.querySelectorAll('[data-c]').forEach(b => (b.onclick = () => { st.color = b.dataset.c; close(); redraw(); })));
+        box.querySelector('[data-art]').onclick = () => sheet(`<h3>Bild wählen</h3><div class="art-grid">${ART_CHOICES.map(([k, n]) => `<button class="art-opt ${(st.art || st.type) === k ? 'on' : ''}" data-a="${k}" style="--c:${st.color}">${roomSvg(k, 'art-thumb')}<small>${esc(n)}</small></button>`).join('')}</div>`,
+          (el, close) => el.querySelectorAll('[data-a]').forEach(b => (b.onclick = () => { st.art = b.dataset.a === st.type ? null : b.dataset.a; close(); redraw(); })));
         box.querySelectorAll('[data-tab]').forEach(b => (b.onclick = () => { st.tab = b.dataset.tab; redraw(); }));
         box.querySelectorAll('[data-type]').forEach(b => (b.onclick = () => {
           st.type = b.dataset.type;
           if (!st.nameTouched || ALL_TYPES.some(x => x[1] === st.name)) { st.name = typeName(st.type); st.nameTouched = false; }
+          st.art = null;
+          if (CUSTOM_TYPES.includes(st.type)) setTimeout(() => box.querySelector('[data-name]')?.focus(), 50);
           redraw();
           box.querySelector('.wheel .on')?.scrollIntoView({ block: 'nearest', inline: 'center' });
         }));
         box.querySelector('[data-cancel]').onclick = () => back('/');
         box.querySelector('[data-save]').onclick = () => {
           const name = st.name.trim() || typeName(st.type);
+          if (!name) { toast('Bitte gib dem Raum einen Namen'); box.querySelector('[data-name]').focus(); return; }
           if (existing) {
-            store.put('areas', { id: existing.id, name, type: st.type, color: st.color });
+            store.put('areas', { id: existing.id, name, type: st.type, color: st.color, art: st.art });
             toast('Gespeichert');
             go('/area/' + existing.id, { replace: true });
           } else {
-            const area = L.createArea({ name, type: st.type, color: st.color });
+            const area = L.createArea({ name, type: st.type, color: st.color, art: st.art });
             go('/area/' + area.id + '/catalog', { replace: true });
             mascot.react('areaCreated', { delay: 400 });
           }
@@ -273,7 +279,7 @@ const catState = {}; // areaId -> { tab, sel: Map(name -> {freqN, freqUnit}) }
 export function catalogView(areaId) {
   const area = store.get('areas', areaId);
   if (!area) return { html: appbar('Katalog', { backTo: '/' }) + '<main class="content"><p class="empty">Bereich nicht gefunden.</p></main>', bind: bindCommon };
-  const st = catState[areaId] || (catState[areaId] = { tab: 'fit', sel: new Map() });
+  const st = catState[areaId] || (catState[areaId] = { tab: (TEMPLATES[area.type] || []).length ? 'fit' : 'more', sel: new Map() });
   const level = L.intensity();
   const have = new Set(L.tasksOfArea(areaId).map(t => t.name.toLowerCase()));
   const own = TEMPLATES[area.type] || [];
@@ -311,7 +317,7 @@ export function catalogView(areaId) {
       <main class="content catalog" style="--c:${area.color}">
         <div class="cat-head"><div><b>Aufgaben-Katalog</b><small>Frequenzen für <a href="#/settings/intensity">„${esc(L.INTENSITY[level].label)}“</a> – antippen zum Auswählen, dann mit − / + anpassen.</small></div></div>
         <button class="btn light own-btn" data-go="/area/${areaId}/new-task">✏️ Eigene Aufgabe erstellen</button>
-        <div class="seg cat-tabs"><button class="${st.tab === 'fit' ? 'on' : ''}" data-tab="fit">Passend (${own.length})</button><button class="${st.tab === 'more' ? 'on' : ''}" data-tab="more">Weitere Aufgaben</button></div>
+        <div class="seg cat-tabs">${own.length ? `<button class="${st.tab === 'fit' ? 'on' : ''}" data-tab="fit">Passend (${own.length})</button>` : ''}<button class="${st.tab === 'more' ? 'on' : ''}" data-tab="more">${own.length ? 'Weitere Aufgaben' : 'Alle Aufgaben aus dem Katalog'}</button></div>
         <div class="row-between cat-tools"><button class="link-btn" data-all>Alle auswählen</button>${count ? '<button class="link-btn" data-none>Auswahl leeren</button>' : ''}</div>
         ${st.tab === 'fit'
           ? (own.length ? `<div class="cat-list">${own.map(item).join('')}</div>` : '<p class="empty">Für diesen Bereich gibt es keine Vorschläge. Schaut unter „Weitere Aufgaben“ oder legt eigene an.</p>')

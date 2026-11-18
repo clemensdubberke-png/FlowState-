@@ -624,3 +624,11 @@ h2.sec:first-child { margin-top: 8px; }
 .cbar-fill.anim-reset { animation: bar-reset 1.1s cubic-bezier(.3, .9, .3, 1); }
 @keyframes bar-reset { from { width: var(--from); background: var(--from-c); } }
 .hist-row.win { background: #f0fbe6; } .hist-row.draw { background: #fff8e1; } .hist-row.loss { background: #fdeeee; }
+/* custom rooms: picture chooser */
+.ap-artbtn { display: block; width: 100%; position: relative; color: #fff; }
+.ap-artbtn span { position: absolute; right: 4px; bottom: 4px; background: rgba(0, 0, 0, .22); border-radius: 12px; padding: 4px 10px; font-size: 13px; }
+.art-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.art-opt { --c: #3eaef7; background: var(--c); color: #fff; border-radius: 12px; padding: 6px; border: 3px solid transparent; opacity: .8; }
+.art-opt.on { border-color: var(--ink); opacity: 1; }
+.art-thumb { width: 100%; height: auto; }
+.art-opt small { display: block; font-size: 12px; margin-top: 2px; }

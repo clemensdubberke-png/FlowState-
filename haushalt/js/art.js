@@ -115,6 +115,18 @@ const rooms = {
     <path d="M70 76h60M76 76v32M124 76v32"/>
     <path d="M40 64v44M40 86h18v22M58 86v-4"/><path d="M160 64v44M160 86h-18v22M142 86v-4"/>
     <path d="M20 110h160"/>`,
+  eigen_innen: `
+    <path d="M30 108V54l70-38 70 38v54z"/><path d="M30 108h140"/>
+    <rect x="48" y="66" width="30" height="24" rx="2"/><path d="M63 66v24M48 78h30"/>
+    <rect x="88" y="70" width="24" height="38"/><circle cx="106" cy="90" r="2"/>
+    <path d="M124 108V86h34v22"/><path d="M120 86h42"/><path d="M130 86v-8a11 11 0 0 1 22 0v8"/>
+    <path d="M100 36l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1z"/>`,
+  eigen_aussen: `
+    <circle cx="160" cy="28" r="10"/><path d="M160 10v-4M178 28h4M147 15l-3-3M173 15l3-3"/>
+    <circle cx="52" cy="50" r="20"/><path d="M52 70v38M52 86l-9-7M52 80l9-7"/>
+    <path d="M86 92h46M90 92v16M128 92v16M86 84h46"/><path d="M92 84v-8h34v8"/>
+    <path d="M20 108h160"/><path d="M140 108c4-10 14-14 26-14"/>
+    <path d="M70 108c0-6 3-9 3-9s3 3 3 9M150 70l2 4 4 1-3 3 1 4-4-2-4 2 1-4-3-3 4-1z"/>`,
   auto: `
     <path d="M30 88V76l14-4 18-20h56l22 20 26 6v10z"/><path d="M68 56l-12 16h40V56zM104 56v16h30l-16-16z"/>
     <circle cx="62" cy="92" r="11"/><circle cx="62" cy="92" r="4"/><circle cx="138" cy="92" r="11"/><circle cx="138" cy="92" r="4"/>
@@ -124,14 +136,25 @@ const rooms = {
 
 export const ROOM_TYPES = {
   innen: [
+    ['eigen_innen', '＋ Eigener Innenraum'],
     ['kueche', 'Küche'], ['wohnzimmer', 'Wohnzimmer'], ['esszimmer', 'Esszimmer'], ['schlafzimmer', 'Schlafzimmer'],
     ['badezimmer', 'Badezimmer'], ['kinderzimmer', 'Kinderzimmer'], ['arbeitszimmer', 'Arbeitszimmer'], ['flur', 'Flur'],
     ['waesche', 'Wäschekammer'], ['wc', 'Gäste-WC'], ['keller', 'Keller'], ['dachboden', 'Dachboden'], ['allgemein', 'Allgemein'],
   ],
   aussen: [
+    ['eigen_aussen', '＋ Eigener Außenbereich'],
     ['garten', 'Garten'], ['balkon', 'Balkon'], ['terrasse', 'Terrasse'], ['garage', 'Garage'], ['auto', 'Auto'],
   ],
 };
+
+export const CUSTOM_TYPES = ['eigen_innen', 'eigen_aussen'];
+/** all illustrations to choose from: [key, label] */
+export const ART_CHOICES = [
+  ['eigen_innen', 'Haus'], ['kueche', 'Küche'], ['wohnzimmer', 'Wohnzimmer'], ['esszimmer', 'Esszimmer'], ['schlafzimmer', 'Schlafzimmer'],
+  ['badezimmer', 'Bad'], ['kinderzimmer', 'Kinderzimmer'], ['arbeitszimmer', 'Arbeitszimmer'], ['flur', 'Flur'], ['waesche', 'Wäsche'],
+  ['wc', 'WC'], ['keller', 'Keller'], ['dachboden', 'Dachboden'], ['allgemein', 'Grundriss'],
+  ['eigen_aussen', 'Draußen'], ['garten', 'Garten'], ['balkon', 'Balkon'], ['terrasse', 'Terrasse'], ['garage', 'Garage'], ['auto', 'Auto'],
+];
 
 export const AREA_COLORS = [
   '#4cc392', '#3eaef7', '#6d7fd6', '#5bc2c2', '#1fa46c', '#2a8fc9', '#3aa5a0', '#8fa6ea',

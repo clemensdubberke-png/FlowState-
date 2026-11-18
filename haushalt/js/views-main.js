@@ -81,7 +81,7 @@ export function homeView() {
     return `<button class="tile" style="--c:${a.color}" data-go="/area/${a.id}">
       <span class="tile-name">${esc(a.name)}</span>
       <span class="dot ${st.dot}"></span>
-      ${roomSvg(a.type, 'tile-art')}
+      ${roomSvg(a.art || a.type, 'tile-art')}
       ${splats}
     </button>`;
   }).join('');
@@ -264,7 +264,7 @@ export function areaView(id) {
   return {
     html: `${appbar(a.name, { backTo: '/', color: a.color, actions: `<button class="icon-btn" data-go="/area/${a.id}/catalog" aria-label="Aufgaben hinzufügen">${icons.plus}</button><button class="icon-btn" data-go="/area/${a.id}/edit" aria-label="Bereich bearbeiten">${icons.edit}</button>` })}
       <main class="content area-list" style="--c:${a.color}">
-        ${tasks.length ? tasks.map(t => taskRow(t)).join('') : `<div class="empty area-empty">${roomSvg(a.type, 'empty-art')}<p>Noch keine Aufgaben in „${esc(a.name)}“.</p>
+        ${tasks.length ? tasks.map(t => taskRow(t)).join('') : `<div class="empty area-empty">${roomSvg(a.art || a.type, 'empty-art')}<p>Noch keine Aufgaben in „${esc(a.name)}“.</p>
           <button class="btn orange big" data-go="/area/${a.id}/catalog">📋 Aus dem Aufgaben-Katalog wählen</button>
           <button class="btn light big" data-go="/area/${a.id}/new-task">✏️ Eigene Aufgabe erstellen</button></div>`}
         <div class="spacer"></div>
