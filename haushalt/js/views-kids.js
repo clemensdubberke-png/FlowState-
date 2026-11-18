@@ -17,7 +17,7 @@ function starsOf(kidId) {
   return store.all('completions').filter(c => c.kid && (c.personId === kidId || (kidId === GROUP_KID && !c.personId))).reduce((a, c) => a + (c.stars || 1), 0);
 }
 function kidTasks(kidId) {
-  return store.all('tasks').filter(t => t.kid?.enabled).filter(t => {
+  return store.all('tasks').filter(t => t.kid?.enabled && L.activeAt(t)).filter(t => {
     const resp = L.responsible(t);
     return !resp || resp === kidId || !store.get('persons', resp)?.kid;
   });

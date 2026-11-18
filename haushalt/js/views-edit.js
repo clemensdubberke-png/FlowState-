@@ -138,7 +138,15 @@ export function taskEditView(id, areaId) {
       </div>
       <h2 class="sec">Aufwand</h2>
       <div class="seg">${[1, 2, 3].map(e => `<button class="${t.effort === e ? 'on' : ''}" data-effort="${e}">${L.EFFORT_LABEL[e]} · ${e} Pkt.</button>`).join('')}</div>
-      ${t.anytime ? '' : `<h2 class="sec" data-cond-sec>Wie sieht es gerade aus?</h2>
+      <h2 class="sec">🗓️ Saison</h2>
+      <div class="form-card">
+        <div class="row-between"><span>Saisonale Aufgabe</span><label class="switch"><input type="checkbox" data-season ${t.seasonal ? 'checked' : ''}><span></span></label></div>
+        ${t.seasonal ? `<p class="muted small">In welchen Monaten fällt die Aufgabe an? In den anderen Monaten schlummert sie 💤 – sie wird nicht fällig und Schmuddel bekommt keine Punkte dafür. Zu Saisonbeginn startet sie frisch.</p>
+          <div class="month-grid">${L.MONTHS_SHORT.map((m, i) => `<button class="mchip ${(t.months || []).includes(i + 1) ? 'on' : ''}" data-month="${i + 1}">${m}</button>`).join('')}</div>
+          <div class="chips season-presets">${L.SEASONS.map(([n, ms]) => `<button class="chip" data-preset="${ms.join(',')}">${n}</button>`).join('')}</div>
+          <p class="season-sum">${(t.months || []).length ? `Aktiv: <b>${esc(L.monthsText(t))}</b>${L.activeAt(t) ? ' · gerade aktiv' : ` · schlummert gerade bis ${L.MONTHS_LONG[L.nextActiveMonth(t)]}`}` : 'Bitte Monate wählen'}</p>` : '<p class="muted small">Z. B. Schnee schieben nur im Winter oder Rasen mähen nur im Sommer.</p>'}
+      </div>
+      ${t.anytime || !L.activeAt(t) ? '' : `<h2 class="sec" data-cond-sec>Wie sieht es gerade aus?</h2>
       <div class="form-card cond-card ${!cond ? 'need' : ''}">${conditionPicker(t, cond, 'task')}
         <p class="muted small">Daraus und aus der Frequenz ergibt sich, ob die Aufgabe heute fällig ist, noch Zeit hat oder überfällig ist.</p></div>`}
       ${s.multiPerson && s.responsibility && ps.length ? `<h2 class="sec">Zuständig ${s.rotation ? '(Rotation: der Erste ist dran)' : ''}</h2>
@@ -184,6 +192,12 @@ export function taskEditView(id, areaId) {
         box.querySelectorAll('[data-unit]').forEach(b => (b.onclick = () => { t.freqUnit = b.dataset.unit; t.customFreq = true; redraw(); }));
         box.querySelectorAll('[data-effort]').forEach(b => (b.onclick = () => { t.effort = Number(b.dataset.effort); redraw(); }));
         bindConditionPickers(box, (_, key) => { cond = key; condChanged = true; redraw(); });
+        box.querySelector('[data-season]').onchange = e => { t.seasonal = e.target.checked; if (t.seasonal && !(t.months || []).length) t.months = [4, 5, 6, 7, 8, 9]; redraw(); };
+        box.querySelectorAll('[data-month]').forEach(b => (b.onclick = () => {
+          const m = Number(b.dataset.month); const ms = new Set(t.months || []);
+          ms.has(m) ? ms.delete(m) : ms.add(m); t.months = [...ms].sort((a, c) => a - c); redraw();
+        }));
+        box.querySelectorAll('[data-preset]').forEach(b => (b.onclick = () => { t.months = b.dataset.preset.split(',').map(Number).sort((a, c) => a - c); redraw(); }));
         box.querySelectorAll('[data-assign]').forEach(b => (b.onclick = () => {
           const pid = b.dataset.assign, i = t.assignees.indexOf(pid);
           i > -1 ? t.assignees.splice(i, 1) : t.assignees.push(pid);
@@ -208,12 +222,14 @@ export function taskEditView(id, areaId) {
           t.name = (t.name || '').trim();
           if (!t.name) { toast('Bitte einen Namen eingeben'); return; }
           t.kid.steps = t.kid.steps.filter(x => x.text.trim());
-          if (!t.anytime && !cond) {
+          if (!t.anytime && !cond && L.activeAt(t)) {
             toast('Bitte wähle, wie es gerade aussieht');
             box.querySelector('[data-cond-sec]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
           }
-          if (!t.anytime && (condChanged || !existing || !t.lastDone)) t.lastDone = L.lastDoneFor(t, cond);
+          if (t.seasonal && !(t.months || []).length) { toast('Bitte mindestens einen Monat wählen'); return; }
+          if (!t.anytime && L.activeAt(t) && (condChanged || !existing || !t.lastDone)) { t.lastDone = L.lastDoneFor(t, cond); t.seasonFrom = L.seasonStart(t); }
+          if (!t.anytime && !L.activeAt(t) && !t.lastDone) t.lastDone = Date.now();
           if (existing && (condChanged || existing.freqN !== t.freqN || existing.freqUnit !== t.freqUnit || existing.anytime !== t.anytime)) t.mSince = Date.now();
           const rec = store.put('tasks', t);
           toast(existing ? 'Gespeichert' : 'Aufgabe hinzugefügt');
@@ -304,7 +320,7 @@ export function catalogView(areaId) {
     return `<div class="cat-row ${on ? 'on' : ''} ${exists ? 'have' : ''}">
       <button class="cat-check" data-pick="${esc(name)}" ${exists ? 'disabled' : ''} aria-label="${esc(name)} auswählen">${exists ? '✓' : on ? '✓' : ''}</button>
       <div class="cat-main" data-pick="${esc(name)}"><span class="cat-name">${esc(name)}</span>
-        <small>${exists ? 'Schon vorhanden' : `${L.EFFORT_LABEL[tpl[3]]}${kid ? ` · ${kid === true ? '👧 Kinder' : esc(kid.e) + ' Kinder'}` : ''}`}</small></div>
+        <small>${exists ? 'Schon vorhanden' : `${L.EFFORT_LABEL[tpl[3]]}${kid ? ` · ${kid === true ? '👧 Kinder' : esc(kid.e) + ' Kinder'}` : ''}${tpl[5] ? ` · 🗓️ ${esc(L.monthsText({ seasonal: true, months: tpl[5] }))}` : ''}`}</small></div>
       ${exists ? '' : freq}
     </div>`;
   };
@@ -363,14 +379,14 @@ function conditionStep(area, st, findTpl, level) {
     const t = { ...L.templateToTask(area.id, tpl, 0, level), ...(f || {}) };
     return { name, t };
   });
-  const need = items.filter(x => !x.t.anytime);
+  const need = items.filter(x => !x.t.anytime && L.activeAt(x.t));
   const missing = need.filter(x => !st.cond.get(x.name)).length;
   return {
     html: `${appbar(area.name, { backTo: '/area/' + area.id, color: area.color })}
       <main class="content catalog" style="--c:${area.color}">
         <div class="cat-head"><div><b>Wie sieht es gerade aus?</b><small>Gebt für jede Aufgabe den aktuellen Zustand an. Zusammen mit der Frequenz ergibt sich daraus, ob sie heute fällig ist, noch Zeit hat oder überfällig ist.</small></div></div>
         ${need.length > 1 ? `<div class="cond-all"><span>Für alle setzen:</span><div class="chips">${L.CONDITIONS.map(c => `<button class="chip" data-allc="${c.key}" title="${esc(c.label)}">${c.emoji} ${esc(c.label)}</button>`).join('')}</div></div>` : ''}
-        <div class="cond-list">${items.map(({ name, t }) => `<div class="cond-item ${t.anytime || st.cond.get(name) ? '' : 'need'}">
+        <div class="cond-list">${items.map(({ name, t }) => `<div class="cond-item ${t.anytime || !L.activeAt(t) || st.cond.get(name) ? '' : 'need'}">
             <div class="ci-head"><b>${esc(name)}</b><small>${esc(L.freqText(t))}</small></div>
             ${conditionPicker(t, st.cond.get(name), name)}
           </div>`).join('')}</div>

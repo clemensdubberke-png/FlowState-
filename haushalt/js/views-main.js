@@ -148,11 +148,15 @@ export function taskRow(t, { showArea = false, quick = false } = {}) {
     resp ? personChip(resp, true) : '',
     area ? `<span class="area-tag" style="--c:${area.color}">${esc(area.name)}</span>` : '',
     t.kid?.enabled ? `<span class="kid-tag" title="Kinder können mitmachen">${esc(t.kid.emoji || '⭐')}</span>` : '',
+    L.isSeasonal(t) ? `<span class="season-tag">🗓️ ${esc(L.monthsText(t))}</span>` : '',
   ].join('');
+  const sleeping = !t.anytime && !L.activeAt(t);
   const right = t.anytime
     ? `<div class="anytime"><span class="count">${L.todayCount(t)}</span><small>Jederzeit</small></div>`
-    : `<div class="cond">${bar(t)}<small>${esc(L.dueText(t))}</small></div>`;
-  return `<div class="task-row" data-task="${t.id}">
+    : sleeping
+      ? `<div class="cond sleep"><span class="zz">💤</span><small>${esc(L.dueText(t))}</small></div>`
+      : `<div class="cond">${bar(t)}<small>${esc(L.dueText(t))}</small></div>`;
+  return `<div class="task-row ${sleeping ? 'sleeping' : ''}" data-task="${t.id}">
     ${quick ? `<button class="quick-check" data-quick="${t.id}" aria-label="Erledigt">✓</button>` : ''}
     <div class="task-main"><div class="task-name">${esc(t.name)}</div><div class="task-under">${under}</div></div>
     ${right}
@@ -198,7 +202,7 @@ export function taskSheet(id) {
   const resp = L.responsible(t);
   sheet(`<div class="task-sheet">
       <div class="ts-head" style="--c:${area?.color || '#1677f2'}"><small>${esc(area?.name || '')}</small><h3>${t.kid?.enabled ? esc(t.kid.emoji) + ' ' : ''}${esc(t.name)}</h3>
-        <div class="ts-meta">${esc(L.freqText(t))} · ${L.EFFORT_LABEL[t.effort || 1]} (${L.pointsFor(t)} Pkt.)</div></div>
+        <div class="ts-meta">${esc(L.freqText(t))} · ${L.EFFORT_LABEL[t.effort || 1]} (${L.pointsFor(t)} Pkt.)${L.isSeasonal(t) ? ` · 🗓️ ${esc(L.monthsText(t))}` : ''}</div></div>
       ${t.anytime ? `<p class="muted">Heute ${L.todayCount(t)}× erledigt.</p>` : `<div class="ts-cond">${bar(t)}<span>${esc(L.dueText(t))}</span></div>`}
       ${resp ? `<p class="muted">Zuständig: ${personChip(resp)}</p>` : ''}
       ${t.notes ? `<p class="notes">${esc(t.notes)}</p>` : ''}
@@ -292,7 +296,7 @@ export function todoView(filter = 'all') {
   let tasks = store.all('tasks').filter(t => !t.anytime);
   if (filter === 'mine' && meId) tasks = tasks.filter(t => !L.responsible(t) || L.responsible(t) === meId);
   const due = L.sortTasks(tasks.filter(t => L.isDue(t)));
-  const soon = L.sortTasks(tasks.filter(t => !L.isDue(t) && L.daysUntilDue(t) <= 3));
+  const soon = L.sortTasks(tasks.filter(t => L.activeAt(t) && !L.isDue(t) && L.daysUntilDue(t) <= 3));
   const doneToday = store.all('completions').filter(c => c.at >= L.startOfDay(Date.now())).sort((a, b) => b.at - a.at);
   const showFilter = s.multiPerson && s.responsibility && meId;
   return {

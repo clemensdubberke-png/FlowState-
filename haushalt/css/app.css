@@ -632,3 +632,14 @@ h2.sec:first-child { margin-top: 8px; }
 .art-opt.on { border-color: var(--ink); opacity: 1; }
 .art-thumb { width: 100%; height: auto; }
 .art-opt small { display: block; font-size: 12px; margin-top: 2px; }
+/* seasonal tasks */
+.month-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 10px 0; }
+.mchip { padding: 9px 0; border-radius: 10px; background: #f1f6f9; color: var(--ink); font-weight: 500; border: 2px solid transparent; }
+.mchip.on { background: var(--blue); color: #fff; }
+.season-presets { margin-bottom: 8px; }
+.season-sum { margin: 6px 0 0; color: var(--ink); }
+.season-tag { font-size: 12px; background: rgba(255, 255, 255, .25); border-radius: 10px; padding: 2px 8px; }
+.task-row.sleeping { opacity: .6; }
+.cond.sleep { text-align: center; }
+.cond.sleep .zz { font-size: 24px; display: block; animation: zz 2.4s ease-in-out infinite; }
+@keyframes zz { 0%, 100% { transform: translateY(0); opacity: .7; } 50% { transform: translateY(-4px); opacity: 1; } }

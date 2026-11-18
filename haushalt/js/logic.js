@@ -33,16 +33,61 @@ export function freqText(t) {
   if (n === 1) return { d: 'Täglich', w: 'Wöchentlich', m: 'Monatlich' }[t.freqUnit];
   return `Alle ${n} ${UNIT_LABEL[t.freqUnit][1]}`;
 }
-export function dueAt(t) { return (t.lastDone || t.createdAt || Date.now()) + intervalDays(t) * DAY; }
-export function progress(t, at = now()) {
-  if (t.anytime) return 0;
-  return (at - (t.lastDone || at)) / (intervalDays(t) * DAY);
+// ---------------- seasonal tasks ----------------
+// t.seasonal + t.months (1..12): outside these months the task sleeps (not due, no points for Schmuddel).
+// When its season starts, the cycle starts fresh.
+export const MONTHS_SHORT = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+export const MONTHS_LONG = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+export const SEASONS = [['Winter', [11, 12, 1, 2]], ['Frühling', [3, 4, 5]], ['Sommer', [5, 6, 7, 8, 9]], ['Herbst', [9, 10, 11]]];
+export function isSeasonal(t) { return !!(t && t.seasonal && Array.isArray(t.months) && t.months.length > 0 && t.months.length < 12); }
+export function activeAt(t, at = now()) { return !isSeasonal(t) || t.months.includes(new Date(at).getMonth() + 1); }
+/** first day of the current active streak (handles seasons over new year, e.g. Nov–Feb) */
+export function seasonStart(t, at = now()) {
+  if (!isSeasonal(t) || !activeAt(t, at)) return 0;
+  const d = new Date(at);
+  let y = d.getFullYear(), m = d.getMonth();
+  for (let i = 0; i < 11; i++) {
+    const pm = (m + 11) % 12;
+    if (!t.months.includes(pm + 1)) break;
+    if (pm === 11) y--;
+    m = pm;
+  }
+  return new Date(y, m, 1).getTime();
 }
-export function daysUntilDue(t, at = now()) { return Math.round((startOfDay(dueAt(t)) - startOfDay(at)) / DAY); }
+export function nextActiveMonth(t, at = now()) {
+  const m = new Date(at).getMonth();
+  for (let i = 1; i <= 12; i++) { const k = (m + i) % 12; if (t.months.includes(k + 1)) return k; }
+  return m;
+}
+/** "Nov–Feb", "Apr–Okt" or "Mär, Jun, Sep" */
+export function monthsText(t) {
+  if (!isSeasonal(t)) return 'Ganzjährig';
+  const set = new Set(t.months);
+  const startIdx = [...Array(12).keys()].find(i => set.has(i + 1) && !set.has(((i + 11) % 12) + 1));
+  if (startIdx === undefined) return 'Ganzjährig';
+  const run = []; for (let i = 0; i < 12; i++) { const k = (startIdx + i) % 12; if (set.has(k + 1)) run.push(k); else break; }
+  if (run.length === set.size) return run.length === 1 ? MONTHS_SHORT[run[0]] : `${MONTHS_SHORT[run[0]]}–${MONTHS_SHORT[run[run.length - 1]]}`;
+  return [...set].sort((a, b) => a - b).map(m => MONTHS_SHORT[m - 1]).join(', ');
+}
+/** last-done used for the condition: a new season starts fresh */
+export function effLast(t, at = now()) {
+  const last = t.lastDone || t.createdAt || at;
+  const ss = seasonStart(t, at);
+  if (ss && t.seasonFrom === ss) return last; // condition was set explicitly during this season
+  return Math.max(last, ss);
+}
+
+export function dueAt(t, at = now()) { return effLast(t, at) + intervalDays(t) * DAY; }
+export function progress(t, at = now()) {
+  if (t.anytime || !activeAt(t, at)) return 0;
+  return (at - effLast(t, at)) / (intervalDays(t) * DAY);
+}
+export function daysUntilDue(t, at = now()) { return Math.round((startOfDay(dueAt(t, at)) - startOfDay(at)) / DAY); }
 
 /** status: fresh | ok | soon | due | overdue | bad */
 export function status(t, at = now()) {
   if (t.anytime) return 'anytime';
+  if (!activeAt(t, at)) return 'sleep';
   const d = daysUntilDue(t, at), p = progress(t, at);
   if (d > 0) return p < 0.6 ? 'fresh' : (d <= 1 ? 'soon' : 'ok');
   if (d === 0) return 'due';
@@ -52,6 +97,7 @@ export function isDue(t, at) { const s = status(t, at); return s === 'due' || s 
 
 export function dueText(t, at = now()) {
   if (t.anytime) return 'Jederzeit';
+  if (!activeAt(t, at)) return `Schlummert bis ${MONTHS_SHORT[nextActiveMonth(t, at)]}.`;
   const d = daysUntilDue(t, at);
   if (d === 0) return 'Heute fällig';
   if (d === 1) return 'Morgen fällig';
@@ -90,7 +136,7 @@ export function dirtLevel(t, at) {
 export function tasksOfArea(areaId) { return store.all('tasks').filter(t => t.areaId === areaId); }
 
 export function areaState(areaId, at = now()) {
-  const tasks = tasksOfArea(areaId).filter(t => !t.anytime);
+  const tasks = tasksOfArea(areaId).filter(t => !t.anytime && activeAt(t, at));
   if (!tasks.length) return { dot: 'none', dirt: 0, due: 0 };
   let worst = 0, due = 0, dirt = 0;
   const rank = { fresh: 0, ok: 0, soon: 1, due: 2, overdue: 3, bad: 4 };
@@ -118,6 +164,8 @@ export function sortTasks(list, mode = 'due', at = now()) {
   if (mode === 'name') return arr.sort((a, b) => a.name.localeCompare(b.name, 'de'));
   if (mode === 'freq') return arr.sort((a, b) => intervalDays(a) - intervalDays(b) || a.name.localeCompare(b.name, 'de'));
   return arr.sort((a, b) => {
+    const sa = !activeAt(a, at), sb = !activeAt(b, at);
+    if (sa !== sb) return sa ? 1 : -1; // sleeping seasonal tasks at the end
     if (a.anytime !== b.anytime) return a.anytime ? -1 : 1;
     if (a.anytime) return a.name.localeCompare(b.name, 'de');
     return (dueAt(a) - dueAt(b)) || a.name.localeCompare(b.name, 'de');
@@ -180,7 +228,7 @@ export function completeTask(t, personId, { kid = false } = {}) {
     taskId: t.id, areaId: t.areaId, taskName: t.name, personId: personId || null,
     at: Date.now(), points: pts, kid,
   });
-  const patch = { id: t.id, lastDone: now(), mSince: Date.now() };
+  const patch = { id: t.id, lastDone: now(), mSince: Date.now(), seasonFrom: seasonStart(t) };
   if (t.anytime) patch.anytimeCount = (todayCount(t) || 0) + 1;
   const s = store.settings();
   if (s.multiPerson && s.responsibility && s.rotation && (t.assignees || []).length > 1) {
@@ -229,18 +277,18 @@ export function lastDoneFor(t, key, at = now()) {
 /** Short preview of what a condition means for this task, e.g. "Fällig in 4 Tg." */
 export function conditionPreview(t, key) {
   if (t.anytime) return 'Jederzeit';
-  return dueText({ ...t, lastDone: lastDoneFor(t, key) });
+  return dueText({ ...t, lastDone: lastDoneFor(t, key), seasonFrom: seasonStart(t) });
 }
 /** Which condition best describes a task right now */
 export function currentConditionKey(t) {
-  if (t.anytime || !t.lastDone) return null;
+  if (t.anytime || !t.lastDone || !activeAt(t)) return null;
   const d = daysUntilDue(t), iv = intervalDays(t);
   if (d >= iv) return 'fresh';
   if (d === 0) return 'due';
   if (d < 0) return -d >= Math.max(2, Math.round(iv * 0.8)) ? 'bad' : 'over';
   return d <= Math.max(1, Math.min(3, Math.round(iv * 0.15))) ? 'soon' : 'ok';
 }
-export function setConditionKey(t, key) { store.put('tasks', { id: t.id, lastDone: lastDoneFor(t, key), mSince: Date.now() }); }
+export function setConditionKey(t, key) { store.put('tasks', { id: t.id, lastDone: lastDoneFor(t, key), seasonFrom: seasonStart(t), mSince: Date.now() }); }
 
 /** Set the condition manually: 0 = clean, 1 = due today, 1.5 = overdue */
 export function setCondition(t, p) {
@@ -249,7 +297,7 @@ export function setCondition(t, p) {
 
 // ---------------- monster race ----------------
 export function autoGoal() {
-  const tasks = store.all('tasks').filter(t => !t.anytime);
+  const tasks = store.all('tasks').filter(t => !t.anytime && activeAt(t));
   let sum = 0;
   tasks.forEach(t => { sum += (30 / intervalDays(t)) * (t.effort || 1); });
   return Math.max(10, Math.round(sum * 0.5));
@@ -269,9 +317,9 @@ export function monsterScan(at = Date.now()) {
   const known = store.raw('mpoints');
   const add = [];
   for (const t of store.all('tasks')) {
-    if (t.anytime || !t.lastDone) continue;
+    if (t.anytime || !t.lastDone || !activeAt(t, nowT)) continue;
     const iv = intervalDays(t) * DAY;
-    const first = startOfDay(dueAt(t)) + DAY; // first moment the task counts as overdue
+    const first = startOfDay(dueAt(t, nowT)) + DAY; // first moment the task counts as overdue
     if (first > nowT) continue;
     const since = Math.max(from, t.mSince || t.createdAt || 0);
     const j0 = first < since ? Math.ceil((since - first) / iv) : 0;
@@ -388,10 +436,11 @@ export function createArea({ name, type, color, art = null }) {
 }
 
 export function templateToTask(areaId, tpl, i = 0, level = intensity()) {
-  const [name, n, unit, effort, kid] = tpl;
+  const [name, n, unit, effort, kid, months] = tpl;
   const base = tplDays(tpl);
   const t = { areaId, name, anytime: n === 0, freqN: 1, freqUnit: unit, effort, order: i, assignees: [], tplDays: base || null };
   if (base) Object.assign(t, scaledFreq(base, level));
+  if (months) { t.seasonal = true; t.months = [...months]; }
   if (kid) {
     t.kid = { enabled: true, emoji: kid.e || guessEmoji(name), steps: (kid.steps || []).map(([e, text]) => ({ e, text })) };
   }
@@ -410,6 +459,7 @@ export function addTemplateTasks(area, list, overrides = {}, conditions = {}) {
     const iv = intervalDays(t);
     const r = ((i * 37) % 100) / 100; // deterministic pseudo-random 0..1
     t.lastDone = t.anytime ? null : conditions[tpl[0]] ? lastDoneFor(t, conditions[tpl[0]]) : n - iv * DAY * (0.1 + r * 0.85);
+    if (conditions[tpl[0]]) t.seasonFrom = seasonStart(t);
     return t;
   });
   store.putMany('tasks', tasks);
