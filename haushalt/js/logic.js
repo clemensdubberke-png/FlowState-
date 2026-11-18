@@ -105,6 +105,14 @@ export function areaState(areaId, at = now()) {
   return { dot, due, dirt: Math.min(4, Math.round(dirtiness * 4)) };
 }
 
+/** The dirtiest area that has overdue tasks (for Schmuddel's room jokes), or null */
+export function dirtiestArea(at = now()) {
+  const list = store.all('areas').map(a => ({ a, st: areaState(a.id, at) })).filter(x => x.st.dot === 'red');
+  if (!list.length) return null;
+  list.sort((x, y) => y.st.dirt - x.st.dirt || y.st.due - x.st.due);
+  return list[0].a;
+}
+
 export function sortTasks(list, mode = 'due', at = now()) {
   const arr = [...list];
   if (mode === 'name') return arr.sort((a, b) => a.name.localeCompare(b.name, 'de'));
@@ -162,8 +170,8 @@ export function suggestedPerson(t) {
 
 // ---------------- completing ----------------
 export function pointsFor(t) {
-  // effort points, +1 bonus when the task was really overdue
-  return (t.effort || 1) + (status(t) === 'bad' ? 1 : 0);
+  // points = effort only (Leicht 1 · Mittel 2 · Schwer 3), no bonus for overdue tasks
+  return t.effort || 1;
 }
 
 export function completeTask(t, personId, { kid = false } = {}) {

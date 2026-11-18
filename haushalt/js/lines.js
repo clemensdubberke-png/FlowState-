@@ -215,6 +215,67 @@ export const LINES = {
     'Ein ganzer Putzplan! Ich krieg Schüttelfrost.',
     'Hübsche Liste. Mal sehen, wie viel davon ihr wirklich schafft. Hehe.',
   ],
+  // ---- a room is really dirty: {room} = name of the area ----
+  dirtyRoom: [
+    'Ich sag nur: {room}. Mehr muss ich gar nicht sagen. 😍',
+    '„{room}“? Das absolute Paradies! Ich hab da schon meinen Liegestuhl aufgestellt.',
+    'Eilmeldung aus „{room}“: Die Wollmäuse haben eine eigene Regierung gegründet!',
+    '„{room}“ – fünf Sterne, würde jederzeit wieder verschmutzen!',
+    'Mein Lieblings-Urlaubsziel? Ganz klar: {room}.',
+    'Ihr sucht „{room}“? Einfach immer dem Geruch nach!',
+    '„{room}“: Betreten auf eigene Gefahr. Gezeichnet, Schmuddel.',
+    'Ich hab „{room}“ auf der Landkarte als Naturschutzgebiet eingetragen.',
+    'Psst… in „{room}“ veranstalte ich heute Abend eine Krümel-Party. Ihr seid nicht eingeladen.',
+    'Wenn ich groß bin, will ich genauso aussehen wie „{room}“ gerade.',
+  ],
+  // room type specific (used for the matching kind of room)
+  dirtyRoom_kueche: [
+    'Ich sag nur: Küche. Im Kühlschrank wächst was. Ich hab es Kevin genannt.',
+    'Die Küche ist mein Paradies! Die Krümel dort haben schon eigene Haustiere.',
+    'In der Küche klebt der Boden so schön – ich komm gar nicht mehr los!',
+  ],
+  dirtyRoom_wohnzimmer: [
+    'Ich sag nur: Wohnzimmer. Das absolute Paradies! Unterm Sofa ist ein ganzer Freizeitpark.',
+    'Im Wohnzimmer feiern die Wollmäuse gerade Hochzeit. Ihr seid nicht eingeladen.',
+    'Das Wohnzimmer? Ich hab da schon Fernsehen geguckt. Durch die Staubschicht.',
+  ],
+  dirtyRoom_esszimmer: [
+    'Im Esszimmer liegen noch Krümel vom letzten Geburtstag. Lecker, so gut gereift!',
+  ],
+  dirtyRoom_schlafzimmer: [
+    'Das Schlafzimmer? Mein Wellness-Hotel! Bettwäsche mit Eigengeruch inklusive.',
+    'Unterm Bett wohnen jetzt so viele Wollmäuse, die brauchen bald einen Bürgermeister.',
+  ],
+  dirtyRoom_badezimmer: [
+    'Das Bad ist gerade so schön schimmelig – ich hab da ein Spa eröffnet!',
+    'Im Bad hat der Kalk eine Tropfsteinhöhle gebaut. Eintritt: fünf Krümel.',
+    'Ich sag nur: Badezimmer. Der Duschvorhang hat schon eigene Muster. Kunst!',
+  ],
+  dirtyRoom_kinderzimmer: [
+    'Das Kinderzimmer? Ein Legostein-Minenfeld! Ich liebe es!',
+    'Im Kinderzimmer hab ich einen Socken gefunden, der älter ist als ich.',
+  ],
+  dirtyRoom_arbeitszimmer: [
+    'Im Arbeitszimmer stapelt sich der Papierkram so hoch, ich kann von oben die Alpen sehen.',
+    'Ich sag nur: Arbeitszimmer. Die Tastatur hat mehr Krümel als ein Bäcker.',
+  ],
+  dirtyRoom_flur: [
+    'Im Flur haben die Schuhe Party gefeiert. Und keiner hat aufgeräumt!',
+    'Der Flur ist mein roter Teppich. Nur halt grau. Und krümelig.',
+  ],
+  dirtyRoom_waesche: [
+    'In der Wäschekammer lebt ein einzelner Socken. Er sucht seit Wochen seinen Partner.',
+    'Der Wäscheberg ist so hoch, ich hab oben eine Fahne gehisst!',
+  ],
+  dirtyRoom_wc: ['Das Gäste-WC? Da bin ich Stammgast!'],
+  dirtyRoom_keller: ['Im Keller wohnen jetzt Spinnen mit Mietvertrag.'],
+  dirtyRoom_dachboden: ['Der Dachboden ist mein Ferienhaus. Mit Staub-Panoramablick!'],
+  dirtyRoom_garage: ['Die Garage ist so voll, das Auto parkt schon draußen und schmollt.'],
+  dirtyRoom_garten: ['Der Garten ist offiziell ein Dschungel. Ich warte auf die ersten Affen.'],
+  dirtyRoom_balkon: ['Auf dem Balkon haben die Tauben eine WG gegründet.'],
+  dirtyRoom_terrasse: ['Die Terrasse? Moos-Teppich deluxe! Barfußlaufen auf eigene Gefahr.'],
+  dirtyRoom_auto: ['Im Auto liegen so viele Krümel, man könnte einen Kuchen daraus backen.'],
+
   // ---- kids ----
   kids: [
     'Oh nein, ein Putz-Held! Hilfe!',

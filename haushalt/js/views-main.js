@@ -59,7 +59,7 @@ export function raceSheet() {
       <h3>Rennen im ${esc(r.monthLabel)}</h3>
       <div class="race-score"><div><b>${r.user}</b><span>Ihr</span></div><div class="vs">:</div><div><b>${r.monster}</b><span>${MONSTER_NAME}</span></div></div>
       <p class="muted">Monatsziel: ${r.goal} Pkt. · Schwierigkeit: ${L.DIFFICULTY[s.difficulty].label}<br>
-      ${MONSTER_NAME} schafft bis Monatsende ${Math.round(r.goal * L.DIFFICULTY[s.difficulty].f)} Pkt. Ihr bekommt Punkte für jede erledigte Aufgabe (Leicht 1 · Mittel 2 · Schwer 3, +1 wenn sie sehr überfällig war).</p>
+      ${MONSTER_NAME} schafft bis Monatsende ${Math.round(r.goal * L.DIFFICULTY[s.difficulty].f)} Pkt. Ihr bekommt Punkte für jede erledigte Aufgabe (Leicht 1 · Mittel 2 · Schwer 3).</p>
       ${s.multiPerson && stats.length ? `<h4>Punkte diesen Monat</h4><div class="pts-list">${stats.map(x => `<div class="pts-row">${personChip(x.person.id)}<b>${x.points}</b></div>`).join('')}</div>` : ''}
       <h4>${icons.trophy} Gewonnene Monate: ${wins}</h4>
       <div class="hist">${hist.length ? hist.map(([k, h]) => `<div class="hist-row ${h.won ? 'won' : 'lost'}"><span>${esc(L.monthName(k))}</span><span>${h.points} : ${h.monster}</span><span>${h.won ? '🏆' : '😈'}</span></div>`).join('') : '<p class="muted">Noch keine abgeschlossenen Monate.</p>'}</div>
@@ -106,7 +106,9 @@ export function homeView() {
         const iv = setInterval(() => {
           if (!lineEl.isConnected) { clearInterval(iv); return; }
           if (document.hidden || !s.comments) return;
-          lineEl.textContent = mascot.line(Math.random() < 0.75 ? key : 'tickle');
+          const dirty = L.dirtiestArea();
+          const r = Math.random();
+          lineEl.textContent = dirty && r < 0.4 ? mascot.roomLine(dirty) : mascot.line(r < 0.8 ? key : 'tickle');
           lineEl.classList.remove('pop'); void lineEl.offsetWidth; lineEl.classList.add('pop');
           const mon = rb.querySelector('.monster');
           mon.classList.remove('a-wiggle'); void mon.getBoundingClientRect(); mon.classList.add('a-wiggle');
@@ -275,6 +277,7 @@ export function areaView(id) {
     bind(root) {
       bindCommon(root);
       bindRows(root);
+      mascot.roomJoke(a);
       root.querySelector('[data-top]').onclick = () => root.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
       root.querySelector('[data-sort]').onclick = () => store.setSettings({ sortArea: s.sortArea === 'name' ? 'due' : 'name' });
     },

@@ -3,6 +3,7 @@ import * as store from './store.js';
 import { monsterSvg, MONSTER_NAME } from './art.js';
 import { LINES } from './lines.js';
 import { esc, speak } from './ui.js';
+import * as L from './logic.js';
 
 // event -> how Schmuddel looks and moves
 const REACT = {
@@ -24,6 +25,7 @@ const REACT = {
   taskCreated: { mood: 'taunt', anim: 'a-sigh' },
   taskDeleted: { mood: 'happy', anim: 'a-dance' },
   tickle: { mood: 'happy', anim: 'a-wiggle' },
+  dirtyRoom: { mood: 'happy', anim: 'a-dance' },
   areaHint: { mood: 'wave', anim: 'a-jump' },
   catalogAdd: { mood: 'shock', anim: 'a-shrink' },
   tickleMany: { mood: 'angry', anim: 'a-stomp' },
@@ -116,6 +118,26 @@ document.addEventListener('click', e => {
 }, true);
 
 // ---- greeting when the app is opened ----
+/** A joke about a dirty room. Uses the room-type lines if the area keeps its standard name. */
+export function roomLine(area) {
+  if (!area) return null;
+  const typed = LINES['dirtyRoom_' + area.type];
+  const standard = typed && typed.some(l => l.includes(area.name)) || /^(küche|wohnzimmer|esszimmer|schlafzimmer|badezimmer|bad|kinderzimmer|arbeitszimmer|flur|wäschekammer|gäste-wc|keller|dachboden|garage|garten|balkon|terrasse|auto)$/i.test(area.name.trim());
+  if (typed && standard && Math.random() < 0.6) return line('dirtyRoom_' + area.type);
+  return line('dirtyRoom').replace(/\{room\}/g, area.name);
+}
+
+/** Pops up a room joke when entering a really dirty area (at most every 3 hours per area). */
+export function roomJoke(area) {
+  if (!area || L.areaState(area.id).dot !== 'red') return;
+  let seen = {};
+  try { seen = JSON.parse(sessionStorage.getItem('bb.roomjokes') || '{}'); } catch (e) { /* ignore */ }
+  if (Date.now() - (seen[area.id] || 0) < 3 * 3600000) return;
+  seen[area.id] = Date.now();
+  try { sessionStorage.setItem('bb.roomjokes', JSON.stringify(seen)); } catch (e) { /* ignore */ }
+  react('dirtyRoom', { text: roomLine(area), delay: 600 });
+}
+
 export function greet() {
   const loc = store.local();
   const now = Date.now();
@@ -125,5 +147,7 @@ export function greet() {
   const h = new Date().getHours();
   let kind = h < 5 ? 'greetNight' : h < 11 ? 'greetMorning' : h < 18 ? 'greetDay' : h < 22 ? 'greetEvening' : 'greetNight';
   if (lastOpen && now - lastOpen > 3 * 86400000) kind = 'greetAway';
+  const dirty = L.dirtiestArea();
+  if (dirty && kind !== 'greetAway' && Math.random() < 0.5) { react('dirtyRoom', { text: roomLine(dirty), delay: 900 }); return; }
   react(kind, { delay: 900 });
 }
