@@ -208,6 +208,7 @@ export function taskEditView(id, areaId) {
             return;
           }
           if (!t.anytime && (condChanged || !existing || !t.lastDone)) t.lastDone = L.lastDoneFor(t, cond);
+          if (existing && (condChanged || existing.freqN !== t.freqN || existing.freqUnit !== t.freqUnit || existing.anytime !== t.anytime)) t.mSince = Date.now();
           const rec = store.put('tasks', t);
           toast(existing ? 'Gespeichert' : 'Aufgabe hinzugefügt');
           if (!existing) mascot.react('taskCreated', { delay: 400 });
@@ -255,12 +256,12 @@ export function managerView() {
       root.querySelector('[data-sort]').onchange = e => { managerSort = e.target.value; window.dispatchEvent(new Event('bb:render')); };
       root.querySelectorAll('[data-n]').forEach(b => (b.onclick = () => {
         const t = store.get('tasks', b.dataset.n);
-        store.put('tasks', { id: t.id, freqN: Math.max(1, Math.min(99, t.freqN + Number(b.dataset.d))), customFreq: true });
+        store.put('tasks', { id: t.id, freqN: Math.max(1, Math.min(99, t.freqN + Number(b.dataset.d))), customFreq: true, mSince: Date.now() });
       }));
       root.querySelectorAll('[data-u]').forEach(b => (b.onclick = () => {
         const t = store.get('tasks', b.dataset.u);
         const i = unitOrder.indexOf(t.freqUnit) + Number(b.dataset.d);
-        if (i >= 0 && i < 3) store.put('tasks', { id: t.id, freqUnit: unitOrder[i], customFreq: true });
+        if (i >= 0 && i < 3) store.put('tasks', { id: t.id, freqUnit: unitOrder[i], customFreq: true, mSince: Date.now() });
       }));
       root.querySelectorAll('[data-edit]').forEach(b => (b.onclick = () => go('/task/' + b.dataset.edit)));
     },

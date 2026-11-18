@@ -123,9 +123,10 @@ store.subscribe(() => render());
 window.addEventListener('hashchange', () => { document.getElementById('overlay-root').innerHTML = ''; render(true); });
 window.addEventListener('bb:render', () => render(true));
 // refresh dirt levels every minute and when the app comes back to the foreground
-setInterval(() => { if (!document.hidden && !current.view?.static) render(); }, 60000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { L.finalizeRaces(); render(); } });
+setInterval(() => { if (!document.hidden) L.monsterScan(); if (!document.hidden && !current.view?.static) render(); }, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { L.monsterScan(); L.finalizeRaces(); render(); } });
 
+L.monsterScan();
 L.finalizeRaces();
 render(true);
 startTimerWatcher();

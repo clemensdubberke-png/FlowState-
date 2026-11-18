@@ -12,7 +12,7 @@ const INFO = {
   fair: 'FairShare zeigt, wie die Hausarbeit verteilt ist. Ihr legt fest, welchen Anteil jede Person übernehmen soll (z. B. 50 / 50 oder 60 / 40). Beim Abhaken schlägt die App automatisch die Person vor, die am weitesten unter ihrem Anteil liegt.',
   resp: 'Mit „Zuständigkeit“ teilt ihr Personen fest für bestimmte Aufgaben ein. Wer zuständig ist, steht direkt an der Aufgabe und in der Heute-Liste unter „Meine“.',
   rot: 'Rotation: Sind mehrere Personen für eine Aufgabe zuständig, wechselt die Zuständigkeit nach jedem Erledigen automatisch zur nächsten Person.',
-  race: `Jeden Monat tretet ihr gegen ${MONSTER_NAME} an. Ihr sammelt Punkte, indem ihr Aufgaben erledigt. ${MONSTER_NAME} bewegt sich langsam, aber stetig. Wer am Monatsende vorne liegt, gewinnt.`,
+  race: `Jeden Monat tretet ihr gegen ${MONSTER_NAME} an. Ihr sammelt Punkte, indem ihr Aufgaben erledigt (Leicht 1 · Mittel 2 · Schwer 3). ${MONSTER_NAME} bewegt sich langsam, aber stetig – und bekommt dieselben Punkte für jede Aufgabe, die überfällig liegen bleibt. Wer am Monatsende vorne liegt, gewinnt; bei gleichem Stand ist es unentschieden.`,
   comments: `${MONSTER_NAME} kommentiert euren Fortschritt mit frechen Sprüchen.`,
   vacation: 'Im Urlaubsmodus wird nichts schmutziger: Alle Zustände werden eingefroren. Beim Beenden werden alle Aufgaben um die Urlaubsdauer verschoben.',
   kids: 'Der Kindermodus zeigt Kindern ihre Aufgaben mit großen Bildern, einzelnen Schritten zum Abhaken und Vorlesefunktion. Für jede erledigte Aufgabe gibt es Sterne.',
@@ -265,7 +265,7 @@ export function monsterView() {
         ])}
         <h2 class="sec">Demo (Monatliches Rennen)</h2>
         <div class="demo-card">
-          <p>Ihr erzielt Punkte, indem ihr Aufgaben erledigt.<br>${MONSTER_NAME} bewegt sich langsam, aber stetig (unterer Balken).</p>
+          <p>Ihr erzielt Punkte, indem ihr Aufgaben erledigt.<br>${MONSTER_NAME} bewegt sich langsam, aber stetig (unterer Balken) – und bekommt Extra-Punkte für jede Aufgabe, die überfällig liegen bleibt.</p>
           <div class="race-meta"><span>Tag ${demoDay}</span><span>${MONSTER_NAME} führt: 1 Pkt.</span></div>
           <div class="race-track demo"><div class="race-bar you"></div><div class="race-bar mon"></div></div>
         </div>
@@ -488,7 +488,7 @@ export function statsView() {
   return {
     html: `${appbar('Statistik', { backTo: '/settings' })}
       <main class="content settings">
-        <div class="stat-tiles"><div><b>${month.length}</b><span>Erledigt im ${esc(L.race().monthLabel)}</span></div><div><b>${month.reduce((a, c) => a + (c.points || 0), 0)}</b><span>Punkte</span></div><div><b>${Object.values(s.raceHistory || {}).filter(h => h.won).length}</b><span>🏆 Monate</span></div></div>
+        <div class="stat-tiles"><div><b>${month.length}</b><span>Erledigt im ${esc(L.race().monthLabel)}</span></div><div><b>${month.reduce((a, c) => a + (c.points || 0), 0)}</b><span>Punkte</span></div><div><b>${Object.values(s.raceHistory || {}).filter(h => L.raceResult(h) === 'win').length}</b><span>🏆 Monate</span></div></div>
         <h2 class="sec">Punkte pro Woche</h2>
         <div class="group pad"><div class="wchart">${weeks.map(w => `<div class="wcol"><div class="wbar" style="height:${(w.pts / maxW) * 100}%"><span>${w.pts || ''}</span></div><small>${w.label}</small></div>`).join('')}</div></div>
         ${s.multiPerson && fs.length ? `<h2 class="sec">Wer hat wie viel gemacht?</h2><div class="group pad">${fs.map(x => `<div class="fs-stat"><span>${esc(x.person.emoji)} ${esc(x.person.name)}</span><div class="fs-bar"><div style="width:${x.share}%;background:${L.personColor(x.person)}"></div>${s.fairshare ? `<i style="left:${x.target}%"></i>` : ''}</div><b>${x.points}</b></div>`).join('')}</div>` : ''}

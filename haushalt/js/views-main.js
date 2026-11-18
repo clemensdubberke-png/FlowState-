@@ -53,16 +53,17 @@ export function raceSheet() {
   const s = store.settings();
   const stats = L.fairStats();
   const hist = Object.entries(s.raceHistory || {}).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 12);
-  const wins = Object.values(s.raceHistory || {}).filter(h => h.won).length;
+  const res = Object.values(s.raceHistory || {}).map(L.raceResult);
+  const wins = res.filter(x => x === 'win').length, draws = res.filter(x => x === 'draw').length;
   sheet(`<div class="race-sheet">
       <div class="race-sheet-mon">${monsterSvg(r.lead < 0 ? 'taunt' : 'sad', 'monster', { tickle: true })}</div>
       <h3>Rennen im ${esc(r.monthLabel)}</h3>
       <div class="race-score"><div><b>${r.user}</b><span>Ihr</span></div><div class="vs">:</div><div><b>${r.monster}</b><span>${MONSTER_NAME}</span></div></div>
       <p class="muted">Monatsziel: ${r.goal} Pkt. · Schwierigkeit: ${L.DIFFICULTY[s.difficulty].label}<br>
-      ${MONSTER_NAME} schafft bis Monatsende ${Math.round(r.goal * L.DIFFICULTY[s.difficulty].f)} Pkt. Ihr bekommt Punkte für jede erledigte Aufgabe (Leicht 1 · Mittel 2 · Schwer 3).</p>
+      ${MONSTER_NAME} bekommt Punkte auf zwei Wegen: gleichmäßig über den Monat (bis Monatsende ${Math.round(r.goal * L.DIFFICULTY[s.difficulty].f)} Pkt., bisher ${r.base}) <b>und</b> für jede Aufgabe, die überfällig liegen bleibt (Leicht 1 · Mittel 2 · Schwer 3, bisher ${r.missed}). Ihr bekommt dieselben Punkte für jede erledigte Aufgabe. Gleicher Stand am Monatsende = Unentschieden.</p>
       ${s.multiPerson && stats.length ? `<h4>Punkte diesen Monat</h4><div class="pts-list">${stats.map(x => `<div class="pts-row">${personChip(x.person.id)}<b>${x.points}</b></div>`).join('')}</div>` : ''}
-      <h4>${icons.trophy} Gewonnene Monate: ${wins}</h4>
-      <div class="hist">${hist.length ? hist.map(([k, h]) => `<div class="hist-row ${h.won ? 'won' : 'lost'}"><span>${esc(L.monthName(k))}</span><span>${h.points} : ${h.monster}</span><span>${h.won ? '🏆' : '😈'}</span></div>`).join('') : '<p class="muted">Noch keine abgeschlossenen Monate.</p>'}</div>
+      <h4>${icons.trophy} Gewonnen: ${wins} · Unentschieden: ${draws}</h4>
+      <div class="hist">${hist.length ? hist.map(([k, h]) => `<div class="hist-row ${L.raceResult(h)}"><span>${esc(L.monthName(k))}</span><span>${h.points} : ${h.monster}</span><span>${L.RESULT_ICON[L.raceResult(h)]}</span></div>`).join('') : '<p class="muted">Noch keine abgeschlossenen Monate.</p>'}</div>
       <div class="btn-row"><button class="btn grey" data-x="set">Einstellungen</button><button class="btn orange" data-x="ok">Weiter putzen</button></div>
     </div>`, (el, close) => {
     el.querySelector('[data-x=ok]').onclick = close;
@@ -177,7 +178,7 @@ export function doComplete(t, personId) {
   const anyDue = store.all('tasks').some(x => !x.anytime && L.isDue(x));
   let kind = 'done';
   if (s.race && r.user >= r.goal && before.race.user < r.goal) { kind = 'goal'; confetti(); }
-  else if (s.race && before.race.lead < 0 && r.lead >= 0) kind = 'leadFlip';
+  else if (s.race && before.race.lead <= 0 && r.lead > 0) kind = 'leadFlip';
   else if (!anyDue && !t.anytime && L.isDue({ ...t, lastDone: prev })) kind = 'allDone';
   else if (before.status === 'overdue' || before.status === 'bad') kind = 'doneOverdue';
   else if ((t.effort || 1) >= 3) kind = 'doneHard';

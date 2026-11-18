@@ -180,7 +180,7 @@ export function completeTask(t, personId, { kid = false } = {}) {
     taskId: t.id, areaId: t.areaId, taskName: t.name, personId: personId || null,
     at: Date.now(), points: pts, kid,
   });
-  const patch = { id: t.id, lastDone: now() };
+  const patch = { id: t.id, lastDone: now(), mSince: Date.now() };
   if (t.anytime) patch.anytimeCount = (todayCount(t) || 0) + 1;
   const s = store.settings();
   if (s.multiPerson && s.responsibility && s.rotation && (t.assignees || []).length > 1) {
@@ -207,7 +207,7 @@ export function todayCount(t) {
 /** Postpone: pretend it was done a bit later (keeps history clean) */
 export function postpone(t, days = 1) {
   const base = Math.max(t.lastDone || 0, now() - intervalDays(t) * DAY);
-  store.put('tasks', { id: t.id, lastDone: base + days * DAY });
+  store.put('tasks', { id: t.id, lastDone: base + days * DAY, mSince: Date.now() });
 }
 
 // ---------------- current condition when creating a task ----------------
@@ -240,11 +240,11 @@ export function currentConditionKey(t) {
   if (d < 0) return -d >= Math.max(2, Math.round(iv * 0.8)) ? 'bad' : 'over';
   return d <= Math.max(1, Math.min(3, Math.round(iv * 0.15))) ? 'soon' : 'ok';
 }
-export function setConditionKey(t, key) { store.put('tasks', { id: t.id, lastDone: lastDoneFor(t, key) }); }
+export function setConditionKey(t, key) { store.put('tasks', { id: t.id, lastDone: lastDoneFor(t, key), mSince: Date.now() }); }
 
 /** Set the condition manually: 0 = clean, 1 = due today, 1.5 = overdue */
 export function setCondition(t, p) {
-  store.put('tasks', { id: t.id, lastDone: now() - p * intervalDays(t) * DAY });
+  store.put('tasks', { id: t.id, lastDone: now() - p * intervalDays(t) * DAY, mSince: Date.now() });
 }
 
 // ---------------- monster race ----------------
@@ -256,6 +256,40 @@ export function autoGoal() {
 }
 export function goal() { const s = store.settings(); return s.goalAuto ? autoGoal() : (s.goal || 48); }
 
+// ---------------- Schmuddel's points for tasks left undone ----------------
+// Every time a task becomes overdue (the day after its due day) and again after every further
+// full cycle it stays undone, Schmuddel scores the task's effort points (Leicht 1 · Mittel 2 · Schwer 3).
+// Records get deterministic ids, so two synced phones never count the same miss twice.
+export function monsterScan(at = Date.now()) {
+  const s = store.settings();
+  if (!s.race) return 0;
+  const nowT = s.vacation?.since || at;
+  const d = new Date(nowT);
+  const from = Math.max(new Date(d.getFullYear(), d.getMonth() - 1, 1).getTime(), s.raceStart || 0);
+  const known = store.raw('mpoints');
+  const add = [];
+  for (const t of store.all('tasks')) {
+    if (t.anytime || !t.lastDone) continue;
+    const iv = intervalDays(t) * DAY;
+    const first = startOfDay(dueAt(t)) + DAY; // first moment the task counts as overdue
+    if (first > nowT) continue;
+    const since = Math.max(from, t.mSince || t.createdAt || 0);
+    const j0 = first < since ? Math.ceil((since - first) / iv) : 0;
+    for (let j = j0; j < j0 + 70 && first + j * iv <= nowT; j++) {
+      const ev = first + j * iv;
+      const id = `${t.id}-${Math.round(ev / 60000)}`;
+      if (known[id]) continue;
+      add.push({ id, taskId: t.id, areaId: t.areaId, taskName: t.name, at: ev, points: t.effort || 1 });
+    }
+  }
+  if (add.length) store.putMany('mpoints', add);
+  return add.reduce((a, m) => a + m.points, 0);
+}
+export function monthMissed(t = Date.now()) {
+  const { start, end } = monthBounds(t);
+  return store.all('mpoints').filter(m => m.at >= start && m.at < end && m.at <= t);
+}
+
 export function race(t = Date.now()) {
   const s = store.settings();
   const { start: mStart, end } = monthBounds(t);
@@ -264,11 +298,16 @@ export function race(t = Date.now()) {
   const frac = Math.min(1, Math.max(0, (t - start) / (end - start)));
   const g = goal();
   const f = DIFFICULTY[s.difficulty]?.f || 1;
-  const monster = Math.round(g * f * frac);
+  const base = Math.round(g * f * frac);                                   // steady pace
+  const missed = monthMissed(t).reduce((a, m) => a + (m.points || 0), 0); // tasks left undone
+  const monster = base + missed;
   const user = monthCompletions(t).reduce((a, c) => a + (c.points || 0), 0);
   const day = new Date(t).getDate();
-  return { goal: g, monster, user, lead: user - monster, frac, day, monthLabel: new Date(t).toLocaleDateString('de-DE', { month: 'long' }) };
+  return { goal: g, base, missed, monster, user, lead: user - monster, frac, day, monthLabel: new Date(t).toLocaleDateString('de-DE', { month: 'long' }) };
 }
+/** 'win' | 'draw' | 'loss' for a race-history entry (old entries only have `won`) */
+export function raceResult(h) { return h.result || (h.won ? (h.points === h.monster ? 'draw' : 'win') : 'loss'); }
+export const RESULT_ICON = { win: '🏆', draw: '🤝', loss: '😈' };
 
 export function raceLine(r = race(), seed = 0) {
   let key;
@@ -300,7 +339,8 @@ export function finalizeRaces() {
     if (!hist[key]) {
       const endOfMonth = new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime() - 1;
       const r = race(endOfMonth);
-      hist[key] = { points: r.user, monster: r.monster, won: r.user >= r.monster };
+      const result = r.user > r.monster ? 'win' : r.user === r.monster ? 'draw' : 'loss';
+      hist[key] = { points: r.user, monster: r.monster, result, won: result === 'win' };
       changed = true;
     }
     d.setMonth(d.getMonth() + 1);
@@ -315,7 +355,7 @@ export function endVacation() {
   if (!v) return;
   const shift = Date.now() - v.since;
   store.setSettings({ vacation: null });
-  store.putMany('tasks', store.all('tasks').filter(t => t.lastDone).map(t => ({ id: t.id, lastDone: t.lastDone + shift })));
+  store.putMany('tasks', store.all('tasks').filter(t => t.lastDone).map(t => ({ id: t.id, lastDone: t.lastDone + shift, mSince: Date.now() })));
 }
 
 // ---------------- cleaning intensity ----------------
@@ -379,7 +419,7 @@ export function addTemplateTasks(area, list, overrides = {}, conditions = {}) {
 /** Re-scales all catalogue tasks the user did not adjust by hand. Returns count. */
 export function applyIntensity(level = intensity()) {
   const list = store.all('tasks').filter(t => t.tplDays && !t.customFreq && !t.anytime);
-  store.putMany('tasks', list.map(t => ({ id: t.id, ...scaledFreq(t.tplDays, level) })));
+  store.putMany('tasks', list.map(t => ({ id: t.id, ...scaledFreq(t.tplDays, level), mSince: Date.now() })));
   return list.length;
 }
 
