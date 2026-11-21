@@ -1,7 +1,7 @@
 // Kindermodus: big pictures, step-by-step checklists, read-aloud, the race against Schmuddel and animated scenes.
 import * as store from './store.js';
 import * as L from './logic.js';
-import { monsterSvg, MONSTER_NAME } from './art.js';
+import { monsterSvg, splatSvg, MONSTER_NAME } from './art.js';
 import { esc, icons, sheet, toast, confetti, speak, vibrate } from './ui.js';
 import { go } from './router.js';
 import { guessEmoji } from './templates.js';
@@ -9,6 +9,7 @@ import * as mascot from './mascot.js';
 import * as voice from './voice.js';
 import { taskSpeech } from './speech.js';
 import { sceneSvg, sceneFor, randomScene } from './scenes.js';
+import { MONSTER_LINES } from './templates.js';
 
 const GROUP_KID = '_kids';
 
@@ -35,6 +36,59 @@ function kidTasks(kidId) {
   });
 }
 function rank(t) { return t.anytime ? 1 : L.isDue(t) ? 0 : L.daysUntilDue(t) <= 1 ? 1 : 2; }
+
+// ---------------- Schmuddel introduces himself (first visit in kids mode) ----------------
+const INTRO_STEPS = [
+  { mood: 'wave', anim: 'in-pop' },
+  { mood: 'happy', anim: 'in-dance' },
+  { mood: 'taunt', anim: 'in-stomp', splats: true },
+  { mood: 'shock', anim: 'in-jump' },
+  { mood: 'angry', anim: 'in-stomp', race: true },
+];
+export function showIntro() {
+  const root = document.getElementById('overlay-root');
+  const lines = MONSTER_LINES.intro;
+  const wrap = document.createElement('div');
+  wrap.className = 'intro';
+  wrap.innerHTML = `<div class="intro-stage">
+      <div class="intro-cloud">${Array.from({ length: 7 }, (_, i) => `<i class="c${i}"></i>`).join('')}</div>
+      <div class="intro-splats">${Array.from({ length: 6 }, (_, i) => `<span class="s${i}">${splatSvg(i)}</span>`).join('')}</div>
+      <div class="intro-mon" data-imon>${monsterSvg('wave', 'monster')}</div>
+    </div>
+    <div class="intro-bubble" data-ibub><b>${MONSTER_NAME}</b><span></span></div>
+    <div class="intro-dots">${lines.map((_, i) => `<i data-dot="${i}"></i>`).join('')}</div>
+    <div class="intro-actions"><button class="btn light" data-iskip>Überspringen</button><button class="btn orange big" data-igo hidden>Wir schaffen das! 💪</button></div>`;
+  root.appendChild(wrap);
+  requestAnimationFrame(() => wrap.classList.add('open'));
+  let stopped = false;
+  const finish = () => {
+    stopped = true;
+    voice.stop();
+    store.setLocal({ kidsIntroSeen: true });
+    wrap.classList.remove('open');
+    setTimeout(() => wrap.remove(), 300);
+  };
+  wrap.querySelector('[data-iskip]').onclick = finish;
+  wrap.querySelector('[data-igo]').onclick = finish;
+  (async () => {
+    await new Promise(r => setTimeout(r, 900)); // dust cloud, then Schmuddel pops out
+    for (let i = 0; i < lines.length && !stopped; i++) {
+      const st = INTRO_STEPS[i] || INTRO_STEPS[0];
+      const mon = wrap.querySelector('[data-imon]');
+      mon.innerHTML = monsterSvg(st.mood, 'monster');
+      mon.className = 'intro-mon ' + st.anim;
+      if (st.splats) wrap.classList.add('dirty');
+      if (st.race) wrap.classList.add('race');
+      const bub = wrap.querySelector('[data-ibub]');
+      bub.querySelector('span').textContent = lines[i];
+      bub.classList.remove('pop'); void bub.offsetWidth; bub.classList.add('pop');
+      wrap.querySelectorAll('[data-dot]').forEach(d => d.classList.toggle('on', Number(d.dataset.dot) <= i));
+      await voice.say(lines[i], 'monster');
+      await new Promise(r => setTimeout(r, 350));
+    }
+    if (!stopped) { wrap.querySelector('[data-igo]').hidden = false; wrap.querySelector('[data-iskip]').hidden = true; }
+  })();
+}
 
 export function enterKids() {
   sessionStorage.setItem('bb.kids', '1');
@@ -106,6 +160,7 @@ export function kidsView(kidId) {
       </main>`,
     bind(root) {
       bindKids(root);
+      if (!store.local().kidsIntroSeen && !document.querySelector('.intro')) showIntro();
       root.querySelectorAll('[data-kt]').forEach(b => (b.onclick = () => kidTaskSheet(b.dataset.kt, kid)));
       const stage = root.querySelector('[data-stage]');
       const show = (key, speakIt) => {

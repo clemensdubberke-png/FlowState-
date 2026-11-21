@@ -25,6 +25,7 @@ const TAGS = {
   kidDone: ['[crying] [dramatic]', '[disgusted] [angry] … [hiccups]', '[angry] [disgusted]', '[sad] [sniffles]'],
   kidTick: ['[annoyed] [whining]', '[growls] [grumpy]', '[whining] [sad]', '[angry] … [frustrated]', '[disgusted] [dramatic]'],
   kidAllSteps: ['[shocked] … [dramatic]', '[gasps] [disgusted]', '[sarcastic] [grumpy]'],
+  intro: ['[excited] [mischievously]', '[happily] [dreamy]', '[mischievously] [evil laugh]', '[surprised] … [laughs] [mocking]', '[proudly] [mischievously]'],
   scene_lamp: ['[excited] [laughs]', '[giggles]', '[cheerfully] [laughs]'],
   scene_bed: ['[excited] [laughs]', '[mischievously] [giggles]', '[excited] [shouting]'],
   scene_bath: ['[giggles]', '[cheerfully]', '[disgusted] [sneezes]'],

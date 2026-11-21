@@ -276,6 +276,14 @@ export const LINES = {
   dirtyRoom_terrasse: ['Die Terrasse? Moos-Teppich deluxe! Barfußlaufen auf eigene Gefahr.'],
   dirtyRoom_auto: ['Im Auto liegen so viele Krümel, man könnte einen Kuchen daraus backen.'],
 
+  // ---- first visit in kids mode: Schmuddel introduces himself (voiced, in this order) ----
+  intro: [
+    'Hallo, hallo! Ich bin Schmuddel! Das gefährlichste Schleim-Monster im ganzen Haus!',
+    'Ich liebe Krümel, Matsch und Socken, die nach Käse riechen! Mmmh, lecker!',
+    'Und ich mache ALLES schmutzig! Ihr könnt gar nichts dagegen tun! Muhahaha!',
+    'Moment mal… ihr wollt aufräumen? Gegen MICH? Das schafft ihr nie im Leben!',
+    'Na gut! Wir machen ein Rennen! Wer am Ende vom Monat mehr Punkte hat, gewinnt. Und das bin natürlich ICH!',
+  ],
   // ---- kids-mode scenes (voiced) ----
   scene_lamp: [
     'Huiii! Von hier oben sehe ich alle Krümel!',

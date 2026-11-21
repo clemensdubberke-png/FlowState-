@@ -30,7 +30,7 @@ if (!VOICES.monster || !VOICES.narrator) { console.error('VOICE_MONSTER and VOIC
 
 // ---- what kids mode can say ----
 const items = [];
-for (const k of ['kids', 'kidStep', 'kidTick', 'kidAllSteps', 'kidDone', 'tickle', 'tickleMany', ...Object.keys(LINES).filter(x => x.startsWith('scene_')), ...ADULT_CATEGORIES]) (LINES[k] || []).forEach(text => items.push({ voice: 'monster', text }));
+for (const k of ['intro', 'kids', 'kidStep', 'kidTick', 'kidAllSteps', 'kidDone', 'tickle', 'tickleMany', ...Object.keys(LINES).filter(x => x.startsWith('scene_')), ...ADULT_CATEGORIES]) (LINES[k] || []).forEach(text => items.push({ voice: 'monster', text }));
 const seen = new Set();
 for (const list of Object.values(TEMPLATES)) {
   for (const [name, , , , kid] of list) {
