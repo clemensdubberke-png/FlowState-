@@ -19,7 +19,7 @@ function kidList() {
 /** kid-friendly race card: you vs Schmuddel this month */
 function raceCard() {
   if (!store.settings().race) return '';
-  const r = L.race();
+  const r = L.kidsRace();
   const max = Math.max(r.user, r.monster, 1);
   const msg = r.lead > 0 ? `Ihr führt mit ${r.lead}! Weiter so! 🏃` : r.lead < 0 ? `Schmuddel führt mit ${-r.lead}. Holt ihn ein! 💨` : 'Gleichstand! Wer schafft die nächste Aufgabe? 🤝';
   return `<section class="kid-race">
@@ -169,7 +169,7 @@ function kidTaskSheet(id, kid) {
 }
 
 function celebrate(kid, monLine) {
-  const r = L.race();
+  const r = L.kidsRace();
   sheet(`<div class="celebrate">${monsterSvg('sad', 'kid-mon big a-melt-loop', { tickle: true })}
       <h2>Geschafft, ${esc(kid.name)}! 🏁</h2>
       <p class="cel-line">Ein Punkt mehr im Rennen gegen Schmuddel!</p>

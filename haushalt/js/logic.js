@@ -353,6 +353,24 @@ export function race(t = Date.now()) {
   const day = new Date(t).getDate();
   return { goal: g, base, missed, monster, user, lead: user - monster, frac, day, monthLabel: new Date(t).toLocaleDateString('de-DE', { month: 'long' }) };
 }
+/** The kids' own race (only shown in kids mode): only tasks marked "Für Kinder" count – for both sides. */
+export function kidsRace(t = Date.now()) {
+  const s = store.settings();
+  const kidIds = new Set(store.all('tasks').filter(x => x.kid?.enabled).map(x => x.id));
+  const { start: mStart, end } = monthBounds(t);
+  const start = Math.min(end - DAY, Math.max(mStart, s.raceStart || 0));
+  const frac = Math.min(1, Math.max(0, (t - start) / (end - start)));
+  let sum = 0;
+  store.all('tasks').filter(x => kidIds.has(x.id) && !x.anytime && activeAt(x)).forEach(x => { sum += (30 / intervalDays(x)) * (x.effort || 1); });
+  const g = kidIds.size ? Math.max(5, Math.round(sum * 0.5)) : 0;
+  const f = DIFFICULTY[s.difficulty]?.f || 1;
+  const base = Math.round(g * f * frac);
+  const missed = monthMissed(t).filter(m => kidIds.has(m.taskId)).reduce((a, m) => a + (m.points || 0), 0);
+  const user = monthCompletions(t).filter(c => kidIds.has(c.taskId)).reduce((a, c) => a + (c.points || 0), 0);
+  const monster = base + missed;
+  return { goal: g, base, missed, monster, user, lead: user - monster };
+}
+
 /** 'win' | 'draw' | 'loss' for a race-history entry (old entries only have `won`) */
 export function raceResult(h) { return h.result || (h.won ? (h.points === h.monster ? 'draw' : 'win') : 'loss'); }
 export const RESULT_ICON = { win: '🏆', draw: '🤝', loss: '😈' };

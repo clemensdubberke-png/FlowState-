@@ -42,6 +42,9 @@ const REACT = {
   kidDone: { mood: 'sad', anim: 'a-melt' },
 };
 
+/** Schmuddel speaks outside kids mode too, unless switched off on this phone */
+export function adultVoice() { return store.local().adultVoice !== false; }
+
 const last = {};
 export function line(kind) {
   const list = LINES[kind] || LINES.done;
@@ -77,7 +80,7 @@ function show(def, text, opts) {
   const el = root.firstElementChild;
   el.onclick = () => hide();
   requestAnimationFrame(() => el.classList.add('in'));
-  if (inKids) voice.say(text, 'monster'); else if (opts.speak) speak(text);
+  if (inKids || adultVoice()) voice.say(text, 'monster');
   const ms = Math.min(7000, 2600 + text.length * 45);
   queueBusyUntil = Date.now() + ms;
   hideTimer = setTimeout(hide, ms);
@@ -114,7 +117,7 @@ document.addEventListener('click', e => {
   if (target) {
     target.textContent = text;
     target.classList.remove('pop'); void target.offsetWidth; target.classList.add('pop');
-    if (document.getElementById('app')?.classList.contains('kids-mode')) voice.say(text, 'monster');
+    if (document.getElementById('app')?.classList.contains('kids-mode') || adultVoice()) voice.say(text, 'monster');
   } else {
     react(kind, { text, force: true });
   }
@@ -126,7 +129,7 @@ export function roomLine(area) {
   if (!area) return null;
   const typed = LINES['dirtyRoom_' + area.type];
   const standard = typed && typed.some(l => l.includes(area.name)) || /^(küche|wohnzimmer|esszimmer|schlafzimmer|badezimmer|bad|kinderzimmer|arbeitszimmer|flur|wäschekammer|gäste-wc|keller|dachboden|garage|garten|balkon|terrasse|auto)$/i.test(area.name.trim());
-  if (typed && standard && Math.random() < 0.6) return line('dirtyRoom_' + area.type);
+  if (typed && (standard || adultVoice()) && Math.random() < (adultVoice() ? 0.85 : 0.6)) return line('dirtyRoom_' + area.type);
   return line('dirtyRoom').replace(/\{room\}/g, area.name);
 }
 

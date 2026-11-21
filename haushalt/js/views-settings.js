@@ -270,13 +270,16 @@ export function monsterView() {
           <div class="race-meta"><span>Tag ${demoDay}</span><span>${MONSTER_NAME} führt: 1 Pkt.</span></div>
           <div class="race-track demo"><div class="race-bar you"></div><div class="race-bar mon"></div></div>
         </div>
-        ${group(`Kommentare von ${MONSTER_NAME}`, [row('Aktivieren', toggle('comments', s.comments), { info: 'comments' })])}
+        ${group(`Kommentare von ${MONSTER_NAME}`, [row('Aktivieren', toggle('comments', s.comments), { info: 'comments' }),
+          row('🔊 Schmuddel spricht', `<label class="switch"><input type="checkbox" data-advoice ${mascot.adultVoice() ? 'checked' : ''}><span></span></label>`)],
+          'Schmuddel sagt seine Sprüche mit seiner Stimme. Gilt nur für dieses Handy. Im Kindermodus spricht er immer.')}
         <div class="mon-show">${monsterSvg('wave', 'mon-big', { tickle: true, say: '[data-monsay]' })}<p class="mon-say" data-monsay>Tipp mich an!</p>
           <div class="chips center mood-demo">${[['taunt', '😈 Frech'], ['happy', '😄 Freut sich'], ['shock', '😱 Schock'], ['angry', '😠 Wütend'], ['sad', '😢 Traurig'], ['wave', '👋 Winkt']].map(([m, l]) => `<button class="chip" data-mood="${m}">${l}</button>`).join('')}</div>
           <button class="btn light" data-sample>Zufälligen Spruch zeigen</button></div>
       </main>`,
     bind(root) {
       bindSettings(root);
+      root.querySelector('[data-advoice]').onchange = e => { store.setLocal({ adultVoice: e.target.checked }); if (e.target.checked) mascot.react('tickle', { force: true }); };
       root.querySelectorAll('[data-mood]').forEach(b => (b.onclick = () => {
         const box = root.querySelector('.mon-show svg');
         box.outerHTML = monsterSvg(b.dataset.mood, 'mon-big', { tickle: true, say: '[data-monsay]' });

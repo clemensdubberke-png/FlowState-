@@ -35,7 +35,20 @@ const TAGS = {
   tickle: ['[giggles]', '[annoyed]', '[mischievously]', '[laughs] [mischievously]', '[sarcastic] … [panicked]', '[proudly]', '[mischievously] [laughs]', '[giggles] [laughs]', '[playfully] [laughs]', '[proudly]', '[cheerfully]'],
   tickleMany: ['[shouting] [angry]', '[sighs] [annoyed]', '[mischievously] [laughs]'],
 };
+// whole categories (adult pop-ups): one emotion per category
+const CATEGORY_TAGS = {
+  done: '[annoyed]', doneOverdue: '[angry] [dramatic]', doneHard: '[shocked]', doneAnytime: '[bored] [sighs]',
+  allDone: '[sad] [dramatic]', goal: '[crying]', leadFlip: '[angry] [shouting]', undo: '[laughs] [excited]',
+  postpone: '[mischievously] [laughs]', dirty: '[excited] [laughs]', vacationOn: '[excited]', vacationOff: '[cheerfully]',
+  timerStart: '[mischievously]', timerDone: '[mischievously] [laughs]', areaCreated: '[excited] [laughs]',
+  taskCreated: '[sarcastic]', taskDeleted: '[laughs]', greetMorning: '[cheerfully] [mischievously]', greetDay: '[cheerfully]',
+  greetEvening: '[mischievously]', greetNight: '[whispers]', greetAway: '[mischievously] [laughs]', areaHint: '[cheerfully]',
+  catalogAdd: '[shocked]',
+};
+export const ADULT_CATEGORIES = [...Object.keys(CATEGORY_TAGS), ...Object.keys(LINES).filter(k => k.startsWith('dirtyRoom_'))];
 const SPOKEN = new Map();
+for (const [k, tag] of Object.entries(CATEGORY_TAGS)) (LINES[k] || []).forEach(text => SPOKEN.set(text, `${tag} ${text}`));
+for (const k of Object.keys(LINES).filter(x => x.startsWith('dirtyRoom_'))) (LINES[k] || []).forEach(text => SPOKEN.set(text, `[excited] [mischievously] ${text}`));
 for (const [k, tags] of Object.entries(TAGS)) {
   (LINES[k] || []).forEach((text, i) => {
     const t = tags[i];

@@ -1,5 +1,5 @@
 // Blitzeblank service worker: network-first for HTML, cache-first for static assets.
-const CACHE_VERSION = 'blitzeblank-v12';
+const CACHE_VERSION = 'blitzeblank-v13';
 const PRECACHE_URLS = [
   './', './index.html', './manifest.json', './css/app.css',
   './js/app.js', './js/art.js', './js/logic.js', './js/router.js', './js/store.js', './js/sync.js',
