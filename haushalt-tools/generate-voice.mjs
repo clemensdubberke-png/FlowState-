@@ -13,8 +13,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const appDir = join(here, '..', 'haushalt');
 const outDir = join(appDir, 'audio');
 const rawDir = join(here, 'voice-raw'); // unpitched originals (not bundled) – re-pitching costs nothing
-// Schmuddel a little higher (≈ +2.5 semitones), tempo unchanged
-const PITCH = { monster: Number(process.env.PITCH_MONSTER || 1.155), narrator: Number(process.env.PITCH_NARRATOR || 1) };
+// Schmuddel a little higher (≈ +4 semitones), tempo unchanged
+const PITCH = { monster: Number(process.env.PITCH_MONSTER || 1.26), narrator: Number(process.env.PITCH_NARRATOR || 1) };
 const { LINES } = await import(join(appDir, 'js', 'lines.js'));
 const { TEMPLATES } = await import(join(appDir, 'js', 'templates.js'));
 const { taskSpeech, FIXED, speechKey, spokenText } = await import(join(appDir, 'js', 'speech.js'));

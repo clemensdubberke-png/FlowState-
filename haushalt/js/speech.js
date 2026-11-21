@@ -30,9 +30,9 @@ export function speechKey(voice, text) {
 // ---- ElevenLabs v3 audio tags for Schmuddel (only spoken, never shown on screen) ----
 import { LINES } from './lines.js';
 const TAGS = {
-  kids: ['[gasps] [scared]', '[frustrated] [annoyed]', '[sad] [whispers]', '[whispers] [mischievously]', '[mischievously] … [gasps] [nervous]', '[nervous] [giggles]', '[mischievously] [laughs]'],
-  kidStep: ['[angry]', '[sighs] [pleading]', '[annoyed] [grumpy]', '[sad] [whispers]', '[angry] [growls]'],
-  kidDone: ['[crying] [dramatic]', '[disgusted] [angry]', '[angry] [sniffles]', '[sad] [sniffles]'],
+  kids: ['[gasps] [scared]', '[frustrated] [annoyed]', '[whining]', '[whispers] [mischievously]', '[mischievously] … [gasps] [panicked]', '[giggles]', '[mischievously] … [screams]'],
+  kidStep: ['[angry]', '[whining]', '[annoyed] [grumpy]', '[sad] [whispers]', '[angry] [growls]'],
+  kidDone: ['[crying] [dramatic]', '[disgusted] [angry] … [hiccups]', '[angry] [disgusted]', '[sad] [sniffles]'],
   scene_lamp: ['[excited] [laughs]', '[giggles]', '[cheerfully] [laughs]'],
   scene_bed: ['[excited] [laughs]', '[mischievously] [giggles]', '[excited] [shouting]'],
   scene_bath: ['[giggles]', '[cheerfully]', '[disgusted] [sneezes]'],
