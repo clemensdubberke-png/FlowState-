@@ -13,13 +13,13 @@ const appDir = join(here, '..', 'haushalt');
 const outDir = join(appDir, 'audio');
 const { LINES } = await import(join(appDir, 'js', 'lines.js'));
 const { TEMPLATES } = await import(join(appDir, 'js', 'templates.js'));
-const { taskSpeech, FIXED, speechKey } = await import(join(appDir, 'js', 'speech.js'));
+const { taskSpeech, FIXED, speechKey, spokenText } = await import(join(appDir, 'js', 'speech.js'));
 
 const KEY = process.env.ELEVEN_API_KEY || 'set-by-proxy';
 const VOICES = { monster: process.env.VOICE_MONSTER, narrator: process.env.VOICE_NARRATOR };
-const MODEL = 'eleven_multilingual_v2';
+const MODELS = { monster: 'eleven_v3', narrator: 'eleven_multilingual_v2' };
 const SETTINGS = {
-  monster: { stability: 0.35, similarity_boost: 0.8, style: 0.6, use_speaker_boost: true },
+  monster: { stability: 0.5, similarity_boost: 0.8, use_speaker_boost: true },
   narrator: { stability: 0.5, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true },
 };
 if (!VOICES.monster || !VOICES.narrator) { console.error('VOICE_MONSTER and VOICE_NARRATOR are required'); process.exit(1); }
@@ -52,7 +52,7 @@ for (const it of items) {
   const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICES[it.voice]}?output_format=mp3_44100_64`, {
     method: 'POST',
     headers: { 'xi-api-key': KEY, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
-    body: JSON.stringify({ text: it.text, model_id: MODEL, voice_settings: SETTINGS[it.voice] }),
+    body: JSON.stringify({ text: spokenText(it.voice, it.text), model_id: MODELS[it.voice], voice_settings: SETTINGS[it.voice] }),
   });
   if (!r.ok) { console.error(`✗ ${r.status} ${it.text}\n${await r.text()}`); process.exit(1); }
   writeFileSync(join(outDir, file), Buffer.from(await r.arrayBuffer()));
@@ -61,5 +61,5 @@ for (const it of items) {
 }
 // remove clips that are no longer used
 for (const f of readdirSync(outDir)) if (f.endsWith('.mp3') && !Object.values(files).includes(f)) unlinkSync(join(outDir, f));
-writeFileSync(manifestPath, JSON.stringify({ voices: VOICES, model: MODEL, files }, null, 1));
+writeFileSync(manifestPath, JSON.stringify({ voices: VOICES, models: MODELS, files }, null, 1));
 console.log(`\n${items.length} Clips im Manifest, ${made} neu erzeugt (${chars} Zeichen verbraucht).`);

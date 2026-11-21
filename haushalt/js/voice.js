@@ -4,12 +4,13 @@
 // 3. Otherwise the phone's own text-to-speech
 import * as store from './store.js';
 import { speak as deviceSpeak, native } from './ui.js';
-import { speechKey } from './speech.js';
+import { speechKey, spokenText } from './speech.js';
 
 const API = 'https://api.elevenlabs.io/v1/text-to-speech/';
-const MODEL = 'eleven_multilingual_v2';
+// Schmuddel: v3 (understands emotion tags like [laughs]); narrator: multilingual v2
+const MODELS = { monster: 'eleven_v3', narrator: 'eleven_multilingual_v2' };
 const SETTINGS = {
-  monster: { stability: 0.35, similarity_boost: 0.8, style: 0.6, use_speaker_boost: true },
+  monster: { stability: 0.5, similarity_boost: 0.8, use_speaker_boost: true },
   narrator: { stability: 0.5, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true },
 };
 
@@ -53,7 +54,7 @@ function b64ToBlob(b64) {
   return new Blob([u], { type: 'audio/mpeg' });
 }
 async function fetchTts(text, voice, id, key) {
-  const body = JSON.stringify({ text, model_id: MODEL, voice_settings: SETTINGS[voice] || SETTINGS.narrator });
+  const body = JSON.stringify({ text: spokenText(voice, text), model_id: MODELS[voice] || MODELS.narrator, voice_settings: SETTINGS[voice] || SETTINGS.narrator });
   if (native && native.ttsFetch) {
     const reqId = Math.random().toString(36).slice(2);
     const b64 = await new Promise(res => { pending.set(reqId, res); native.ttsFetch(reqId, key, id, body); setTimeout(() => window.__bbTts(reqId, ''), 20000); });

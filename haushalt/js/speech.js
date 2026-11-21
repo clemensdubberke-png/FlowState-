@@ -21,3 +21,28 @@ export function speechKey(voice, text) {
   for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
   return h.toString(16).padStart(8, '0');
 }
+
+// ---- ElevenLabs v3 audio tags for Schmuddel (only spoken, never shown on screen) ----
+import { LINES } from './lines.js';
+const TAGS = {
+  kids: ['[gasps] [scared]', '[panting] [frustrated]', '[sad] [whispers]', '[whispers] [mischievously]', '[mischievously] … [gasps] [nervous]', '[nervous] [giggles]', '[mischievously] [laughs]'],
+  kidStep: ['[angry]', '[sighs] [pleading]', '[sighs] [impressed]', '[sad] [whispers]', '[surprised]'],
+  kidDone: ['[crying] [dramatic]', '[sniffles] [crying]', '[shocked]', '[sad] [sniffles]'],
+  tickle: ['[giggles]', '[annoyed]', '[mischievously]', '[laughs] [mischievously]', '[sarcastic] … [panicked]', '[proudly]', '[mischievously] [laughs]', '[giggles] [laughs]', '[playfully] [laughs]', '[proudly]', '[cheerfully]'],
+  tickleMany: ['[shouting] [angry]', '[sighs] [annoyed]', '[mischievously] [laughs]'],
+};
+const SPOKEN = new Map();
+for (const [k, tags] of Object.entries(TAGS)) {
+  (LINES[k] || []).forEach((text, i) => {
+    const t = tags[i];
+    if (!t) return;
+    if (t.includes('…')) {
+      // tag in the middle of the line: second tag goes after the "…" break
+      const [a, b] = t.split('…').map(x => x.trim());
+      const parts = text.split('…');
+      SPOKEN.set(text, parts.length > 1 ? `${a} ${parts[0].trim()} … ${b} ${parts.slice(1).join('…').trim()}` : `${a} ${text}`);
+    } else SPOKEN.set(text, `${t} ${text}`);
+  });
+}
+/** text sent to ElevenLabs (with emotion tags for Schmuddel); the cache key stays the display text */
+export function spokenText(voice, text) { return voice === 'monster' ? (SPOKEN.get(text) || text) : text; }
