@@ -26,14 +26,24 @@ function raceCard() {
   return `<section class="kid-race">
     <div class="kr-row"><span class="kr-name">🦸 Ihr</span><div class="kr-bar you"><div style="width:${(r.user / max) * 100}%"></div></div><b>${r.user}</b></div>
     <div class="kr-row"><span class="kr-name">🟢 Schmuddel</span><div class="kr-bar mon"><div style="width:${(r.monster / max) * 100}%"></div></div><b>${r.monster}</b></div>
+    ${contrib()}
     <p>${msg}</p></section>`;
+}
+function contrib() {
+  const kids = L.persons().filter(p => p.kid);
+  if (kids.length < 2) return '';
+  const by = L.kidsContribution();
+  return `<div class="kr-team">${kids.map(k => `<span style="--pc:${L.personColor(k)}">${esc(k.emoji)} ${esc(k.name)} <b>${by[k.id] || 0}</b></span>`).join('<i>+</i>')}<span class="kr-sum">= zusammen gegen Schmuddel</span></div>`;
 }
 const pick = list => list[Math.floor(Math.random() * list.length)];
 function kidTasks(kidId) {
-  return store.all('tasks').filter(t => t.kid?.enabled && L.activeAt(t)).filter(t => {
-    const resp = L.responsible(t);
-    return !resp || resp === kidId || !store.get('persons', resp)?.kid;
-  });
+  return store.all('tasks').filter(t => t.kid?.enabled && L.activeAt(t) && (kidId === GROUP_KID || L.kidTaskFor(t, kidId)));
+}
+/** who finished this task today (for shared tasks) */
+function doneTodayBy(t) {
+  const sod = L.startOfDay(Date.now());
+  const c = store.all('completions').filter(x => x.taskId === t.id && x.at >= sod).sort((a, b) => b.at - a.at)[0];
+  return c ? store.get('persons', c.personId) : null;
 }
 function rank(t) { return t.anytime ? 1 : L.isDue(t) ? 0 : L.daysUntilDue(t) <= 1 ? 1 : 2; }
 
@@ -126,7 +136,7 @@ export function exitGate() {
 export function kidsView(kidId) {
   const kids = kidList();
   if (!kidId && kids.length === 1) kidId = kids[0].id;
-  const header = `<header class="kids-bar"><button class="exit-btn" data-exit aria-label="Kindermodus verlassen">🔒 Eltern</button><h1>Putz-Helden</h1>${kidId && kids.length > 1 ? '<button class="icon-btn" data-go="/kids" aria-label="Kind wechseln">👥</button>' : '<span></span>'}</header>`;
+  const header = `<header class="kids-bar"><button class="exit-btn" data-exit aria-label="Kindermodus verlassen">🔒 Eltern</button><h1>Putz-Helden</h1>${kidId && kids.length > 1 ? '<button class="exit-btn switch-kid" data-go="/kids" aria-label="Kind wechseln">👥 Wechseln</button>' : '<span></span>'}</header>`;
 
   if (!kidId) {
     return {
@@ -153,7 +163,7 @@ export function kidsView(kidId) {
             <span class="kt-emo">${esc(t.kid.emoji || guessEmoji(t.name))}</span>
             <b>${esc(t.name)}</b>
             <span class="kt-area">${esc(store.get('areas', t.areaId)?.name || '')}</span>
-            <small>${done ? '✅ Heute geschafft!' : due ? '🔥 Jetzt dran!' : t.anytime ? 'Hilf mit!' : 'Bald wieder dran'}</small>
+            <small>${done ? `✅ Heute geschafft${(() => { const by = doneTodayBy(t); return by && by.id !== kid.id ? ` von ${esc(by.name)}` : ''; })()}!` : due ? '🔥 Jetzt dran!' : t.anytime ? 'Hilf mit!' : 'Bald wieder dran'}</small>
           </button>`;
         }).join('') || `<p class="empty">Gerade gibt es keine Kinder-Aufgaben. Frag Mama oder Papa! 🙂</p>`}</div>
         <button class="btn light big kids-exit" data-exit>🔒 Zurück zum Hauptmenü (für Eltern)</button>

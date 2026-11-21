@@ -364,6 +364,23 @@ export function race(t = Date.now()) {
   const day = new Date(t).getDate();
   return { goal: g, base, missed, missCap, missedRaw, monster, user, lead: user - monster, frac, day, monthLabel: new Date(t).toLocaleDateString('de-DE', { month: 'long' }) };
 }
+/** Is a kid task meant for this kid? Explicit choice in the task wins; otherwise the room's kid
+ *  (area.kidId) – tasks in a room that belongs to one kid are only shown to that kid. */
+export function kidTaskFor(t, kidId) {
+  if (!t.kid?.enabled) return false;
+  const who = t.kid.who || [];
+  if (who.length) return who.includes(kidId);
+  const owner = store.get('areas', t.areaId)?.kidId;
+  return !owner || owner === kidId || !store.get('persons', owner);
+}
+/** points per kid this month (kid tasks only) */
+export function kidsContribution(t = Date.now()) {
+  const kidIds = new Set(store.all('tasks').filter(x => x.kid?.enabled).map(x => x.id));
+  const by = {};
+  monthCompletions(t).filter(c => kidIds.has(c.taskId) && c.personId).forEach(c => (by[c.personId] = (by[c.personId] || 0) + (c.points || 0)));
+  return by;
+}
+
 /** The kids' own race (only shown in kids mode): only tasks marked "Für Kinder" count – for both sides. */
 export function kidsRace(t = Date.now()) {
   const s = store.settings();

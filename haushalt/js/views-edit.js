@@ -165,6 +165,12 @@ export function taskEditView(id, areaId) {
         ${t.kid.enabled ? `
           <p class="muted small">Im Kindermodus wird die Aufgabe mit großem Bild und einzelnen Schritten angezeigt – und auf Wunsch vorgelesen.</p>
           <div class="emoji-pick"><span class="big-emoji">${esc(t.kid.emoji)}</span><div class="chips wrap">${EMOJI_CHOICES.map(e => `<button class="emo ${e === t.kid.emoji ? 'on' : ''}" data-emo="${e}">${e}</button>`).join('')}</div></div>
+          ${L.persons().filter(p => p.kid).length > 1 ? `<h4>Für welches Kind?</h4>
+          <div class="chips wrap">${[{ id: '', name: (() => { const o = store.get('persons', store.get('areas', t.areaId)?.kidId); return o ? `Wie das Zimmer (${o.name})` : 'Alle Kinder'; })(), emoji: '👧👦' }, ...L.persons().filter(p => p.kid)].map(p => {
+            const who = t.kid.who || [];
+            const on = p.id ? who.includes(p.id) : !who.length;
+            return `<button class="pchip sel ${on ? 'on' : ''}" data-kwho="${p.id}" style="--pc:${p.id ? L.personColor(p) : '#ff9500'}">${esc(p.emoji)} ${esc(p.name)}</button>`;
+          }).join('')}</div>` : ''}
           <h4>Schritte</h4>
           <div class="steps-edit">${t.kid.steps.map((st, i) => `<div class="step-edit"><input class="se-emo" data-se="${i}" data-k="e" value="${esc(st.e)}" maxlength="4"><input data-se="${i}" data-k="text" value="${esc(st.text)}" placeholder="Was ist zu tun?"><button class="icon-btn" data-sdel="${i}" aria-label="Schritt löschen">${icons.trash}</button></div>`).join('')}</div>
           <button class="btn light" data-sadd>+ Schritt hinzufügen</button>` : ''}
@@ -215,6 +221,11 @@ export function taskEditView(id, areaId) {
         const kidEn = box.querySelector('[data-kid=enabled]');
         kidEn.onchange = () => { t.kid.enabled = kidEn.checked; if (t.kid.enabled && !t.kid.emoji) t.kid.emoji = guessEmoji(t.name); redraw(); };
         box.querySelectorAll('[data-emo]').forEach(b => (b.onclick = () => { t.kid.emoji = b.dataset.emo; redraw(); }));
+        box.querySelectorAll('[data-kwho]').forEach(b => (b.onclick = () => {
+          const id = b.dataset.kwho; const who = new Set(t.kid.who || []);
+          if (!id) who.clear(); else who.has(id) ? who.delete(id) : who.add(id);
+          t.kid.who = [...who]; redraw();
+        }));
         box.querySelectorAll('[data-se]').forEach(inp => (inp.oninput = () => { t.kid.steps[Number(inp.dataset.se)][inp.dataset.k] = inp.value; }));
         box.querySelectorAll('[data-sdel]').forEach(b => (b.onclick = () => { t.kid.steps.splice(Number(b.dataset.sdel), 1); redraw(); }));
         const sadd = box.querySelector('[data-sadd]');

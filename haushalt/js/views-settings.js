@@ -334,7 +334,8 @@ export function kidsSettingsView() {
         ${group('Kindermodus', [row('Aktivieren', toggle('kidsMode', s.kidsMode), { info: 'kids' }), row('Kindermodus öffnen', '').replace('class="grow', 'data-kidsopen class="grow link'), row('Schmuddels Vorstellung nochmal zeigen', '').replace('class="grow', 'data-intro class="grow link')],
           'Kinder sehen nur Aufgaben, die als „Kinder können mitmachen“ markiert sind – mit Bild, Schritt-für-Schritt-Liste und Vorlesen. Zum Verlassen muss eine kleine Rechenaufgabe gelöst werden.')}
         <h2 class="sec">Kinder</h2>
-        <div class="group pad">${kids.length ? kids.map(k => `<div class="row-between"><span><span class="avatar" style="--pc:${L.personColor(k)}">${esc(k.emoji)}</span> ${esc(k.name)}</span></div>`).join('') : '<p class="muted">Legt unter Personen ein Kind an (Schalter „Ist ein Kind“). Ohne Kinder-Profile gibt es ein gemeinsames Kinder-Profil.</p>'}
+        <div class="group pad">${kids.length ? kids.map(k => `<div class="row-between kid-room"><span><span class="avatar" style="--pc:${L.personColor(k)}">${esc(k.emoji)}</span> ${esc(k.name)}</span>
+            <label>Zimmer: <select data-kroom="${k.id}"><option value="">– keins –</option>${store.all('areas').sort((a, b) => (a.order || 0) - (b.order || 0)).map(a => `<option value="${a.id}" ${a.kidId === k.id ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select></label></div>`).join('') + '<p class="muted small">Kinder-Aufgaben aus dem Zimmer eines Kindes sieht nur dieses Kind. Aufgaben aus anderen Räumen sehen alle Kinder – oder ihr wählt in der Aufgabe „Für welches Kind?“.</p>' : '<p class="muted">Legt unter Personen ein Kind an (Schalter „Ist ein Kind“). Ohne Kinder-Profile gibt es ein gemeinsames Kinder-Profil.</p>'}
           <p class="muted small">Es gibt keine Sterne: Jede erledigte Kinder-Aufgabe ist ein Punkt im Rennen gegen Schmuddel.</p></div>
         <h2 class="sec">🔊 Stimme (ElevenLabs)</h2>
         <div class="group pad voice-box">
@@ -356,6 +357,12 @@ export function kidsSettingsView() {
       root.querySelector('[data-toggle]').onchange = e => store.setSettings({ kidsMode: e.target.checked });
       root.querySelector('[data-kidsopen]').onclick = () => import('./views-kids.js').then(m => m.enterKids());
       root.querySelector('[data-intro]').onclick = () => import('./views-kids.js').then(m => m.showIntro());
+      root.querySelectorAll('[data-kroom]').forEach(sel => (sel.onchange = () => {
+        const kidId = sel.dataset.kroom;
+        store.all('areas').filter(a => a.kidId === kidId && a.id !== sel.value).forEach(a => store.put('areas', { id: a.id, kidId: null }));
+        if (sel.value) store.put('areas', { id: sel.value, kidId });
+        toast('Gespeichert');
+      }));
       voice.bundledInfo().then(i => {
         const el = root.querySelector('[data-vinfo]');
         if (el) el.textContent = i.count ? `✅ ${i.count} Sprachdateien in der App.` : 'Noch keine Sprachdateien in der App – es spricht die Stimme des Handys (oder ElevenLabs live, wenn ein Schlüssel hinterlegt ist).';
