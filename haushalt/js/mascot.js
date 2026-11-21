@@ -129,7 +129,7 @@ export function roomLine(area) {
   if (!area) return null;
   const typed = LINES['dirtyRoom_' + area.type];
   const standard = typed && typed.some(l => l.includes(area.name)) || /^(küche|wohnzimmer|esszimmer|schlafzimmer|badezimmer|bad|kinderzimmer|arbeitszimmer|flur|wäschekammer|gäste-wc|keller|dachboden|garage|garten|balkon|terrasse|auto)$/i.test(area.name.trim());
-  if (typed && (standard || adultVoice()) && Math.random() < (adultVoice() ? 0.85 : 0.6)) return line('dirtyRoom_' + area.type);
+  if (typed && (standard || adultVoice())) return line('dirtyRoom_' + area.type); // voiced room-type lines
   return line('dirtyRoom').replace(/\{room\}/g, area.name);
 }
 

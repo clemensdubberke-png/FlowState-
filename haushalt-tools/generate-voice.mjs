@@ -17,7 +17,7 @@ const rawDir = join(here, 'voice-raw'); // unpitched originals (not bundled) –
 const PITCH = { monster: Number(process.env.PITCH_MONSTER || 1.26), narrator: Number(process.env.PITCH_NARRATOR || 1.26) }; // everything in the same higher voice
 const { LINES } = await import(join(appDir, 'js', 'lines.js'));
 const { TEMPLATES } = await import(join(appDir, 'js', 'templates.js'));
-const { taskSpeech, speechKey, spokenText, ADULT_CATEGORIES } = await import(join(appDir, 'js', 'speech.js'));
+const { taskSpeech, speechKey, spokenText, ADULT_CATEGORIES, KID_CATEGORIES } = await import(join(appDir, 'js', 'speech.js'));
 
 const KEY = process.env.ELEVEN_API_KEY || 'set-by-proxy';
 const VOICES = { monster: process.env.VOICE_MONSTER, narrator: process.env.VOICE_NARRATOR };
@@ -30,7 +30,7 @@ if (!VOICES.monster || !VOICES.narrator) { console.error('VOICE_MONSTER and VOIC
 
 // ---- what kids mode can say ----
 const items = [];
-for (const k of ['intro', 'kids', 'kidStep', 'kidTick', 'kidAllSteps', 'kidDone', 'tickle', 'tickleMany', ...Object.keys(LINES).filter(x => x.startsWith('scene_')), ...ADULT_CATEGORIES]) (LINES[k] || []).forEach(text => items.push({ voice: 'monster', text }));
+for (const k of [...KID_CATEGORIES, ...ADULT_CATEGORIES]) (LINES[k] || []).forEach(text => items.push({ voice: 'monster', text }));
 const seen = new Set();
 for (const list of Object.values(TEMPLATES)) {
   for (const [name, , , , kid] of list) {

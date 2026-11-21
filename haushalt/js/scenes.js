@@ -100,6 +100,12 @@ const RULES = [
   [/staub|lampe|fenster/i, 'lamp'],
 ];
 const KEYS = Object.keys(SCENES);
+/** scene key only if the task clearly matches one (else null) */
+export function matchScene(task) {
+  const text = task ? `${task.name}` : '';
+  for (const [re, key] of RULES) if (re.test(text)) return key;
+  return null;
+}
 /** scene that fits a task (or a random one) */
 export function sceneFor(task) {
   const text = task ? `${task.name}` : '';

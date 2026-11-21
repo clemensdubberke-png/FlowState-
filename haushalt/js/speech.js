@@ -21,10 +21,22 @@ export function speechKey(voice, text) {
 import { LINES } from './lines.js';
 const TAGS = {
   kids: ['[gasps] [scared]', '[frustrated] [annoyed]', '[whining]', '[whispers] [mischievously]', '[mischievously] … [gasps] [panicked]', '[giggles]', '[mischievously] … [screams]'],
-  kidStep: ['[angry]', '[whining]', '[annoyed] [grumpy]', '[sad] [whispers]', '[angry] [growls]'],
-  kidDone: ['[crying] [dramatic]', '[disgusted] [angry] … [hiccups]', '[angry] [disgusted]', '[sad] [sniffles]'],
-  kidTick: ['[annoyed] [whining]', '[growls] [grumpy]', '[whining] [sad]', '[angry] … [frustrated]', '[disgusted] [dramatic]'],
-  kidAllSteps: ['[shocked] … [dramatic]', '[gasps] [disgusted]', '[sarcastic] [grumpy]'],
+  kidStep: ['[angry]', '[whining]', '[annoyed] [grumpy]', '[sad] [whispers]', '[angry] [growls]', '[angry] [disgusted]', '[mischievously] [sighs]', '[sad] [sniffles]', '[pleading] [whining]'],
+  done_bed: ['[whining] [shocked]', '[annoyed] [sighs]', '[crying] [disgusted]'],
+  done_bath: ['[sad] [whining]', '[shocked] [embarrassed]', '[angry] [dramatic]'],
+  done_laundry: ['[whining] [shocked]', '[angry] [dramatic]', '[disgusted] [sneezes]'],
+  done_broom: ['[shocked] [whining]', '[angry] [shouting]', '[sad] [sighs]'],
+  done_plant: ['[whining] [annoyed]', '[annoyed] [grumpy]', '[sad] [dramatic]'],
+  done_toybox: ['[whining] [sad]', '[crying] [dramatic]', '[panicked] [sighs]'],
+  done_lamp: ['[shivers] [whining]', '[disgusted] [annoyed]', '[shocked] [screams]'],
+  kidLead: ['[shocked] [angry]', '[whining] [sad]', '[excited] [sad]', '[panting] [whining]'],
+  kidBehind: ['[excited] [laughs]', '[mischievously] [laughs]', '[nervous] [giggles]', '[proudly] [giggles]'],
+  kidTied: ['[nervous] [excited]', '[nervous] [giggles]', '[confused] [laughs]'],
+  kidAllClear: ['[shocked] [dramatic]', '[sad] [whining]', '[whispers] [mischievously]', '[angry] [laughs]'],
+  kidJoke: ['[proudly] [laughs]', '[giggles]', '[laughs] [mischievously]', '[laughs]', '[giggles] [laughs]', '[giggles] [embarrassed]', '[sad] [giggles]', '[proudly] [laughs]', '[proudly] [laughs]', '[panicked] [dramatic]', '[giggles] [laughs]', '[giggles] [mischievously]'],
+  kidDone: ['[crying] [dramatic]', '[disgusted] [angry] … [hiccups]', '[angry] [disgusted]', '[sad] [sniffles]', '[shocked] [angry]', '[shocked] [disgusted]', '[whining] [sighs]', '[whining] [sad]', '[angry] [whining]', '[mischievously] [laughs]', '[angry] [laughs]', '[sarcastic] [giggles]', '[angry] [giggles]', '[confused] [giggles]', '[grumpy] [sighs]', '[shocked] [screams]'],
+  kidTick: ['[annoyed] [whining]', '[growls] [grumpy]', '[whining] [sad]', '[angry] … [frustrated]', '[disgusted] [dramatic]', '[giggles] [annoyed]', '[angry] [shouting]', '[booing] [angry]', '[disgusted] [giggles]', '[mischievously] [annoyed]', '[whining] [annoyed]'],
+  kidAllSteps: ['[shocked] … [dramatic]', '[gasps] [disgusted]', '[sarcastic] [grumpy]', '[shocked] [dramatic]', '[crying] [dramatic]', '[disgusted] [dramatic]'],
   intro: ['[excited] [mischievously]', '[happily] [dreamy]', '[mischievously] [evil laugh]', '[surprised] … [laughs] [mocking]', '[proudly] [mischievously]'],
   scene_lamp: ['[excited] [laughs]', '[giggles]', '[cheerfully] [laughs]'],
   scene_bed: ['[excited] [laughs]', '[mischievously] [giggles]', '[excited] [shouting]'],
@@ -45,7 +57,13 @@ const CATEGORY_TAGS = {
   taskCreated: '[sarcastic]', taskDeleted: '[laughs]', greetMorning: '[cheerfully] [mischievously]', greetDay: '[cheerfully]',
   greetEvening: '[mischievously]', greetNight: '[whispers]', greetAway: '[mischievously] [laughs]', areaHint: '[cheerfully]',
   catalogAdd: '[shocked]',
+  // race-banner lines (Home screen)
+  start: '[mischievously] [laughs]', aheadBig: '[proudly] [mischievously]', aheadSmall: '[mischievously] [giggles]',
+  tied: '[annoyed] [nervous]', behindSmall: '[angry] [whining]', behindBig: '[crying] [dramatic]',
 };
+// everything Schmuddel can say in kids mode (shared by the voice generator and the audit)
+export const KID_CATEGORIES = ['intro', 'kids', 'kidStep', 'kidTick', 'kidAllSteps', 'kidDone', 'kidLead', 'kidBehind', 'kidTied', 'kidAllClear', 'kidJoke', 'tickle', 'tickleMany',
+  ...Object.keys(LINES).filter(k => k.startsWith('scene_') || k.startsWith('done_'))];
 export const ADULT_CATEGORIES = [...Object.keys(CATEGORY_TAGS), ...Object.keys(LINES).filter(k => k.startsWith('dirtyRoom_'))];
 const SPOKEN = new Map();
 for (const [k, tag] of Object.entries(CATEGORY_TAGS)) (LINES[k] || []).forEach(text => SPOKEN.set(text, `${tag} ${text}`));

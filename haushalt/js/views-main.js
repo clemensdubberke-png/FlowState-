@@ -4,6 +4,7 @@ import { roomSvg, splatSvg, monsterSvg, MONSTER_NAME } from './art.js';
 import { esc, icons, sheet, toast, vibrate, confetti } from './ui.js';
 import { go, back } from './router.js';
 import * as mascot from './mascot.js';
+import * as voice from './voice.js';
 import { conditionPicker, bindConditionPickers } from './condition.js';
 
 // ---------------- shared layout ----------------
@@ -37,6 +38,7 @@ export function raceBanner() {
   return `<section class="race-banner" data-race>
     <div class="race-mon">${monsterSvg(line.mood, 'monster', { tickle: true, say: '.race-line' })}</div>
     <div class="race-body">
+      <button class="race-say" data-sayline aria-label="Schmuddel sprechen lassen">🔊</button>
       <div class="race-line">${s.comments ? esc(line.text) : `Rennen gegen ${MONSTER_NAME}`}</div>
       <div class="race-meta"><span>Rennen im ${esc(r.monthLabel)}</span><span>${esc(leadText)}</span></div>
       <div class="race-track">
@@ -101,6 +103,7 @@ export function homeView() {
       const rb = root.querySelector('[data-race]');
       if (rb) {
         rb.onclick = raceSheet;
+        rb.querySelector('[data-sayline]').onclick = e => { e.stopPropagation(); voice.say(rb.querySelector('.race-line').textContent, 'monster'); };
         // Schmuddel keeps chatting in the banner every ~18 s
         const key = L.raceLine().key;
         const lineEl = rb.querySelector('.race-line');

@@ -8,7 +8,7 @@ import { guessEmoji } from './templates.js';
 import * as mascot from './mascot.js';
 import * as voice from './voice.js';
 import { taskSpeech } from './speech.js';
-import { sceneSvg, sceneFor, randomScene } from './scenes.js';
+import { sceneSvg, sceneFor, matchScene, randomScene } from './scenes.js';
 import { MONSTER_LINES } from './templates.js';
 
 const GROUP_KID = '_kids';
@@ -236,9 +236,9 @@ function kidTaskSheet(id, kid) {
         L.completeTask(t, personId, { kid: true });
         close();
         confetti(90);
-        const monLine = mascot.line('kidDone');
-        voice.say(monLine, 'monster');
-        celebrate(kid, monLine);
+        const { main: monLine, joke } = pickDoneLines(t, kid);
+        voice.say(monLine, 'monster').then(() => (joke ? voice.say(joke, 'monster') : null));
+        celebrate(kid, monLine, joke);
       };
     };
     bind();
@@ -247,12 +247,29 @@ function kidTaskSheet(id, kid) {
   setTimeout(() => voice.say(scLine, 'monster').then(() => { if (document.querySelector('.sheet.kid')) readAll(); }), 350);
 }
 
-function celebrate(kid, monLine) {
+/** What Schmuddel says after a finished task: a mix of general, task-specific, race-aware and
+ *  all-clear lines, often followed by a silly joke. */
+function pickDoneLines(t, kid) {
+  const r = L.kidsRace();
+  const dueLeft = kidTasks(kid.id).some(x => !x.anytime && L.isDue(x));
+  const sc = matchScene(t);
+  const roll = Math.random();
+  let main;
+  if (!dueLeft && roll < 0.7) main = mascot.line('kidAllClear');
+  else if (sc && roll < 0.4) main = mascot.line('done_' + sc);
+  else if (roll < 0.6) main = mascot.line(r.lead > 0 ? 'kidLead' : r.lead < 0 ? 'kidBehind' : 'kidTied');
+  else main = mascot.line('kidDone');
+  const joke = Math.random() < 0.6 ? mascot.line('kidJoke') : null;
+  return { main, joke };
+}
+
+function celebrate(kid, monLine, joke) {
   const r = L.kidsRace();
   sheet(`<div class="celebrate">${monsterSvg('sad', 'kid-mon big a-melt-loop', { tickle: true })}
       <h2>Geschafft, ${esc(kid.name)}! 🏁</h2>
       <p class="cel-line">Ein Punkt mehr im Rennen gegen Schmuddel!</p>
       ${store.settings().race ? `<div class="cel-score"><span>Ihr <b>${r.user}</b></span><span>:</span><span><b>${r.monster}</b> Schmuddel</span></div>` : ''}
       <p>${esc(MONSTER_NAME)}: „${esc(monLine)}“</p>
+      ${joke ? `<p class="cel-joke">😜 „${esc(joke)}“</p>` : ''}
       <button class="btn orange big" data-ok>Weiter</button></div>`, (el, close) => { el.querySelector('[data-ok]').onclick = close; }, { cls: 'kid' });
 }
