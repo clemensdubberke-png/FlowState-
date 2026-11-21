@@ -315,24 +315,24 @@ export const LINES = {
   // ---- kids ----
   kids: [
     'Oh nein, ein Putz-Held! Hilfe!',
-    'Du bist viel zu schnell für mich!',
+    'Warum lachst du beim Aufräumen? Das ärgert mich so!',
     'Wenn du aufräumst, werde ich ganz klein…',
     'Psst… lass doch das Spielzeug liegen! Bitteee!',
-    'Wetten, du schaffst das nicht? …Oh nein, du schaffst das bestimmt.',
+    'Wetten, du schaffst das nicht? …Oh nein, du fängst ja schon an! Hör sofort auf!',
     'Ich versteck mich unter dem Bett! Such mich ja nicht!',
     'Die Legosteine auf dem Boden sind meine Fallen. Hihi!',
   ],
   kidStep: [
     'Hey! Das war mein Lieblings-Chaos!',
     'Noch ein Schritt? Bitte nicht!',
-    'Uff, du bist ja richtig gut!',
+    'Hör auf zu grinsen! Aufräumen soll doch keinen Spaß machen!',
     'Ich werde kleiner… und kleiner…',
-    'Wie machst du das nur so schnell?!',
+    'Grrr! Schon wieder ein Krümel weniger! Das ist MEIN Zimmer!',
   ],
   kidDone: [
     'Neeein! Besiegt von einem Kind!',
-    'Du bist ein echter Putz-Held! Ich geh weinen.',
-    'Wie hast du das gemacht?! Bring mir das bloß nicht bei!',
+    'Pfui, alles blitzeblank! Und du freust dich auch noch darüber!',
+    'Menno! Ich wollte, dass es dreckig bleibt! Jetzt riecht es nach Seife!',
     'Schon wieder sauber! Jetzt hängt ihr mich im Rennen ab. Schnief.',
   ],
 };
