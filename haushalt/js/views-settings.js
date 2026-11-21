@@ -13,7 +13,7 @@ const INFO = {
   fair: 'FairShare zeigt, wie die Hausarbeit verteilt ist. Ihr legt fest, welchen Anteil jede Person übernehmen soll (z. B. 50 / 50 oder 60 / 40). Beim Abhaken schlägt die App automatisch die Person vor, die am weitesten unter ihrem Anteil liegt.',
   resp: 'Mit „Zuständigkeit“ teilt ihr Personen fest für bestimmte Aufgaben ein. Wer zuständig ist, steht direkt an der Aufgabe und in der Heute-Liste unter „Meine“.',
   rot: 'Rotation: Sind mehrere Personen für eine Aufgabe zuständig, wechselt die Zuständigkeit nach jedem Erledigen automatisch zur nächsten Person.',
-  race: `Jeden Monat tretet ihr gegen ${MONSTER_NAME} an. Ihr sammelt Punkte, indem ihr Aufgaben erledigt (Leicht 1 · Mittel 2 · Schwer 3). ${MONSTER_NAME} bewegt sich langsam, aber stetig – und bekommt dieselben Punkte für jede Aufgabe, die überfällig liegen bleibt. Wer am Monatsende vorne liegt, gewinnt; bei gleichem Stand ist es unentschieden.`,
+  race: `Jeden Monat tretet ihr gegen ${MONSTER_NAME} an. Ihr sammelt Punkte, indem ihr Aufgaben erledigt (Leicht 1 · Mittel 2 · Schwer 3). ${MONSTER_NAME} bewegt sich langsam, aber stetig – und bekommt Punkte für Aufgaben, die überfällig liegen bleiben (höchstens 1× pro Aufgabe und Monat, maximal die Hälfte des Monatsziels). Altlasten vom Start zählen für ihn erst, wenn ihr sie einmal erledigt habt. Wer am Monatsende vorne liegt, gewinnt; bei gleichem Stand ist es unentschieden.`,
   comments: `${MONSTER_NAME} kommentiert euren Fortschritt mit frechen Sprüchen.`,
   vacation: 'Im Urlaubsmodus wird nichts schmutziger: Alle Zustände werden eingefroren. Beim Beenden werden alle Aufgaben um die Urlaubsdauer verschoben.',
   kids: 'Der Kindermodus zeigt Kindern ihre Aufgaben mit großen Bildern, einzelnen Schritten zum Abhaken und Vorlesefunktion. Jede erledigte Aufgabe zählt im Rennen gegen Schmuddel – Schmuddel turnt dabei in kleinen Szenen herum.',
@@ -289,7 +289,7 @@ export function monsterView() {
         mascot.react(kinds[Math.floor(Math.random() * kinds.length)], { force: true });
       };
       root.querySelectorAll('[data-toggle]').forEach(i => (i.onchange = () => store.setSettings(i.dataset.toggle === 'race' && i.checked && !s.race ? { race: true, raceStart: Date.now() } : { [i.dataset.toggle]: i.checked })));
-      root.querySelector('[data-diff]').onclick = () => sheet(`<h3>Schwierigkeitsstufe</h3><div class="opt-list">${Object.entries(L.DIFFICULTY).map(([k, v]) => `<button class="opt ${k === s.difficulty ? 'on' : ''}" data-d="${k}">${v.label} <small>– ${MONSTER_NAME} schafft ${Math.round(v.f * 100)} % des Monatsziels</small></button>`).join('')}</div>`,
+      root.querySelector('[data-diff]').onclick = () => sheet(`<h3>Schwierigkeitsstufe</h3><div class="opt-list">${Object.entries(L.DIFFICULTY).map(([k, v]) => `<button class="opt ${k === s.difficulty ? 'on' : ''}" data-d="${k}">${v.label} <small>– ${MONSTER_NAME} erreicht bis Monatsende ${Math.round(v.f * 100)} % des Monatsziels</small></button>`).join('')}</div>`,
         (el, close) => el.querySelectorAll('[data-d]').forEach(b => (b.onclick = () => { store.setSettings({ difficulty: b.dataset.d }); close(); })));
       root.querySelector('[data-goal]').onclick = () => sheet(`<h3>Monatsziel</h3>
         <div class="row-between"><span>Automatisch berechnen</span><label class="switch"><input type="checkbox" data-auto ${s.goalAuto ? 'checked' : ''}><span></span></label></div>

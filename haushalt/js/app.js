@@ -108,7 +108,7 @@ function welcomeView() {
     bind(root) {
       bindIntensity(root, l => (level = l));
       root.querySelector('[data-start]').onclick = () => {
-        store.setSettings({ setupDone: true, raceStart: Date.now(), intensity: level, kidDefaultsOff: true });
+        store.setSettings({ setupDone: true, raceStart: Date.now(), intensity: level, kidDefaultsOff: true, legacyMigrated: true });
         go('/', { replace: true });
         mascot.react('areaHint', { delay: 700, force: true });
       };
@@ -127,6 +127,7 @@ setInterval(() => { if (!document.hidden) L.monsterScan(); if (!document.hidden 
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { L.monsterScan(); L.finalizeRaces(); render(); } });
 
 L.migrateKidDefaults();
+L.migrateLegacy();
 L.monsterScan();
 L.finalizeRaces();
 render(true);

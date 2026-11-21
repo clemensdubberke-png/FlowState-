@@ -230,6 +230,7 @@ export function taskEditView(id, areaId) {
           if (t.seasonal && !(t.months || []).length) { toast('Bitte mindestens einen Monat wählen'); return; }
           if (!t.anytime && L.activeAt(t) && (condChanged || !existing || !t.lastDone)) { t.lastDone = L.lastDoneFor(t, cond); t.seasonFrom = L.seasonStart(t); }
           if (!t.anytime && !L.activeAt(t) && !t.lastDone) t.lastDone = Date.now();
+          if (!existing && !t.anytime && L.isDue(t)) t.legacy = true;
           if (existing && (condChanged || existing.freqN !== t.freqN || existing.freqUnit !== t.freqUnit || existing.anytime !== t.anytime)) t.mSince = Date.now();
           const rec = store.put('tasks', t);
           toast(existing ? 'Gespeichert' : 'Aufgabe hinzugefügt');

@@ -5,7 +5,10 @@ export const DAY = 86400000;
 const UNIT_DAYS = { d: 1, w: 7, m: 30 };
 export const UNIT_LABEL = { d: ['Tag', 'Tage'], w: ['Woche', 'Wochen'], m: ['Monat', 'Monate'] };
 export const EFFORT_LABEL = { 1: 'Leicht', 2: 'Mittel', 3: 'Schwer' };
-export const DIFFICULTY = { leicht: { label: 'Leicht', f: 0.7 }, normal: { label: 'Normal', f: 1 }, schwer: { label: 'Schwer', f: 1.3 } };
+// Schmuddel's steady pace: by month end he reaches goal × f
+export const DIFFICULTY = { leicht: { label: 'Leicht', f: 0.8 }, normal: { label: 'Normal', f: 1 }, schwer: { label: 'Schwer', f: 1.25 } };
+// his extra points for tasks left undone are capped at this share of the monthly goal
+export const MISS_CAP = 0.5;
 
 export function startOfDay(t) { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); }
 export function monthKey(t = Date.now()) { const d = new Date(t); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; }
@@ -228,7 +231,7 @@ export function completeTask(t, personId, { kid = false } = {}) {
     taskId: t.id, areaId: t.areaId, taskName: t.name, personId: personId || null,
     at: Date.now(), points: pts, kid,
   });
-  const patch = { id: t.id, lastDone: now(), mSince: Date.now(), seasonFrom: seasonStart(t) };
+  const patch = { id: t.id, lastDone: now(), mSince: Date.now(), seasonFrom: seasonStart(t), legacy: false };
   if (t.anytime) patch.anytimeCount = (todayCount(t) || 0) + 1;
   const s = store.settings();
   if (s.multiPerson && s.responsibility && s.rotation && (t.assignees || []).length > 1) {
@@ -316,8 +319,11 @@ export function monsterScan(at = Date.now()) {
   const from = Math.max(new Date(d.getFullYear(), d.getMonth() - 1, 1).getTime(), s.raceStart || 0);
   const known = store.raw('mpoints');
   const add = [];
+  // at most one miss per task and month
+  const hit = new Set(Object.values(known).filter(m => !m.deleted).map(m => `${m.taskId}|${monthKey(m.at)}`));
   for (const t of store.all('tasks')) {
     if (t.anytime || !t.lastDone || !activeAt(t, nowT)) continue;
+    if (t.legacy) continue; // "Altlast": was already due when it was added – no points for Schmuddel until done once
     const iv = intervalDays(t) * DAY;
     const first = startOfDay(dueAt(t, nowT)) + DAY; // first moment the task counts as overdue
     if (first > nowT) continue;
@@ -327,6 +333,9 @@ export function monsterScan(at = Date.now()) {
       const ev = first + j * iv;
       const id = `${t.id}-${Math.round(ev / 60000)}`;
       if (known[id]) continue;
+      const mk = `${t.id}|${monthKey(ev)}`;
+      if (hit.has(mk)) continue;
+      hit.add(mk);
       add.push({ id, taskId: t.id, areaId: t.areaId, taskName: t.name, at: ev, points: t.effort || 1 });
     }
   }
@@ -347,11 +356,13 @@ export function race(t = Date.now()) {
   const g = goal();
   const f = DIFFICULTY[s.difficulty]?.f || 1;
   const base = Math.round(g * f * frac);                                   // steady pace
-  const missed = monthMissed(t).reduce((a, m) => a + (m.points || 0), 0); // tasks left undone
+  const missedRaw = monthMissed(t).reduce((a, m) => a + (m.points || 0), 0); // tasks left undone
+  const missCap = Math.round(g * MISS_CAP);
+  const missed = Math.min(missedRaw, missCap);
   const monster = base + missed;
   const user = monthCompletions(t).reduce((a, c) => a + (c.points || 0), 0);
   const day = new Date(t).getDate();
-  return { goal: g, base, missed, monster, user, lead: user - monster, frac, day, monthLabel: new Date(t).toLocaleDateString('de-DE', { month: 'long' }) };
+  return { goal: g, base, missed, missCap, missedRaw, monster, user, lead: user - monster, frac, day, monthLabel: new Date(t).toLocaleDateString('de-DE', { month: 'long' }) };
 }
 /** The kids' own race (only shown in kids mode): only tasks marked "Für Kinder" count – for both sides. */
 export function kidsRace(t = Date.now()) {
@@ -365,7 +376,7 @@ export function kidsRace(t = Date.now()) {
   const g = kidIds.size ? Math.max(5, Math.round(sum * 0.5)) : 0;
   const f = DIFFICULTY[s.difficulty]?.f || 1;
   const base = Math.round(g * f * frac);
-  const missed = monthMissed(t).filter(m => kidIds.has(m.taskId)).reduce((a, m) => a + (m.points || 0), 0);
+  const missed = Math.min(monthMissed(t).filter(m => kidIds.has(m.taskId)).reduce((a, m) => a + (m.points || 0), 0), Math.round(g * MISS_CAP));
   const user = monthCompletions(t).filter(c => kidIds.has(c.taskId)).reduce((a, c) => a + (c.points || 0), 0);
   const monster = base + missed;
   return { goal: g, base, missed, monster, user, lead: user - monster };
@@ -412,6 +423,26 @@ export function finalizeRaces() {
     d.setMonth(d.getMonth() + 1);
   }
   if (changed) store.setSettings({ raceHistory: hist });
+}
+
+/** one-time: everything that is due right now and was never done becomes an "Altlast";
+ *  Schmuddel's points for those (and duplicates within a month) are removed – fair restart. */
+export function migrateLegacy() {
+  const s = store.settings();
+  if (s.legacyMigrated) return;
+  const done = new Set(store.all('completions').map(c => c.taskId));
+  const legacy = store.all('tasks').filter(t => !t.anytime && isDue(t) && !done.has(t.id));
+  if (legacy.length) store.putMany('tasks', legacy.map(t => ({ id: t.id, legacy: true })));
+  const ids = new Set(legacy.map(t => t.id));
+  const seen = new Set();
+  const drop = store.all('mpoints').sort((a, b) => a.at - b.at).filter(m => {
+    if (ids.has(m.taskId)) return true;
+    const k = `${m.taskId}|${monthKey(m.at)}`;
+    if (seen.has(k)) return true;
+    seen.add(k); return false;
+  });
+  drop.forEach(m => store.remove('mpoints', m.id));
+  store.setSettings({ legacyMigrated: true });
 }
 
 /** one-time: catalogue tasks are no longer kid-enabled by default (kids mode starts empty) */
@@ -487,6 +518,7 @@ export function addTemplateTasks(area, list, overrides = {}, conditions = {}, fo
     t.lastDone = t.anytime ? null : conditions[tpl[0]] ? lastDoneFor(t, conditions[tpl[0]]) : n - iv * DAY * (0.1 + r * 0.85);
     if (conditions[tpl[0]]) t.seasonFrom = seasonStart(t);
     if (forKids.has(tpl[0])) t.kid.enabled = true;
+    if (!t.anytime && isDue(t)) t.legacy = true;
     return t;
   });
   store.putMany('tasks', tasks);
