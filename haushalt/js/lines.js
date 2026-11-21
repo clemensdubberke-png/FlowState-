@@ -276,6 +276,42 @@ export const LINES = {
   dirtyRoom_terrasse: ['Die Terrasse? Moos-Teppich deluxe! Barfußlaufen auf eigene Gefahr.'],
   dirtyRoom_auto: ['Im Auto liegen so viele Krümel, man könnte einen Kuchen daraus backen.'],
 
+  // ---- kids-mode scenes (voiced) ----
+  scene_lamp: [
+    'Huiii! Von hier oben sehe ich alle Krümel!',
+    'Ich bin ein Kronleuchter-Monster! Bitte nicht das Licht ausmachen!',
+    'Schaukeln ist viel lustiger als Staubwischen! Komm doch auch hoch!',
+  ],
+  scene_bed: [
+    'Hopsi, hopsi! Ein ungemachtes Bett ist das beste Trampolin!',
+    'Wer sein Bett macht, verpasst das Hüpfen! Hihi!',
+    'Höher! Höher! Ich bin gleich an der Decke!',
+  ],
+  scene_bath: [
+    'Blubb! Ich bade im Schaum – aber nur, damit er schön schmutzig wird!',
+    'Quietsch, quietsch! Mein Gummi-Entchen und ich bleiben hier drin!',
+    'Igitt, Seife! Das kitzelt in der Nase!',
+  ],
+  scene_laundry: [
+    'Ich hab mir eine Socke als Mütze geklaut. Steht mir doch, oder?',
+    'Kuckuck! Im Wäschekorb findet mich keiner!',
+    'Schmutzige Wäsche riecht so herrlich nach Abenteuer!',
+  ],
+  scene_broom: [
+    'Juhu! Besen-Rodeo! Die Krümel fliegen nur so!',
+    'Ich fege nicht, ich reite! Das ist ein großer Unterschied!',
+    'Wer braucht ein Skateboard, wenn er einen Besen hat?',
+  ],
+  scene_plant: [
+    'Psst! Ich bin ein Blatt. Ein grünes, schleimiges Blatt.',
+    'Gieß mich bitte nicht, sonst wachse ich noch!',
+    'Hier hinter dem Blumentopf ist mein Geheimversteck!',
+  ],
+  scene_toybox: [
+    'Überraschung! Ich wohne jetzt in der Spielzeugkiste!',
+    'Boing! Wenn du die Kiste aufräumst, wo soll ich dann schlafen?',
+    'Ich hab alle Bauklötze versteckt. Viel Spaß beim Suchen!',
+  ],
   // ---- kids ----
   kids: [
     'Oh nein, ein Putz-Held! Hilfe!',
@@ -297,6 +333,6 @@ export const LINES = {
     'Neeein! Besiegt von einem Kind!',
     'Du bist ein echter Putz-Held! Ich geh weinen.',
     'Wie hast du das gemacht?! Bring mir das bloß nicht bei!',
-    'Sterne für dich, Tränen für mich. Schnief.',
+    'Schon wieder sauber! Jetzt hängt ihr mich im Rennen ab. Schnief.',
   ],
 };

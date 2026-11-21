@@ -11,7 +11,12 @@ export function taskSpeech(name, steps) {
 export const FIXED = {
   prima: 'Prima!',
   allDone: 'Super! Alles geschafft!',
-  stars: n => `Super gemacht! Du bekommst ${n === 1 ? 'einen Stern' : n === 2 ? 'zwei Sterne' : 'drei Sterne'}.`,
+  // after a kid finished a task (instead of stars: the race against Schmuddel)
+  done: [
+    'Super gemacht! Damit seid ihr Schmuddel ein Stück davongerannt!',
+    'Klasse! Jetzt muss sich Schmuddel ganz schön anstrengen!',
+    'Toll! Ein Punkt mehr im Rennen gegen Schmuddel!',
+  ],
 };
 
 /** FNV-1a hash → short hex id for "voice|text" */
@@ -28,6 +33,13 @@ const TAGS = {
   kids: ['[gasps] [scared]', '[panting] [frustrated]', '[sad] [whispers]', '[whispers] [mischievously]', '[mischievously] … [gasps] [nervous]', '[nervous] [giggles]', '[mischievously] [laughs]'],
   kidStep: ['[angry]', '[sighs] [pleading]', '[sighs] [impressed]', '[sad] [whispers]', '[surprised]'],
   kidDone: ['[crying] [dramatic]', '[sniffles] [crying]', '[shocked]', '[sad] [sniffles]'],
+  scene_lamp: ['[excited] [laughs]', '[giggles]', '[cheerfully] [laughs]'],
+  scene_bed: ['[excited] [laughs]', '[mischievously] [giggles]', '[excited] [shouting]'],
+  scene_bath: ['[giggles]', '[cheerfully]', '[disgusted] [sneezes]'],
+  scene_laundry: ['[proudly] [mischievously]', '[whispers] [giggles]', '[happily] [sighs]'],
+  scene_broom: ['[excited] [laughs]', '[proudly]', '[mischievously] [laughs]'],
+  scene_plant: ['[whispers]', '[nervous] [giggles]', '[whispers] [mischievously]'],
+  scene_toybox: ['[laughs] [excited]', '[cheerfully] [laughs]', '[mischievously] [laughs]'],
   tickle: ['[giggles]', '[annoyed]', '[mischievously]', '[laughs] [mischievously]', '[sarcastic] … [panicked]', '[proudly]', '[mischievously] [laughs]', '[giggles] [laughs]', '[playfully] [laughs]', '[proudly]', '[cheerfully]'],
   tickleMany: ['[shouting] [angry]', '[sighs] [annoyed]', '[mischievously] [laughs]'],
 };

@@ -16,7 +16,7 @@ const INFO = {
   race: `Jeden Monat tretet ihr gegen ${MONSTER_NAME} an. Ihr sammelt Punkte, indem ihr Aufgaben erledigt (Leicht 1 · Mittel 2 · Schwer 3). ${MONSTER_NAME} bewegt sich langsam, aber stetig – und bekommt dieselben Punkte für jede Aufgabe, die überfällig liegen bleibt. Wer am Monatsende vorne liegt, gewinnt; bei gleichem Stand ist es unentschieden.`,
   comments: `${MONSTER_NAME} kommentiert euren Fortschritt mit frechen Sprüchen.`,
   vacation: 'Im Urlaubsmodus wird nichts schmutziger: Alle Zustände werden eingefroren. Beim Beenden werden alle Aufgaben um die Urlaubsdauer verschoben.',
-  kids: 'Der Kindermodus zeigt Kindern ihre Aufgaben mit großen Bildern, einzelnen Schritten zum Abhaken und Vorlesefunktion. Für jede erledigte Aufgabe gibt es Sterne.',
+  kids: 'Der Kindermodus zeigt Kindern ihre Aufgaben mit großen Bildern, einzelnen Schritten zum Abhaken und Vorlesefunktion. Jede erledigte Aufgabe zählt im Rennen gegen Schmuddel – Schmuddel turnt dabei in kleinen Szenen herum.',
 };
 
 function group(title, rows, foot = '') {
@@ -324,19 +324,15 @@ export function vacationView() {
 export function kidsSettingsView() {
   const s = store.settings();
   const kids = L.persons().filter(p => p.kid);
-  const rewards = s.kidRewards || {};
   return {
     static: true,
     html: `${appbar('Kindermodus', { backTo: '/settings' })}
       <main class="content settings">
         ${group('Kindermodus', [row('Aktivieren', toggle('kidsMode', s.kidsMode), { info: 'kids' }), row('Kindermodus öffnen', '').replace('class="grow', 'data-kidsopen class="grow link')],
           'Kinder sehen nur Aufgaben, die als „Kinder können mitmachen“ markiert sind – mit Bild, Schritt-für-Schritt-Liste und Vorlesen. Zum Verlassen muss eine kleine Rechenaufgabe gelöst werden.')}
-        <h2 class="sec">Kinder & Belohnungen</h2>
-        <div class="group pad">${kids.length ? kids.map(k => `<div class="reward-row"><span class="avatar" style="--pc:${L.personColor(k)}">${esc(k.emoji)}</span><b>${esc(k.name)}</b>
-          <label>Bei <input type="number" min="1" max="500" value="${rewards[k.id]?.goal || 20}" data-rg="${k.id}"> ⭐</label>
-          <input placeholder="Belohnung, z. B. Eis essen" value="${esc(rewards[k.id]?.text || '')}" data-rt="${k.id}"></div>`).join('')
-          : '<p class="muted">Legt unter Personen ein Kind an (Schalter „Ist ein Kind“). Ohne Kinder-Profile gibt es ein gemeinsames Kinder-Profil.</p>'}</div>
-        ${kids.length ? '<div class="btn-row"><button class="btn orange" data-save>Speichern</button></div>' : ''}
+        <h2 class="sec">Kinder</h2>
+        <div class="group pad">${kids.length ? kids.map(k => `<div class="row-between"><span><span class="avatar" style="--pc:${L.personColor(k)}">${esc(k.emoji)}</span> ${esc(k.name)}</span></div>`).join('') : '<p class="muted">Legt unter Personen ein Kind an (Schalter „Ist ein Kind“). Ohne Kinder-Profile gibt es ein gemeinsames Kinder-Profil.</p>'}
+          <p class="muted small">Es gibt keine Sterne: Jede erledigte Kinder-Aufgabe ist ein Punkt im Rennen gegen Schmuddel.</p></div>
         <h2 class="sec">🔊 Stimme (ElevenLabs)</h2>
         <div class="group pad voice-box">
           <div class="row-between"><span>ElevenLabs-Stimme verwenden</span><label class="switch"><input type="checkbox" data-von ${voice.config().enabled ? 'checked' : ''}><span></span></label></div>
@@ -365,13 +361,6 @@ export function kidsSettingsView() {
       root.querySelector('[data-vmon]').onchange = e => voice.setConfig({ monsterVoice: e.target.value.trim() });
       root.querySelector('[data-vnar]').onchange = e => voice.setConfig({ narratorVoice: e.target.value.trim() });
       root.querySelectorAll('[data-vtest]').forEach(b => (b.onclick = () => voice.say(b.dataset.vtest === 'monster' ? mascot.line('kids') : 'Kinderzimmer aufräumen. Schritt 1: Spielzeug in die Kisten legen.', b.dataset.vtest)));
-      const save = root.querySelector('[data-save]');
-      if (save) save.onclick = () => {
-        const r = { ...rewards };
-        kids.forEach(k => { r[k.id] = { goal: Number(root.querySelector(`[data-rg="${k.id}"]`).value) || 20, text: root.querySelector(`[data-rt="${k.id}"]`).value.trim() }; });
-        store.setSettings({ kidRewards: r });
-        toast('Gespeichert');
-      };
     },
   };
 }

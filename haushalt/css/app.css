@@ -648,3 +648,63 @@ h2.sec:first-child { margin-top: 8px; }
 .voice-box input { color: var(--text); }
 .voice-box details { margin: 8px 0; }
 .voice-box summary { cursor: pointer; }
+
+/* ---------- kids: race card ---------- */
+.kid-race { background: #fff; border-radius: 22px; padding: 12px 16px; margin: 12px 0; box-shadow: 0 4px 0 #f0d6a8; }
+.kr-row { display: grid; grid-template-columns: 118px 1fr 34px; align-items: center; gap: 8px; margin: 6px 0; font-size: 16px; color: #3b2a3e; }
+.kr-bar { height: 18px; border-radius: 9px; background: #f3ead9; overflow: hidden; }
+.kr-bar div { height: 100%; border-radius: 9px; min-width: 6px; transition: width .6s; }
+.kr-bar.you div { background: linear-gradient(90deg, #ff9500, #ffcc00); }
+.kr-bar.mon div { background: linear-gradient(90deg, #6e9234, #8fb84a); }
+.kr-row b { text-align: right; }
+.kid-race p { margin: 6px 0 0; text-align: center; font-size: 17px; color: #8a4b00; }
+
+/* ---------- kids: Schmuddel scenes ---------- */
+.kid-stage { position: relative; background: linear-gradient(180deg, #fffaf0, #ffeccc); border-radius: 22px; padding: 6px 8px 10px; cursor: pointer; box-shadow: 0 4px 0 #f0d6a8; margin-bottom: 14px; }
+.scene { width: 100%; height: auto; display: block; max-height: 210px; }
+.scene.small { max-height: 150px; }
+.kid-stage .bubble, .ks-scene .bubble { margin: 4px 6px 0; text-align: center; }
+.kid-stage .bubble::before, .ks-scene .bubble::before { display: none; }
+.ks-scene { background: linear-gradient(180deg, #fffaf0, #ffeccc); border-radius: 18px; padding: 4px 6px 8px; margin-bottom: 12px; }
+.scene * { transform-box: view-box; }
+/* lamp: swinging on the cord */
+.scene-lamp .sc-swing { transform-origin: 100px 4px; animation: sc-swing 2.4s ease-in-out infinite; }
+.scene-lamp .sc-glow { animation: sc-glow 2.4s ease-in-out infinite; }
+@keyframes sc-swing { 0%, 100% { transform: rotate(-16deg); } 50% { transform: rotate(16deg); } }
+@keyframes sc-glow { 0%, 100% { opacity: .35; } 50% { opacity: .7; } }
+/* bed: jumping */
+.scene-bed .sc-bounce { animation: sc-bounce 1s cubic-bezier(.3, 0, .3, 1) infinite; transform-origin: 106px 96px; }
+.scene-bed .sc-feather { animation: sc-feather 3s ease-in-out infinite; }
+.scene-bed .sc-feather.f2 { animation-delay: 1.4s; }
+@keyframes sc-bounce { 0%, 100% { transform: translateY(2px) scale(1.08, .9); } 15% { transform: translateY(0) scale(.95, 1.06); } 50% { transform: translateY(-28px) scale(1, 1); } 85% { transform: translateY(0) scale(.96, 1.04); } }
+@keyframes sc-feather { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(-10px, 60px) rotate(60deg); opacity: 0; } }
+/* bath: bobbing, bubbles, duck */
+.scene-bath .sc-bob { animation: sc-bob 2.2s ease-in-out infinite; }
+.scene-bath .sc-bubble { animation: sc-rise 2.6s ease-in infinite; }
+.scene-bath .sc-bubble.b2 { animation-delay: .9s; } .scene-bath .sc-bubble.b3 { animation-delay: 1.7s; }
+.scene-bath .sc-duck { animation: sc-bob 1.6s ease-in-out infinite reverse; }
+@keyframes sc-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-5px) rotate(2deg); } }
+@keyframes sc-rise { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-60px); opacity: 0; } }
+/* laundry: peek-a-boo */
+.scene-laundry .sc-peek { animation: sc-peek 2.6s ease-in-out infinite; }
+@keyframes sc-peek { 0%, 30% { transform: translateY(38px); } 45%, 80% { transform: translateY(0); } 88% { transform: translateY(-4px) rotate(4deg); } 100% { transform: translateY(38px); } }
+/* broom: rodeo ride */
+.scene-broom .sc-ride { animation: sc-ride 3s ease-in-out infinite; transform-origin: 100px 110px; }
+.scene-broom .sc-dust { animation: sc-dust 1s ease-out infinite; }
+@keyframes sc-ride { 0%, 100% { transform: translateX(-14px) rotate(-4deg); } 25% { transform: translateX(0) rotate(3deg) translateY(-6px); } 50% { transform: translateX(14px) rotate(-3deg); } 75% { transform: translateX(0) rotate(4deg) translateY(-6px); } }
+@keyframes sc-dust { 0% { transform: translateX(0); opacity: .9; } 100% { transform: translateX(-14px) translateY(-6px); opacity: 0; } }
+/* plant: hide and seek */
+.scene-plant .sc-hide { animation: sc-hide 3.2s ease-in-out infinite; }
+.scene-plant .sc-leaves { transform-origin: 82px 100px; animation: sc-rustle 3.2s ease-in-out infinite; }
+.scene-plant .sc-drop { animation: sc-drop 1.4s ease-in infinite; }
+@keyframes sc-hide { 0%, 35% { transform: translateX(-34px); } 50%, 80% { transform: translateX(0); } 100% { transform: translateX(-34px); } }
+@keyframes sc-rustle { 0%, 30%, 100% { transform: rotate(0); } 40% { transform: rotate(4deg); } 45% { transform: rotate(-3deg); } 85% { transform: rotate(3deg); } }
+@keyframes sc-drop { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(40px); opacity: 0; } }
+/* toybox: jack-in-the-box */
+.scene-toybox .sc-jack { animation: sc-jack 2.4s cubic-bezier(.3, 1.6, .5, 1) infinite; transform-origin: 100px 96px; }
+.scene-toybox .sc-lid { transform-origin: 56px 96px; animation: sc-lid 2.4s ease-out infinite; }
+@keyframes sc-jack { 0%, 20% { transform: translateY(62px) scaleY(.4); } 35%, 85% { transform: translateY(0) scaleY(1); } 92% { transform: translateY(6px) scaleY(.92); } 100% { transform: translateY(62px) scaleY(.4); } }
+@keyframes sc-lid { 0%, 18% { transform: rotate(0); } 30%, 88% { transform: rotate(-38deg); } 100% { transform: rotate(0); } }
+.cel-line { font-size: 19px; color: #3b2a3e; }
+.cel-score { display: flex; justify-content: center; gap: 14px; font-size: 22px; color: #3b2a3e; margin: 8px 0; }
+.cel-score b { font-size: 30px; }

@@ -93,4 +93,6 @@ export async function say(text, voice = 'narrator') {
     }
   }
   deviceSpeak(text);
+  // phone voice: resolve after roughly the time it takes to speak
+  await new Promise(r => setTimeout(r, Math.min(9000, 600 + text.length * 65)));
 }
