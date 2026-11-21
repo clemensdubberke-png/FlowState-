@@ -745,3 +745,7 @@ h2.sec:first-child { margin-top: 8px; }
 .switch-kid { font-size: 14px; }
 .kid-room { flex-wrap: wrap; gap: 6px; margin: 6px 0; }
 .kid-room select { border: 0; border-radius: 8px; padding: 6px 8px; color: var(--text); }
+.kid-allclear { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 22px; padding: 14px 16px; box-shadow: 0 4px 0 #f0d6a8; color: #3b2a3e; font-size: 18px; }
+.kid-allclear p { margin: 0; }
+.kid-donetoday { margin-top: 14px; background: #e9f9e2; border-radius: 18px; padding: 10px 14px; color: #2f5d2a; font-size: 15px; }
+.kid-donetoday ul { margin: 6px 0 0; padding-left: 18px; }

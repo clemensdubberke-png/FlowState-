@@ -146,7 +146,14 @@ export function kidsView(kidId) {
     };
   }
   const kid = kids.find(k => k.id === kidId) || kids[0];
-  const tasks = kidTasks(kid.id).sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
+  const mine = kidTasks(kid.id);
+  // only what is due now ("Jederzeit"-tasks have no due date and stay available)
+  const tasks = mine.filter(t => t.anytime || L.isDue(t)).sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
+  // finished today (no longer due): shown as a small line so kids see what was done, and by whom
+  const doneList = mine.filter(t => !t.anytime && !L.isDue(t) && L.todayCount(t) > 0).map(t => {
+    const by = doneTodayBy(t);
+    return `${esc(t.kid.emoji || guessEmoji(t.name))} ${esc(t.name)}${by ? ` · ${esc(by.name)}` : ''}`;
+  });
   let scene = randomScene();
   return {
     html: `${header}
@@ -165,7 +172,10 @@ export function kidsView(kidId) {
             <span class="kt-area">${esc(store.get('areas', t.areaId)?.name || '')}</span>
             <small>${done ? `✅ Heute geschafft${(() => { const by = doneTodayBy(t); return by && by.id !== kid.id ? ` von ${esc(by.name)}` : ''; })()}!` : due ? '🔥 Jetzt dran!' : t.anytime ? 'Hilf mit!' : 'Bald wieder dran'}</small>
           </button>`;
-        }).join('') || `<p class="empty">Gerade gibt es keine Kinder-Aufgaben. Frag Mama oder Papa! 🙂</p>`}</div>
+        }).join('') || (mine.length
+          ? `<div class="kid-allclear">${monsterSvg('sad', 'kid-mon', { tickle: true })}<p><b>Alles erledigt!</b><br>Schmuddel schmollt in der Ecke. 😤</p></div>`
+          : `<p class="empty">Gerade gibt es keine Kinder-Aufgaben. Frag Mama oder Papa! 🙂</p>`)}</div>
+        ${doneList.length ? `<div class="kid-donetoday"><b>✅ Heute geschafft</b><ul>${doneList.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}
         <button class="btn light big kids-exit" data-exit>🔒 Zurück zum Hauptmenü (für Eltern)</button>
       </main>`,
     bind(root) {
