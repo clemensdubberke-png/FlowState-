@@ -396,6 +396,15 @@ export function finalizeRaces() {
   if (changed) store.setSettings({ raceHistory: hist });
 }
 
+/** one-time: catalogue tasks are no longer kid-enabled by default (kids mode starts empty) */
+export function migrateKidDefaults() {
+  const s = store.settings();
+  if (s.kidDefaultsOff) return;
+  const list = store.all('tasks').filter(t => 'tplDays' in t && t.kid?.enabled);
+  if (list.length) store.putMany('tasks', list.map(t => ({ id: t.id, kid: { ...t.kid, enabled: false } })));
+  store.setSettings({ kidDefaultsOff: true });
+}
+
 // ---------------- vacation ----------------
 export function startVacation() { store.setSettings({ vacation: { since: Date.now() } }); }
 export function endVacation() {
@@ -441,14 +450,13 @@ export function templateToTask(areaId, tpl, i = 0, level = intensity()) {
   const t = { areaId, name, anytime: n === 0, freqN: 1, freqUnit: unit, effort, order: i, assignees: [], tplDays: base || null };
   if (base) Object.assign(t, scaledFreq(base, level));
   if (months) { t.seasonal = true; t.months = [...months]; }
-  if (kid) {
-    t.kid = { enabled: true, emoji: kid.e || guessEmoji(name), steps: (kid.steps || []).map(([e, text]) => ({ e, text })) };
-  }
+  // prepared for kids (nice symbol + steps), but only shown in kids mode once "Für Kinder" is switched on
+  t.kid = { enabled: false, emoji: (kid && kid.e) || guessEmoji(name), steps: ((kid && kid.steps) || []).map(([e, text]) => ({ e, text })) };
   return t;
 }
 
 /** Adds catalogue tasks. overrides: name -> { freqN, freqUnit } chosen by the user. */
-export function addTemplateTasks(area, list, overrides = {}, conditions = {}) {
+export function addTemplateTasks(area, list, overrides = {}, conditions = {}, forKids = new Set()) {
   const n = Date.now();
   const start = tasksOfArea(area.id).length;
   const tasks = list.map((tpl, i) => {
@@ -460,6 +468,7 @@ export function addTemplateTasks(area, list, overrides = {}, conditions = {}) {
     const r = ((i * 37) % 100) / 100; // deterministic pseudo-random 0..1
     t.lastDone = t.anytime ? null : conditions[tpl[0]] ? lastDoneFor(t, conditions[tpl[0]]) : n - iv * DAY * (0.1 + r * 0.85);
     if (conditions[tpl[0]]) t.seasonFrom = seasonStart(t);
+    if (forKids.has(tpl[0])) t.kid.enabled = true;
     return t;
   });
   store.putMany('tasks', tasks);

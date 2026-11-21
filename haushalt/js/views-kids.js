@@ -6,6 +6,8 @@ import { esc, icons, sheet, toast, confetti, speak, vibrate } from './ui.js';
 import { go } from './router.js';
 import { guessEmoji } from './templates.js';
 import * as mascot from './mascot.js';
+import * as voice from './voice.js';
+import { taskSpeech, FIXED } from './speech.js';
 
 const GROUP_KID = '_kids';
 
@@ -114,7 +116,7 @@ function kidTaskSheet(id, kid) {
   if (!t) return;
   const steps = (t.kid.steps && t.kid.steps.length) ? t.kid.steps : [{ e: t.kid.emoji || '⭐', text: t.name }];
   const checked = new Set();
-  const readAll = () => speak(`${t.name}. ` + steps.map((s, i) => `Schritt ${i + 1}: ${s.text}.`).join(' '));
+  const readAll = () => voice.say(taskSpeech(t.name, t.kid.steps), 'narrator');
   const draw = () => `<div class="kid-sheet">
       <div class="ks-head"><span class="kt-emo big">${esc(t.kid.emoji || '⭐')}</span><h3>${esc(t.name)}</h3><button class="icon-btn speak" data-read aria-label="Vorlesen">${icons.speaker}</button></div>
       <div class="ks-steps">${steps.map((s, i) => `<button class="ks-step ${checked.has(i) ? 'on' : ''}" data-s="${i}"><span class="ks-num">${checked.has(i) ? '✔' : i + 1}</span><span class="ks-emo">${esc(s.e || '⭐')}</span><span class="ks-text">${esc(s.text)}</span></button>`).join('')}</div>
@@ -127,7 +129,7 @@ function kidTaskSheet(id, kid) {
       box.querySelector('[data-read]').onclick = readAll;
       box.querySelectorAll('[data-s]').forEach(b => (b.onclick = () => {
         const i = Number(b.dataset.s);
-        if (checked.has(i)) checked.delete(i); else { checked.add(i); vibrate(20); if (checked.size === steps.length) speak('Super! Alles geschafft!'); else if (Math.random() < 0.6) mascot.react('kidStep', { force: true }); else speak('Prima!'); }
+        if (checked.has(i)) checked.delete(i); else { checked.add(i); vibrate(20); if (checked.size === steps.length) voice.say(FIXED.allDone, 'narrator'); else if (Math.random() < 0.6) mascot.react('kidStep', { force: true }); else voice.say(FIXED.prima, 'narrator'); }
         box.innerHTML = draw(); bind();
       }));
       box.querySelector('[data-done]').onclick = () => {
@@ -138,12 +140,13 @@ function kidTaskSheet(id, kid) {
         if (c) store.put('completions', { id: c.id, stars });
         close();
         confetti(90);
-        speak(`Super gemacht, ${kid.name}! Du bekommst ${stars} ${stars === 1 ? 'Stern' : 'Sterne'}.`);
+        voice.say(FIXED.stars(Math.min(3, stars)), 'narrator');
         celebrate(stars, kid);
       };
     };
     bind();
   }, { cls: 'kid' });
+  setTimeout(readAll, 350);
 }
 
 function celebrate(stars, kid) {

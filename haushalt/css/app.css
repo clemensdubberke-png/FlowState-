@@ -643,3 +643,8 @@ h2.sec:first-child { margin-top: 8px; }
 .cond.sleep { text-align: center; }
 .cond.sleep .zz { font-size: 24px; display: block; animation: zz 2.4s ease-in-out infinite; }
 @keyframes zz { 0%, 100% { transform: translateY(0); opacity: .7; } 50% { transform: translateY(-4px); opacity: 1; } }
+.kid-toggle { margin: 0 0 8px; background: #fff4e0; color: #8a5a10; border-radius: 14px; padding: 6px 12px; font-size: 14px; font-weight: 500; border: 2px solid transparent; }
+.kid-toggle.on { background: #ffe2b0; border-color: var(--orange); }
+.voice-box input { color: var(--text); }
+.voice-box details { margin: 8px 0; }
+.voice-box summary { cursor: pointer; }

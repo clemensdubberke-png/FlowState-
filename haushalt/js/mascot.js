@@ -4,6 +4,7 @@ import { monsterSvg, MONSTER_NAME } from './art.js';
 import { LINES } from './lines.js';
 import { esc, speak } from './ui.js';
 import * as L from './logic.js';
+import * as voice from './voice.js';
 
 // event -> how Schmuddel looks and moves
 const REACT = {
@@ -74,7 +75,7 @@ function show(def, text, opts) {
   const el = root.firstElementChild;
   el.onclick = () => hide();
   requestAnimationFrame(() => el.classList.add('in'));
-  if (opts.speak || inKids) speak(text);
+  if (inKids) voice.say(text, 'monster'); else if (opts.speak) speak(text);
   const ms = Math.min(7000, 2600 + text.length * 45);
   queueBusyUntil = Date.now() + ms;
   hideTimer = setTimeout(hide, ms);
@@ -111,7 +112,7 @@ document.addEventListener('click', e => {
   if (target) {
     target.textContent = text;
     target.classList.remove('pop'); void target.offsetWidth; target.classList.add('pop');
-    if (document.getElementById('app')?.classList.contains('kids-mode')) speak(text);
+    if (document.getElementById('app')?.classList.contains('kids-mode')) voice.say(text, 'monster');
   } else {
     react(kind, { text, force: true });
   }

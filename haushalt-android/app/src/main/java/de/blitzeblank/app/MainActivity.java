@@ -299,6 +299,41 @@ public class MainActivity extends Activity {
             if (am != null) am.cancel(alarmIntent("", ""));
         }
 
+        /** ElevenLabs text-to-speech without browser CORS limits; answers via window.__bbTts(id, base64). */
+        @JavascriptInterface
+        public void ttsFetch(String reqId, String apiKey, String voiceId, String jsonBody) {
+            new Thread(() -> {
+                String b64 = "";
+                java.net.HttpURLConnection con = null;
+                try {
+                    java.net.URL url = new java.net.URL("https://api.elevenlabs.io/v1/text-to-speech/"
+                            + java.net.URLEncoder.encode(voiceId, "UTF-8") + "?output_format=mp3_44100_64");
+                    con = (java.net.HttpURLConnection) url.openConnection();
+                    con.setRequestMethod("POST");
+                    con.setConnectTimeout(10000);
+                    con.setReadTimeout(20000);
+                    con.setDoOutput(true);
+                    con.setRequestProperty("xi-api-key", apiKey);
+                    con.setRequestProperty("Content-Type", "application/json");
+                    con.setRequestProperty("Accept", "audio/mpeg");
+                    try (OutputStream os = con.getOutputStream()) { os.write(jsonBody.getBytes(StandardCharsets.UTF_8)); }
+                    if (con.getResponseCode() == 200) {
+                        java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+                        try (java.io.InputStream in = con.getInputStream()) {
+                            byte[] buf = new byte[8192]; int n;
+                            while ((n = in.read(buf)) > 0) bos.write(buf, 0, n);
+                        }
+                        b64 = android.util.Base64.encodeToString(bos.toByteArray(), android.util.Base64.NO_WRAP);
+                    }
+                } catch (Exception ignored) {
+                } finally {
+                    if (con != null) con.disconnect();
+                }
+                final String js = "window.__bbTts && window.__bbTts('" + reqId.replaceAll("[^A-Za-z0-9]", "") + "','" + b64 + "')";
+                runOnUiThread(() -> web.evaluateJavascript(js, null));
+            }).start();
+        }
+
         @JavascriptInterface
         public void setBarColor(String color) {
             runOnUiThread(() -> MainActivity.this.setBarColor(color));

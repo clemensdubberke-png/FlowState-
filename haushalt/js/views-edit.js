@@ -374,6 +374,7 @@ export function catalogView(areaId) {
 // step 2: "Wie sieht es gerade aus?" for every selected task
 function conditionStep(area, st, findTpl, level) {
   st.cond = st.cond || new Map();
+  st.kids = st.kids || new Set();
   const items = [...st.sel.entries()].map(([name, f]) => {
     const tpl = findTpl(name);
     const t = { ...L.templateToTask(area.id, tpl, 0, level), ...(f || {}) };
@@ -387,7 +388,8 @@ function conditionStep(area, st, findTpl, level) {
         <div class="cat-head"><div><b>Wie sieht es gerade aus?</b><small>Gebt für jede Aufgabe den aktuellen Zustand an. Zusammen mit der Frequenz ergibt sich daraus, ob sie heute fällig ist, noch Zeit hat oder überfällig ist.</small></div></div>
         ${need.length > 1 ? `<div class="cond-all"><span>Für alle setzen:</span><div class="chips">${L.CONDITIONS.map(c => `<button class="chip" data-allc="${c.key}" title="${esc(c.label)}">${c.emoji} ${esc(c.label)}</button>`).join('')}</div></div>` : ''}
         <div class="cond-list">${items.map(({ name, t }) => `<div class="cond-item ${t.anytime || !L.activeAt(t) || st.cond.get(name) ? '' : 'need'}">
-            <div class="ci-head"><b>${esc(name)}</b><small>${esc(L.freqText(t))}</small></div>
+            <div class="ci-head"><b>${t.kid?.emoji ? esc(t.kid.emoji) + ' ' : ''}${esc(name)}</b><small>${esc(L.freqText(t))}</small></div>
+            <button class="kid-toggle ${st.kids.has(name) ? 'on' : ''}" data-kidt="${esc(name)}">${st.kids.has(name) ? '✓ ' : ''}👧 Auch für Kinder</button>
             ${conditionPicker(t, st.cond.get(name), name)}
           </div>`).join('')}</div>
         <button class="btn link" data-backpick>← Auswahl ändern</button>
@@ -398,13 +400,14 @@ function conditionStep(area, st, findTpl, level) {
       bindCommon(root);
       const rerender = () => window.dispatchEvent(new Event('bb:render'));
       bindConditionPickers(root, (name, key) => { st.cond.set(name, key); rerender(); });
+      root.querySelectorAll('[data-kidt]').forEach(b => (b.onclick = () => { const n = b.dataset.kidt; st.kids.has(n) ? st.kids.delete(n) : st.kids.add(n); rerender(); }));
       root.querySelectorAll('[data-allc]').forEach(b => (b.onclick = () => { need.forEach(x => st.cond.set(x.name, b.dataset.allc)); rerender(); }));
       root.querySelector('[data-backpick]').onclick = () => { st.step = 'pick'; rerender(); };
       root.querySelector('[data-add]').onclick = () => {
         const list = items.map(x => findTpl(x.name)).filter(Boolean);
         const overrides = {}; st.sel.forEach((f, n) => { if (f) overrides[n] = f; });
         const conds = Object.fromEntries(st.cond);
-        const n = L.addTemplateTasks(area, list, overrides, conds);
+        const n = L.addTemplateTasks(area, list, overrides, conds, st.kids);
         delete catState[area.id];
         toast(`${n} Aufgabe${n > 1 ? 'n' : ''} hinzugefügt`);
         go('/area/' + area.id, { replace: true });
