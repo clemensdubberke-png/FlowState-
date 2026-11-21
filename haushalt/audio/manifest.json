@@ -9,10 +9,9 @@
  },
  "pitch": {
   "monster": 1.26,
-  "narrator": 1
+  "narrator": 1.26
  },
  "files": {
-  "22941602": "22941602.mp3",
   "58118298": "58118298.mp3",
   "32f804be": "32f804be.mp3",
   "b7ea8441": "b7ea8441.mp3",
@@ -25,6 +24,14 @@
   "e55e201c": "e55e201c.mp3",
   "d5af1420": "d5af1420.mp3",
   "b8499485": "b8499485.mp3",
+  "cea8da1a": "cea8da1a.mp3",
+  "a7e09d7b": "a7e09d7b.mp3",
+  "91d0e051": "91d0e051.mp3",
+  "098f4c8f": "098f4c8f.mp3",
+  "3f49f4ea": "3f49f4ea.mp3",
+  "2ab322d6": "2ab322d6.mp3",
+  "0f5575bf": "0f5575bf.mp3",
+  "0810f3c2": "0810f3c2.mp3",
   "d6c70d9d": "d6c70d9d.mp3",
   "85bfb8ce": "85bfb8ce.mp3",
   "8cafdad3": "8cafdad3.mp3",
@@ -64,10 +71,6 @@
   "f06a89dd": "f06a89dd.mp3",
   "4023e98f": "4023e98f.mp3",
   "86d832de": "86d832de.mp3",
-  "bd62f7e9": "bd62f7e9.mp3",
-  "e23d056a": "e23d056a.mp3",
-  "d07beec9": "d07beec9.mp3",
-  "f3b6197e": "f3b6197e.mp3",
   "4bba45dd": "4bba45dd.mp3",
   "3057e5a9": "3057e5a9.mp3",
   "acf23349": "acf23349.mp3",

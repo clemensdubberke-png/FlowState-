@@ -36,9 +36,12 @@ export function stop() {
   try { if (current) { current.pause(); current = null; } } catch (e) { /* ignore */ }
   try { if (native) native.stopSpeaking(); else if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) { /* ignore */ }
 }
-function play(src) {
+// bundled clips are pitched already; live clips are raised at playback (≈ +4 semitones)
+const LIVE_PITCH = 1.26;
+function play(src, live = false) {
   return new Promise(res => {
     const a = new Audio(src);
+    if (live) { a.preservesPitch = false; a.mozPreservesPitch = false; a.webkitPreservesPitch = false; a.playbackRate = LIVE_PITCH; }
     current = a;
     a.onended = a.onerror = () => res(true);
     a.play().catch(() => res(false));
@@ -83,12 +86,12 @@ export async function say(text, voice = 'narrator') {
     const file = m.files?.[k];
     if (file && await play(`audio/${file}`)) return;
     const hit = await cached(k);
-    if (hit && await play(URL.createObjectURL(hit))) return;
+    if (hit && await play(URL.createObjectURL(hit), true)) return;
     const id = await voiceId(voice);
     if (c.key && id) {
       try {
         const blob = await fetchTts(text, voice, id, c.key);
-        if (blob) { store_(k, blob); if (await play(URL.createObjectURL(blob))) return; }
+        if (blob) { store_(k, blob); if (await play(URL.createObjectURL(blob), true)) return; }
       } catch (e) { /* fall back */ }
     }
   }

@@ -97,7 +97,7 @@ export function speak(text) {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'de-DE';
     u.rate = 0.95;
-    u.pitch = 1.1;
+    u.pitch = 1.6;
     const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith('de'));
     if (v) u.voice = v;
     speechSynthesis.speak(u);

@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
                 ttsReady = r != TextToSpeech.LANG_MISSING_DATA && r != TextToSpeech.LANG_NOT_SUPPORTED;
                 if (!ttsReady) ttsReady = tts.setLanguage(Locale.GERMAN) >= 0;
                 tts.setSpeechRate(0.95f);
-                tts.setPitch(1.1f);
+                tts.setPitch(1.6f);
             }
         });
 

@@ -329,6 +329,18 @@ export const LINES = {
     'Ich werde kleiner… und kleiner… gleich bin ich so klein wie eine Rosine!',
     'Grrr! Schon wieder ein Krümel weniger! Das ist MEIN Zimmer!',
   ],
+  kidTick: [
+    'Menno! Schon wieder ein Schritt!',
+    'Grrr! Das macht mich ganz kribbelig!',
+    'Och nööö! Mein schöner Dreck wird weniger!',
+    'Nicht weitermachen! Ich zähl bis drei! Eins… zwei… ach Mist!',
+    'Pfui! Jetzt glänzt da was! Meine Augen!',
+  ],
+  kidAllSteps: [
+    'Alle Schritte fertig?! Ich glaub, ich werd ohnmächtig… plumps!',
+    'Waaas, alles erledigt? Da fällt mir vor Schreck der Schleim aus der Nase!',
+    'Fertig?! Na super. Jetzt muss ich mir ein neues Chaos ausdenken!',
+  ],
   kidDone: [
     'Neeein! Besiegt von einem Kind! Ich muss mich jetzt erst mal in Matsch wälzen!',
     'Pfui, alles blitzeblank! Und du freust dich auch noch! …Hicks! Jetzt hab ich Schluckauf vor Wut!',

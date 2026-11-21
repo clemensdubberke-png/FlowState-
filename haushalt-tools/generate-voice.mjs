@@ -14,10 +14,10 @@ const appDir = join(here, '..', 'haushalt');
 const outDir = join(appDir, 'audio');
 const rawDir = join(here, 'voice-raw'); // unpitched originals (not bundled) – re-pitching costs nothing
 // Schmuddel a little higher (≈ +4 semitones), tempo unchanged
-const PITCH = { monster: Number(process.env.PITCH_MONSTER || 1.26), narrator: Number(process.env.PITCH_NARRATOR || 1) };
+const PITCH = { monster: Number(process.env.PITCH_MONSTER || 1.26), narrator: Number(process.env.PITCH_NARRATOR || 1.26) }; // everything in the same higher voice
 const { LINES } = await import(join(appDir, 'js', 'lines.js'));
 const { TEMPLATES } = await import(join(appDir, 'js', 'templates.js'));
-const { taskSpeech, FIXED, speechKey, spokenText } = await import(join(appDir, 'js', 'speech.js'));
+const { taskSpeech, speechKey, spokenText } = await import(join(appDir, 'js', 'speech.js'));
 
 const KEY = process.env.ELEVEN_API_KEY || 'set-by-proxy';
 const VOICES = { monster: process.env.VOICE_MONSTER, narrator: process.env.VOICE_NARRATOR };
@@ -30,9 +30,7 @@ if (!VOICES.monster || !VOICES.narrator) { console.error('VOICE_MONSTER and VOIC
 
 // ---- what kids mode can say ----
 const items = [];
-for (const k of ['kids', 'kidStep', 'kidDone', 'tickle', 'tickleMany', ...Object.keys(LINES).filter(x => x.startsWith('scene_'))]) (LINES[k] || []).forEach(text => items.push({ voice: 'monster', text }));
-items.push({ voice: 'narrator', text: FIXED.prima }, { voice: 'narrator', text: FIXED.allDone });
-FIXED.done.forEach(text => items.push({ voice: 'narrator', text }));
+for (const k of ['kids', 'kidStep', 'kidTick', 'kidAllSteps', 'kidDone', 'tickle', 'tickleMany', ...Object.keys(LINES).filter(x => x.startsWith('scene_'))]) (LINES[k] || []).forEach(text => items.push({ voice: 'monster', text }));
 const seen = new Set();
 for (const list of Object.values(TEMPLATES)) {
   for (const [name, , , , kid] of list) {

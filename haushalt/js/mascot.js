@@ -37,6 +37,8 @@ const REACT = {
   greetAway: { mood: 'taunt', anim: 'a-dance' },
   kids: { mood: 'taunt', anim: 'a-jump' },
   kidStep: { mood: 'shock', anim: 'a-shrink' },
+  kidTick: { mood: 'angry', anim: 'a-stomp' },
+  kidAllSteps: { mood: 'shock', anim: 'a-faint' },
   kidDone: { mood: 'sad', anim: 'a-melt' },
 };
 

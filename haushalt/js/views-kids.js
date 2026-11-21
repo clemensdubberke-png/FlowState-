@@ -7,7 +7,7 @@ import { go } from './router.js';
 import { guessEmoji } from './templates.js';
 import * as mascot from './mascot.js';
 import * as voice from './voice.js';
-import { taskSpeech, FIXED } from './speech.js';
+import { taskSpeech } from './speech.js';
 import { sceneSvg, sceneFor, randomScene } from './scenes.js';
 
 const GROUP_KID = '_kids';
@@ -149,7 +149,7 @@ function kidTaskSheet(id, kid) {
       box.querySelector('[data-read]').onclick = readAll;
       box.querySelectorAll('[data-s]').forEach(b => (b.onclick = () => {
         const i = Number(b.dataset.s);
-        if (checked.has(i)) checked.delete(i); else { checked.add(i); vibrate(20); if (checked.size === steps.length) voice.say(FIXED.allDone, 'narrator'); else if (Math.random() < 0.6) mascot.react('kidStep', { force: true }); else voice.say(FIXED.prima, 'narrator'); }
+        if (checked.has(i)) checked.delete(i); else { checked.add(i); vibrate(20); if (checked.size === steps.length) mascot.react('kidAllSteps', { force: true }); else mascot.react(Math.random() < 0.5 ? 'kidStep' : 'kidTick', { force: true }); }
         box.innerHTML = draw(); bind();
       }));
       box.querySelector('[data-done]').onclick = () => {
@@ -157,10 +157,9 @@ function kidTaskSheet(id, kid) {
         L.completeTask(t, personId, { kid: true });
         close();
         confetti(90);
-        const doneLine = pick(FIXED.done);
         const monLine = mascot.line('kidDone');
-        voice.say(doneLine, 'narrator').then(() => voice.say(monLine, 'monster'));
-        celebrate(kid, doneLine, monLine);
+        voice.say(monLine, 'monster');
+        celebrate(kid, monLine);
       };
     };
     bind();
@@ -169,11 +168,11 @@ function kidTaskSheet(id, kid) {
   setTimeout(() => voice.say(scLine, 'monster').then(() => { if (document.querySelector('.sheet.kid')) readAll(); }), 350);
 }
 
-function celebrate(kid, doneLine, monLine) {
+function celebrate(kid, monLine) {
   const r = L.race();
   sheet(`<div class="celebrate">${monsterSvg('sad', 'kid-mon big a-melt-loop', { tickle: true })}
-      <h2>Super, ${esc(kid.name)}!</h2>
-      <p class="cel-line">${esc(doneLine)}</p>
+      <h2>Geschafft, ${esc(kid.name)}! 🏁</h2>
+      <p class="cel-line">Ein Punkt mehr im Rennen gegen Schmuddel!</p>
       ${store.settings().race ? `<div class="cel-score"><span>Ihr <b>${r.user}</b></span><span>:</span><span><b>${r.monster}</b> Schmuddel</span></div>` : ''}
       <p>${esc(MONSTER_NAME)}: „${esc(monLine)}“</p>
       <button class="btn orange big" data-ok>Weiter</button></div>`, (el, close) => { el.querySelector('[data-ok]').onclick = close; }, { cls: 'kid' });
