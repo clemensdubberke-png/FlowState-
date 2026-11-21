@@ -21,8 +21,25 @@ function manifest() {
 }
 export async function bundledInfo() { const m = await manifest(); return { count: Object.keys(m.files || {}).length, voices: m.voices || {} }; }
 
-export function config() { return { enabled: true, key: '', monsterVoice: '', narratorVoice: '', ...(store.local().eleven || {}) }; }
-export function setConfig(patch) { store.setLocal({ eleven: { ...config(), ...patch } }); }
+// The ElevenLabs key is shared by the whole household (synced settings);
+// "use ElevenLabs" and the voice ids stay per phone.
+export function config() {
+  const loc = { enabled: true, monsterVoice: '', narratorVoice: '', ...(store.local().eleven || {}) };
+  return { ...loc, key: store.settings().elevenKey || loc.key || '' };
+}
+export function setConfig(patch) {
+  const { key, ...rest } = patch;
+  if (key !== undefined) store.setSettings({ elevenKey: key });
+  const loc = { ...(store.local().eleven || {}), ...rest };
+  delete loc.key;
+  store.setLocal({ eleven: loc });
+}
+/** one-time: a key that was stored only on this phone becomes the household key */
+export function migrateKey() {
+  const loc = store.local().eleven || {};
+  if (loc.key && !store.settings().elevenKey) store.setSettings({ elevenKey: loc.key });
+  if (loc.key) { const { key, ...rest } = loc; store.setLocal({ eleven: rest }); }
+}
 
 async function voiceId(voice) {
   const c = config();

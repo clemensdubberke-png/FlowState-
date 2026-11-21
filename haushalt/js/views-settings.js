@@ -338,15 +338,15 @@ export function kidsSettingsView() {
           <p class="muted small">Es gibt keine Sterne: Jede erledigte Kinder-Aufgabe ist ein Punkt im Rennen gegen Schmuddel.</p></div>
         <h2 class="sec">🔊 Stimme (ElevenLabs)</h2>
         <div class="group pad voice-box">
-          <div class="row-between"><span>ElevenLabs-Stimme verwenden</span><label class="switch"><input type="checkbox" data-von ${voice.config().enabled ? 'checked' : ''}><span></span></label></div>
+          <div class="row-between"><span>ElevenLabs-Stimme verwenden <small class="muted">(dieses Handy)</small></span><label class="switch"><input type="checkbox" data-von ${voice.config().enabled ? 'checked' : ''}><span></span></label></div>
           <p class="small" data-vinfo>Lade Sprachdateien…</p>
-          <label class="field"><small>API-Schlüssel für eigene Aufgaben (nur auf diesem Handy gespeichert)</small><input type="password" data-vkey value="${esc(voice.config().key)}" placeholder="optional – sk_…" autocomplete="off"></label>
+          <label class="field"><small>API-Schlüssel für eigene Aufgaben (gilt für alle Handys im Haushalt)</small><input type="password" data-vkey value="${esc(voice.config().key)}" placeholder="optional – sk_…" autocomplete="off"></label>
           <details><summary class="small">Stimmen ändern (Voice-IDs)</summary>
             <label class="field"><small>Schmuddel</small><input data-vmon value="${esc(voice.config().monsterVoice)}" placeholder="Standard aus der App"></label>
             <label class="field"><small>Erzähler (Aufgaben & Schritte)</small><input data-vnar value="${esc(voice.config().narratorVoice)}" placeholder="Standard aus der App"></label>
           </details>
           <div class="btn-row"><button class="btn light" data-vtest="monster">▶ Schmuddel</button><button class="btn light" data-vtest="narrator">▶ Erzähler</button></div>
-          <p class="muted small">Sprüche von Schmuddel und die Aufgaben aus dem Katalog sind als Sprachdateien in der App (offline, kostenlos). Für selbst geschriebene Aufgaben holt die App die Stimme mit dem Schlüssel live von ElevenLabs und merkt sie sich. Ohne Schlüssel spricht die Stimme des Handys.</p>
+          <p class="muted small">Sprüche von Schmuddel und die Aufgaben aus dem Katalog sind als Sprachdateien in der App (offline, kostenlos). Für selbst geschriebene Aufgaben holt die App die Stimme mit dem Schlüssel live von ElevenLabs und merkt sie sich. Der Schlüssel wird über die Synchronisation an alle Handys im Haushalt verteilt; ob ElevenLabs genutzt wird und ob Schmuddel bei Erwachsenen spricht, stellt jedes Handy selbst ein. Ohne Schlüssel spricht die Stimme des Handys.</p>
         </div>
         <h2 class="sec">Aufgaben für Kinder</h2>
         <div class="group">${store.all('tasks').filter(t => t.kid?.enabled).map(t => `<div class="grow link" data-go="/task/${t.id}"><span class="glabel">${esc(t.kid.emoji)} ${esc(t.name)}</span><span class="gright"><small>${t.kid.steps?.length || 0} Schritte</small><span class="chev">›</span></span></div>`).join('') || '<div class="grow"><span class="glabel muted">Noch keine. Aktiviert „Für Kinder“ in einer Aufgabe.</span></div>'}</div>
@@ -361,7 +361,7 @@ export function kidsSettingsView() {
         if (el) el.textContent = i.count ? `✅ ${i.count} Sprachdateien in der App.` : 'Noch keine Sprachdateien in der App – es spricht die Stimme des Handys (oder ElevenLabs live, wenn ein Schlüssel hinterlegt ist).';
       });
       root.querySelector('[data-von]').onchange = e => voice.setConfig({ enabled: e.target.checked });
-      root.querySelector('[data-vkey]').onchange = e => { voice.setConfig({ key: e.target.value.trim() }); toast('Schlüssel gespeichert (nur auf diesem Handy)'); };
+      root.querySelector('[data-vkey]').onchange = e => { voice.setConfig({ key: e.target.value.trim() }); toast('Schlüssel gespeichert – gilt für alle Handys im Haushalt'); };
       root.querySelector('[data-vmon]').onchange = e => voice.setConfig({ monsterVoice: e.target.value.trim() });
       root.querySelector('[data-vnar]').onchange = e => voice.setConfig({ narratorVoice: e.target.value.trim() });
       root.querySelectorAll('[data-vtest]').forEach(b => (b.onclick = () => voice.say(b.dataset.vtest === 'monster' ? mascot.line('kids') : 'Kinderzimmer aufräumen. Schritt 1: Spielzeug in die Kisten legen.', b.dataset.vtest)));

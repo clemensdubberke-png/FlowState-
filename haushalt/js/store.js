@@ -115,7 +115,11 @@ export function setLocal(patch) {
   return next;
 }
 
-export function exportJson() { return JSON.stringify({ app: 'blitzeblank', version: 1, exportedAt: Date.now(), data: state }, null, 1); }
+export function exportJson() {
+  const copy = JSON.parse(JSON.stringify(state));
+  Object.values(copy.settings || {}).forEach(s => { delete s.elevenKey; });
+  return JSON.stringify({ app: 'blitzeblank', version: 1, exportedAt: Date.now(), data: copy }, null, 1);
+}
 export function importJson(text) {
   const parsed = JSON.parse(text);
   const data = parsed.data || parsed;

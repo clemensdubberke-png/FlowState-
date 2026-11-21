@@ -11,6 +11,7 @@ import { kidsView } from './views-kids.js';
 import { timerView, startTimerWatcher } from './views-timer.js';
 import { intensityWidget, bindIntensity, intensityView } from './views-intensity.js';
 import * as mascot from './mascot.js';
+import * as voice from './voice.js';
 
 const routes = [
   [/^\/$/, () => homeView()],
@@ -127,6 +128,7 @@ setInterval(() => { if (!document.hidden) L.monsterScan(); if (!document.hidden 
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { L.monsterScan(); L.finalizeRaces(); render(); } });
 
 L.migrateKidDefaults();
+voice.migrateKey();
 L.migrateLegacy();
 L.monsterScan();
 L.finalizeRaces();
