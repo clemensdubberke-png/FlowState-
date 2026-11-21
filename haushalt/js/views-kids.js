@@ -161,6 +161,10 @@ export function kidsView(kidId) {
     bind(root) {
       bindKids(root);
       if (!store.local().kidsIntroSeen && !document.querySelector('.intro')) showIntro();
+      if (!window.__bbKidsPrefetched) {
+        window.__bbKidsPrefetched = true;
+        (async () => { for (const t of kidTasks(kid.id)) await voice.prefetch(taskSpeech(t.name, t.kid.steps), 'narrator'); })();
+      }
       root.querySelectorAll('[data-kt]').forEach(b => (b.onclick = () => kidTaskSheet(b.dataset.kt, kid)));
       const stage = root.querySelector('[data-stage]');
       const show = (key, speakIt) => {

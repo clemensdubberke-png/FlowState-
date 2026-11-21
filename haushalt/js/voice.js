@@ -10,8 +10,8 @@ const API = 'https://api.elevenlabs.io/v1/text-to-speech/';
 // Schmuddel: v3 (understands emotion tags like [laughs]); narrator: multilingual v2
 const MODELS = { monster: 'eleven_v3', narrator: 'eleven_multilingual_v2' };
 const SETTINGS = {
-  monster: { stability: 0.5, similarity_boost: 0.8, use_speaker_boost: true },
-  narrator: { stability: 0.5, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true },
+  monster: { stability: 0.5, similarity_boost: 0.8, use_speaker_boost: true, speed: 0.8 },
+  narrator: { stability: 0.5, similarity_boost: 0.8, style: 0.3, use_speaker_boost: true, speed: 0.8 },
 };
 
 let manifestP = null;
@@ -73,6 +73,29 @@ async function cached(k) {
 }
 async function store_(k, blob) {
   try { const c = await caches.open('bb-voice'); await c.put(`/voice-cache/${k}.mp3`, new Response(blob, { headers: { 'Content-Type': 'audio/mpeg' } })); } catch (e) { /* ignore */ }
+}
+
+/** Is this text available in Schmuddel's voice (bundled or cached)? */
+export async function hasVoice(text, voice = 'narrator') {
+  const k = speechKey(voice, text);
+  const m = await manifest();
+  return !!(m.files?.[k] || await cached(k));
+}
+
+/** Fetch and cache a text in Schmuddel's voice without playing it (needs the key in the app).
+ *  Returns 'ready' | 'nokey' | 'error'. */
+export async function prefetch(text, voice = 'narrator') {
+  if (!text) return 'error';
+  if (await hasVoice(text, voice)) return 'ready';
+  const c = config();
+  const id = await voiceId(voice);
+  if (!c.key || !id) return 'nokey';
+  try {
+    const blob = await fetchTts(text, voice, id, c.key);
+    if (!blob) return 'error';
+    await store_(speechKey(voice, text), blob);
+    return 'ready';
+  } catch (e) { return 'error'; }
 }
 
 /** Speak a text in kids mode. voice: 'monster' (Schmuddel) | 'narrator' */

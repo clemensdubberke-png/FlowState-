@@ -7,6 +7,8 @@ import { go, back } from './router.js';
 import { appbar, bindCommon } from './views-main.js';
 import * as mascot from './mascot.js';
 import { conditionPicker, bindConditionPickers } from './condition.js';
+import * as voice from './voice.js';
+import { taskSpeech } from './speech.js';
 
 const ALL_TYPES = [...ROOM_TYPES.innen, ...ROOM_TYPES.aussen];
 const typeName = t => CUSTOM_TYPES.includes(t) ? '' : (ALL_TYPES.find(x => x[0] === t) || [, 'Bereich'])[1];
@@ -233,6 +235,13 @@ export function taskEditView(id, areaId) {
           if (!existing && !t.anytime && L.isDue(t)) t.legacy = true;
           if (existing && (condChanged || existing.freqN !== t.freqN || existing.freqUnit !== t.freqUnit || existing.anytime !== t.anytime)) t.mSince = Date.now();
           const rec = store.put('tasks', t);
+          // Schmuddel learns the (new) steps right away, so kids hear them in his voice – also offline later
+          if (rec.kid?.enabled) {
+            voice.prefetch(taskSpeech(rec.name, rec.kid.steps), 'narrator').then(r => {
+              if (r === 'ready') toast('🔊 Schmuddel hat die Schritte gelernt');
+              else if (r === 'nokey') toast('Für Schmuddels Stimme bei eigenen Schritten: ElevenLabs-Schlüssel in Einstellungen → Kindermodus eintragen', { ms: 6000 });
+            });
+          }
           toast(existing ? 'Gespeichert' : 'Aufgabe hinzugefügt');
           if (!existing) mascot.react('taskCreated', { delay: 400 });
           go('/area/' + rec.areaId, { replace: true });
