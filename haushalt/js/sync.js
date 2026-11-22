@@ -22,18 +22,92 @@ function clean(obj) { return JSON.parse(JSON.stringify(obj)); }
 
 export function newHouseholdCode() { return store.uid(20); }
 
+/** Reads one quoted JS string starting at src[i] (', " or `); returns [value, indexAfter]. */
+function readString(src, i) {
+  const q = src[i];
+  let j = i + 1, val = '';
+  while (j < src.length && src[j] !== q) {
+    if (src[j] === '\\' && j + 1 < src.length) {
+      const e = src[j + 1];
+      if (e === 'u' && /^[0-9a-fA-F]{4}$/.test(src.slice(j + 2, j + 6))) { val += String.fromCharCode(parseInt(src.slice(j + 2, j + 6), 16)); j += 6; continue; }
+      val += { n: '\n', t: '\t', r: '\r', b: '\b', f: '\f' }[e] ?? e;
+      j += 2;
+      continue;
+    }
+    val += src[j++];
+  }
+  if (j >= src.length) throw new Error('Anführungszeichen nicht geschlossen');
+  return [val, j + 1];
+}
+
+/** Index after the {...} block that starts at src[start], respecting strings and comments; -1 if unbalanced. */
+function blockEnd(src, start) {
+  let depth = 0;
+  for (let i = start; i < src.length;) {
+    const ch = src[i];
+    if (ch === '"' || ch === "'" || ch === '`') { try { i = readString(src, i)[1]; } catch (e) { return -1; } continue; }
+    if (ch === '/' && src[i + 1] === '/') { const n = src.indexOf('\n', i); i = n === -1 ? src.length : n; continue; }
+    if (ch === '/' && src[i + 1] === '*') { const n = src.indexOf('*/', i + 2); i = n === -1 ? src.length : n + 2; continue; }
+    if (ch === '{') depth++;
+    else if (ch === '}' && --depth === 0) return i + 1;
+    i++;
+  }
+  return -1;
+}
+
+/** Converts a JS object literal (unquoted keys, single quotes, comments, trailing commas) into JSON text. */
+function jsObjectToJson(src) {
+  let out = '', i = 0, pendingComma = false;
+  const flushComma = next => { if (pendingComma && next !== '}' && next !== ']') out += ','; pendingComma = false; };
+  while (i < src.length) {
+    const ch = src[i];
+    if (/\s/.test(ch)) { out += ch; i++; continue; }
+    if (ch === '/' && src[i + 1] === '/') { const n = src.indexOf('\n', i); i = n === -1 ? src.length : n; continue; }
+    if (ch === '/' && src[i + 1] === '*') { const n = src.indexOf('*/', i + 2); i = n === -1 ? src.length : n + 2; continue; }
+    if (ch === ',') { pendingComma = true; i++; continue; }
+    flushComma(ch);
+    if (ch === '"' || ch === "'" || ch === '`') {
+      const [val, next] = readString(src, i);
+      out += JSON.stringify(val);
+      i = next;
+      continue;
+    }
+    const id = /^[A-Za-z_$][\w$]*/.exec(src.slice(i));
+    if (id) {
+      let k = i + id[0].length;
+      while (k < src.length && /\s/.test(src[k])) k++;
+      out += src[k] === ':' ? JSON.stringify(id[0]) : id[0];
+      i += id[0].length;
+      continue;
+    }
+    out += ch;
+    i++;
+  }
+  return out;
+}
+
 export function parseConfig(text) {
-  // Accept a pasted JSON object or the JS snippet from the Firebase console.
-  let t = String(text || '').trim();
-  const m = t.match(/\{[\s\S]*\}/);
-  if (!m) throw new Error('Keine Konfiguration gefunden');
-  t = m[0]
-    .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":')
-    .replace(/'/g, '"')
-    .replace(/,\s*}/g, '}');
-  const cfg = JSON.parse(t);
-  if (!cfg.apiKey || !cfg.projectId) throw new Error('apiKey oder projectId fehlt');
-  return cfg;
+  // Accepts a pasted JSON object, the "const firebaseConfig = {...}" block or the whole snippet
+  // from the Firebase console (incl. import lines and comments).
+  const src = String(text || '').replace(/[\u201C\u201D\u201E]/g, '"').replace(/[\u2018\u2019]/g, "'").trim();
+  const starts = [];
+  const named = /firebaseConfig\s*=\s*\{/.exec(src);
+  if (named) starts.push(named.index + named[0].length - 1);
+  for (let i = src.indexOf('{'); i !== -1; i = src.indexOf('{', i + 1)) if (!starts.includes(i)) starts.push(i);
+  if (!starts.length) throw new Error('Keine Konfiguration gefunden – bitte den Block „const firebaseConfig = { … }“ einfügen');
+  let lastErr = null;
+  for (const st of starts) {
+    const end = blockEnd(src, st);
+    if (end === -1) continue;
+    try {
+      const cfg = JSON.parse(jsObjectToJson(src.slice(st, end)));
+      if (cfg && typeof cfg === 'object' && cfg.apiKey && cfg.projectId) return cfg;
+      lastErr = lastErr || new Error('apiKey oder projectId fehlt');
+    } catch (e) {
+      lastErr = lastErr || e;
+    }
+  }
+  throw lastErr || new Error('Konfiguration unvollständig – fehlt eine schließende Klammer „}“?');
 }
 
 export function inviteLink(cfg, code) {
