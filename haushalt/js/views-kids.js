@@ -45,6 +45,16 @@ function doneTodayBy(t) {
   const c = store.all('completions').filter(x => x.taskId === t.id && x.at >= sod).sort((a, b) => b.at - a.at)[0];
   return c ? store.get('persons', c.personId) : null;
 }
+// ---- the scene on the kids home screen: stays until the app is reopened or a task is finished ----
+let kidScene = null; // lives as long as the app runs (reopening the app starts fresh)
+/** prefer a scene that fits a task that is due right now; otherwise any other scene */
+function pickKidScene(kidId, except) {
+  const fitting = [...new Set(kidTasks(kidId).filter(t => !t.anytime && L.isDue(t)).map(matchScene).filter(Boolean))];
+  const choices = fitting.filter(k => k !== except);
+  if (choices.length) return choices[Math.floor(Math.random() * choices.length)];
+  if (fitting.length) return fitting[0];
+  return randomScene(except);
+}
 function rank(t) { return t.anytime ? 1 : L.isDue(t) ? 0 : L.daysUntilDue(t) <= 1 ? 1 : 2; }
 
 // ---------------- Schmuddel introduces himself (first visit in kids mode) ----------------
@@ -154,7 +164,8 @@ export function kidsView(kidId) {
     const by = doneTodayBy(t);
     return `${esc(t.kid.emoji || guessEmoji(t.name))} ${esc(t.name)}${by ? ` · ${esc(by.name)}` : ''}`;
   });
-  let scene = randomScene();
+  if (!kidScene) kidScene = pickKidScene(kid.id);
+  const scene = kidScene;
   return {
     html: `${header}
       <main class="content kids">
@@ -187,17 +198,13 @@ export function kidsView(kidId) {
       }
       root.querySelectorAll('[data-kt]').forEach(b => (b.onclick = () => kidTaskSheet(b.dataset.kt, kid)));
       const stage = root.querySelector('[data-stage]');
-      const show = (key, speakIt) => {
-        scene = key;
-        const text = mascot.line('scene_' + key);
-        stage.querySelector('svg').outerHTML = sceneSvg(key);
+      // tap: the scene stays, Schmuddel just says another line of it
+      stage.onclick = () => {
+        const text = mascot.line('scene_' + scene);
         const b = stage.querySelector('[data-sbubble]');
         b.textContent = text; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
-        if (speakIt) voice.say(text, 'monster');
+        voice.say(text, 'monster');
       };
-      // tap: next scene with a voiced line; otherwise a new scene every 20 s (silent)
-      stage.onclick = () => show(randomScene(scene), true);
-      const iv = setInterval(() => { if (!stage.isConnected) { clearInterval(iv); return; } if (!document.hidden && !document.querySelector('.sheet-wrap')) show(randomScene(scene), false); }, 20000);
     },
   };
 }
@@ -234,6 +241,7 @@ function kidTaskSheet(id, kid) {
       box.querySelector('[data-done]').onclick = () => {
         const personId = kid.id === '_kids' ? null : kid.id;
         L.completeTask(t, personId, { kid: true });
+        kidScene = pickKidScene(kid.id, kidScene);
         close();
         confetti(90);
         const { main: monLine, joke } = pickDoneLines(t, kid);
