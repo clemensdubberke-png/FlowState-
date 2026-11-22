@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- simple white slime-blob silhouette for the status bar -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M12,2C7.5,2 5,6 4.7,10.5C4.4,14.4 5,17.4 5.3,18.9C5.6,20.1 6.5,20.1 6.8,19.2C7.1,20.4 8.3,20.7 8.9,19.5C9.5,20.7 10.7,20.7 11.3,19.5C11.9,20.7 13.1,20.7 13.7,19.5C14.3,20.7 15.5,20.4 15.8,19.2C16.1,20.1 17,20.1 17.3,18.9C17.6,17.4 18.2,14.4 17.9,10.5C17.6,6 15.5,2 12,2ZM9,8.5A1.8,1.8 0,1 1,9 12.1A1.8,1.8 0,1 1,9 8.5ZM15,9A1.5,1.5 0,1 1,15 12A1.5,1.5 0,1 1,15 9ZM8.5,14L15.5,14C14.5,16.2 9.5,16.2 8.5,14Z"/>
+</vector>

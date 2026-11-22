@@ -63,6 +63,7 @@ jobs:
         run: |
           mkdir -p dist
           cp haushalt-android/app/build/outputs/apk/release/app-release.apk "dist/Blitzeblank-1.0.${BUILD_NUMBER}.apk"
+          cp haushalt-android/wear/build/outputs/apk/release/wear-release.apk "dist/Blitzeblank-Uhr-1.0.${BUILD_NUMBER}.apk"
           ls -la dist
 
       - uses: actions/upload-artifact@v4
@@ -86,3 +87,6 @@ jobs:
             Installation: APK unten auf dem Handy antippen → herunterladen → öffnen.
             Beim ersten Mal fragt Android, ob Installationen aus dieser Quelle erlaubt sind → „Zulassen“.
             Ab Version mit festem Schlüssel installiert sich jede neue Version einfach über die alte – alle Daten bleiben erhalten.
+
+            **Blitzeblank-Uhr-…apk** ist die Wear-OS-App (z. B. Pixel Watch): Putz-Timer und fällige Aufgaben, synchron mit dem Handy.
+            Installation auf der Uhr per ADB über WLAN (Entwickleroptionen → Kabelloses Debugging): `adb install Blitzeblank-Uhr-….apk`.

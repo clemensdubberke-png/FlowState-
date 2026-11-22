@@ -3,8 +3,6 @@ package de.blitzeblank.app;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
@@ -49,6 +47,34 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> fileCallback;
     private TextToSpeech tts;
     private boolean ttsReady = false;
+    private static java.lang.ref.WeakReference<MainActivity> current = new java.lang.ref.WeakReference<>(null);
+
+    /** Hands a timer change from the watch to the web app (if it is open). */
+    static void deliverWatchTimer(String json) {
+        MainActivity a = current.get();
+        if (a == null || a.web == null) return;
+        final String js = "window.__bbWatchTimer && window.__bbWatchTimer(" + org.json.JSONObject.quote(json) + ")";
+        a.runOnUiThread(() -> a.web.evaluateJavascript(js, null));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        current = new java.lang.ref.WeakReference<>(this);
+        String pending = WearSync.prefs(this).getString("watchTimer", null);
+        if (pending != null) deliverWatchTimer(pending);
+        try {
+            Uri uri = new Uri.Builder().scheme("wear").path(WearSync.PATH_TIMER).build();
+            com.google.android.gms.wearable.Wearable.getDataClient(this).getDataItems(uri).addOnSuccessListener(buf -> {
+                for (com.google.android.gms.wearable.DataItem item : buf) {
+                    String json = com.google.android.gms.wearable.DataMapItem.fromDataItem(item).getDataMap().getString("json");
+                    if (json != null) WearSync.handleWatchTimer(this, json);
+                }
+                buf.release();
+            });
+        } catch (Throwable ignored) {
+        }
+    }
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
@@ -106,6 +132,7 @@ public class MainActivity extends Activity {
             }
         });
 
+        current = new java.lang.ref.WeakReference<>(this);
         web.addJavascriptInterface(new Bridge(), "BlitzeblankAndroid");
 
         tts = new TextToSpeech(this, status -> {
@@ -204,13 +231,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private PendingIntent alarmIntent(String title, String body) {
-        Intent i = new Intent(this, AlarmReceiver.class);
-        i.putExtra("title", title);
-        i.putExtra("body", body);
-        return PendingIntent.getBroadcast(this, 1, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-    }
-
     /** Methods callable from JavaScript as window.BlitzeblankAndroid.* */
     class Bridge {
         @JavascriptInterface
@@ -278,25 +298,41 @@ public class MainActivity extends Activity {
             AlarmReceiver.show(MainActivity.this, title, body);
         }
 
-        /** Timer alarm that also fires when the app is in the background. */
+        /** Timer alarm that also fires when the app is in the background (old signature). */
         @JavascriptInterface
         public void scheduleAlarm(double atMillis, String title, String body) {
+            scheduleTimer(atMillis, title, body, WearSync.prefs(MainActivity.this).getString("mode", "both"));
+        }
+
+        /** Timer alarm with signal mode "sound", "vibrate" or "both". */
+        @JavascriptInterface
+        public void scheduleTimer(double atMillis, String title, String body, String mode) {
             askNotificationPermission();
-            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            if (am == null) return;
-            long at = (long) atMillis;
-            PendingIntent pi = alarmIntent(title, body);
-            if (Build.VERSION.SDK_INT >= 31 && !am.canScheduleExactAlarms()) {
-                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
-            } else {
-                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
-            }
+            WearSync.prefs(MainActivity.this).edit().putString("mode", mode).apply();
+            AlarmReceiver.schedule(MainActivity.this, (long) atMillis, title, body, mode);
         }
 
         @JavascriptInterface
         public void cancelAlarm() {
-            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            if (am != null) am.cancel(alarmIntent("", ""));
+            AlarmReceiver.cancel(MainActivity.this);
+        }
+
+        /** Short sample of the chosen signal. */
+        @JavascriptInterface
+        public void previewAlarm(String mode) {
+            runOnUiThread(() -> Alarmer.fire(getApplicationContext(), mode, 1500, null));
+        }
+
+        /** Sends timer + due tasks to the watch app. */
+        @JavascriptInterface
+        public void wearSync(String json) {
+            WearSync.push(getApplicationContext(), json);
+        }
+
+        /** Last timer change made on the watch (JSON) or "". */
+        @JavascriptInterface
+        public String watchTimer() {
+            return WearSync.prefs(MainActivity.this).getString("watchTimer", "");
         }
 
         /** ElevenLabs text-to-speech without browser CORS limits; answers via window.__bbTts(id, base64). */
