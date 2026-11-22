@@ -72,7 +72,7 @@ h2.sec:first-child { margin-top: 8px; }
 .tile { --c: #4cc392; position: relative; aspect-ratio: 1.65; background: linear-gradient(160deg, color-mix(in srgb, var(--c) 92%, #fff), var(--c)); border-radius: 18px; color: #fff; text-align: left; overflow: hidden; box-shadow: 0 2px 6px rgba(0, 50, 80, .12); transition: transform .12s; }
 .tile:active { transform: scale(.97); }
 .tile-name { position: absolute; left: 12px; top: 8px; font-family: var(--font-fun); font-weight: 600; font-size: clamp(16px, 4.6vw, 24px); z-index: 2; text-shadow: 0 1px 2px rgba(0, 0, 0, .08); max-width: 78%; line-height: 1.15; }
-.tile-art { position: absolute; left: 8%; right: 8%; bottom: 2%; width: 84%; height: 72%; color: #fff; opacity: .95; }
+.tile-art { position: absolute; left: 6%; right: 6%; bottom: 3%; width: 88%; height: 72%; }
 .tile .dot { position: absolute; right: 10px; top: 10px; width: 26px; height: 26px; border-radius: 50%; border: 3px solid #fff; z-index: 2; }
 .dot.red { background: #ff3b30; } .dot.orange { background: #ff9500; } .dot.yellow { background: #ffcc00; } .dot.green { background: #34c759; }
 .dot.none { background: transparent; border-color: rgba(255, 255, 255, .45); box-shadow: inset 0 0 0 5px rgba(255, 255, 255, .25); }
@@ -881,3 +881,21 @@ h2.sec:first-child { margin-top: 8px; }
 .alarm-mode > span { display: block; margin-bottom: 6px; opacity: .8; }
 .timer-result { text-align: center; background: #fff; color: var(--ink); border-radius: 14px; padding: 8px 12px; margin: 10px 0; }
 .watch-hint { text-align: center; color: var(--ink); opacity: .7; font-size: 13px; margin: 14px 0; }
+
+/* ---- Raumbilder (v2): flächige Illustrationen in Tönen der Bereichsfarbe ---- */
+.rm { --rm-dark: color-mix(in srgb, var(--c, #3a8fd6) 62%, #0b2540); overflow: visible; }
+.rm .ra { fill: #fff; }
+.rm .rb { fill: rgba(255, 255, 255, .62); }
+.rm .rc { fill: rgba(255, 255, 255, .26); }
+.rm .rd { fill: rgba(6, 30, 60, .14); }
+.rm .re { fill: var(--rm-dark); }
+.rm .ry { fill: #ffd95a; }
+.rm .ro { fill: #ff9b4a; }
+.rm .rg { fill: #fff3b8; opacity: .3; }
+.rm .rl { fill: none; stroke: var(--rm-dark); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; opacity: .45; }
+.rm .rw, .rm .rw2 { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.rm .rw2 { stroke-width: 1.5; opacity: .85; }
+.rm .rt { fill: none; stroke: rgba(255, 255, 255, .3); stroke-width: .9; }
+.rm .rs { animation: rm-steam 2.4s ease-in-out infinite; transform-box: fill-box; }
+@keyframes rm-steam { 0% { transform: translateY(3px); opacity: 0; } 40% { opacity: .9; } 100% { transform: translateY(-5px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .rm .rs { animation: none; } }
