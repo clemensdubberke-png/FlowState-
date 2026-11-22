@@ -848,3 +848,12 @@ h2.sec:first-child { margin-top: 8px; }
 .race-say { position: absolute; right: -6px; top: -8px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, .22); font-size: 16px; display: grid; place-items: center; }
 .race-line { padding-right: 26px; }
 .cel-joke { font-size: 17px; color: #3b2a3e; background: #fff3d6; border-radius: 14px; padding: 8px 12px; margin: 8px 0; }
+/* kids mode, nothing due: Schmuddel sulks in the corner */
+.kid-sulk { position: relative; background: linear-gradient(135deg, #fffaf0 0%, #fffaf0 62%, #f3e6cf 62%); border-radius: 22px; box-shadow: 0 4px 0 #f0d6a8; padding: 14px 16px 18px; margin-bottom: 14px; display: flex; align-items: flex-end; gap: 10px; min-height: 170px; overflow: hidden; }
+.kid-sulk p { margin: 0 0 8px; font-size: 20px; color: #3b2a3e; flex: 1; }
+.kid-sulk p b { font-size: 26px; }
+.sulk-corner { position: relative; width: 130px; height: 130px; flex-shrink: 0; transform: scaleX(-1); }
+.sulk-mon { width: 130px; height: 130px; animation: sulk 3.2s ease-in-out infinite; transform-origin: 50% 95%; }
+@keyframes sulk { 0%, 100% { transform: rotate(-3deg) scale(1, 1); } 30% { transform: rotate(2deg) scale(1.03, .96); } 55% { transform: rotate(-1deg) scale(.98, 1.02); } 75% { transform: rotate(3deg) scale(1.02, .97); } }
+.sulk-cloud { position: absolute; right: 6px; top: 0; font-style: normal; font-size: 24px; animation: sulk-cloud 1.6s ease-in-out infinite; }
+@keyframes sulk-cloud { 0%, 100% { transform: translateY(0) scale(1); opacity: .9; } 50% { transform: translateY(-6px) scale(1.15); opacity: 1; } }

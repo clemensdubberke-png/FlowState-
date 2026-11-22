@@ -173,7 +173,10 @@ export function kidsView(kidId) {
           <div class="kid-hero-top"><span class="kid-emo">${esc(kid.emoji)}</span><div><b>Hallo ${esc(kid.name)}!</b><span>Hilf mit, Schmuddel im Rennen zu schlagen!</span></div></div>
         </section>
         ${raceCard()}
-        <div class="kid-stage" data-stage>${sceneSvg(scene)}<div class="bubble" data-sbubble>${esc(mascot.line('scene_' + scene))}</div></div>
+        ${tasks.length
+          ? `<div class="kid-stage" data-stage>${sceneSvg(scene)}<div class="bubble" data-sbubble>${esc(mascot.line('scene_' + scene))}</div></div>`
+          : `<div class="kid-sulk"><div class="sulk-corner">${monsterSvg('sad', 'kid-mon sulk-mon', { tickle: true, say: '.kid-sulk p span' })}<i class="sulk-cloud">💢</i></div>
+              <p><b>Alles sauber!</b><br><span>Schmuddel schmollt in der Ecke. 😤</span></p></div>`}
         <div class="kid-tasks">${tasks.map(t => {
           const due = rank(t) === 0;
           const done = L.todayCount(t) > 0;
@@ -183,9 +186,7 @@ export function kidsView(kidId) {
             <span class="kt-area">${esc(store.get('areas', t.areaId)?.name || '')}</span>
             <small>${done ? `✅ Heute geschafft${(() => { const by = doneTodayBy(t); return by && by.id !== kid.id ? ` von ${esc(by.name)}` : ''; })()}!` : due ? '🔥 Jetzt dran!' : t.anytime ? 'Hilf mit!' : 'Bald wieder dran'}</small>
           </button>`;
-        }).join('') || (mine.length
-          ? `<div class="kid-allclear">${monsterSvg('sad', 'kid-mon', { tickle: true })}<p><b>Alles erledigt!</b><br>Schmuddel schmollt in der Ecke. 😤</p></div>`
-          : `<p class="empty">Gerade gibt es keine Kinder-Aufgaben. Frag Mama oder Papa! 🙂</p>`)}</div>
+        }).join('') || (mine.length ? '' : `<p class="empty">Gerade gibt es keine Kinder-Aufgaben. Frag Mama oder Papa! 🙂</p>`)}</div>
         ${doneList.length ? `<div class="kid-donetoday"><b>✅ Heute geschafft</b><ul>${doneList.map(x => `<li>${x}</li>`).join('')}</ul></div>` : ''}
         <button class="btn light big kids-exit" data-exit>🔒 Zurück zum Hauptmenü (für Eltern)</button>
       </main>`,
@@ -198,7 +199,7 @@ export function kidsView(kidId) {
       }
       root.querySelectorAll('[data-kt]').forEach(b => (b.onclick = () => kidTaskSheet(b.dataset.kt, kid)));
       const stage = root.querySelector('[data-stage]');
-      // tap: the scene stays, Schmuddel just says another line of it
+      if (stage)       // tap: the scene stays, Schmuddel just says another line of it
       stage.onclick = () => {
         const text = mascot.line('scene_' + scene);
         const b = stage.querySelector('[data-sbubble]');
