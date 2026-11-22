@@ -11,13 +11,54 @@ const BASE = `https://www.gstatic.com/firebasejs/${V}`;
 let fs = null, db = null, household = null;
 let unsubs = [];
 let statusText = 'Nicht verbunden';
+let problem = null; // { title, hint } – explains the last error in plain words
 const statusListeners = new Set();
 
 function setStatus(t) { statusText = t; statusListeners.forEach(fn => fn(t)); }
 export function syncStatus() { return statusText; }
+/** Details for the last sync error (or null): what is wrong and what to do in the Firebase console. */
+export function syncProblem() { return problem; }
+
+const AUTH_HINTS = {
+  'auth/admin-restricted-operation': 'In der Firebase-Konsole ist die anonyme Anmeldung nicht aktiviert.',
+  'auth/operation-not-allowed': 'In der Firebase-Konsole ist die anonyme Anmeldung nicht aktiviert.',
+  'auth/configuration-not-found': 'Authentication ist im Firebase-Projekt noch nicht eingerichtet.',
+  'auth/unauthorized-domain': 'Diese App-Adresse ist in Firebase nicht als Domain freigegeben.',
+  'auth/network-request-failed': 'Keine Internetverbindung zur Anmeldung.',
+  'auth/api-key-not-valid.-please-pass-a-valid-api-key.': 'Der apiKey in der Konfiguration ist ungültig.',
+  'auth/invalid-api-key': 'Der apiKey in der Konfiguration ist ungültig.',
+};
+function explain(code, authErr) {
+  if (code === 'permission-denied') {
+    if (authErr) {
+      return {
+        title: 'Zugriff verweigert – die Anmeldung bei Firebase hat nicht geklappt',
+        hint: `${AUTH_HINTS[authErr] || `Fehlercode: ${authErr}.`} Öffne console.firebase.google.com → dein Projekt → <b>Build → Authentication</b> → „Los geht's“ → Reiter <b>Anmeldemethode</b> → <b>Anonym</b> aktivieren und speichern. Danach hier „Erneut verbinden“ tippen.`,
+        rules: true,
+      };
+    }
+    return {
+      title: 'Zugriff verweigert – die Firestore-Regeln fehlen',
+      hint: 'Die Datenbank im Produktionsmodus sperrt erst einmal alles. Öffne console.firebase.google.com → dein Projekt → <b>Build → Firestore Database</b> → Reiter <b>Regeln</b>, ersetze den Inhalt durch die Regeln unten und tippe auf <b>Veröffentlichen</b>. Danach hier „Erneut verbinden“ tippen (auf beiden Handys).',
+      rules: true,
+    };
+  }
+  if (code === 'unavailable' || code === 'timeout') return { title: 'Firebase ist gerade nicht erreichbar', hint: 'Prüfe die Internetverbindung. Änderungen werden nachgeholt, sobald die Verbindung steht.' };
+  if (code === 'not-found' || /database.*does not exist|NOT_FOUND/i.test(code)) return { title: 'Keine Firestore-Datenbank gefunden', hint: 'In der Firebase-Konsole unter <b>Build → Firestore Database</b> → „Datenbank erstellen“ anlegen.', rules: true };
+  return { title: 'Synchronisation fehlgeschlagen', hint: `Fehlercode: ${code}` };
+}
+export const RULES = `rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /households/{h}/{col}/{doc} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}`;
 export function onStatus(fn) { statusListeners.add(fn); return () => statusListeners.delete(fn); }
 export function isActive() { return !!db; }
 
+const esc0 = t => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 function clean(obj) { return JSON.parse(JSON.stringify(obj)); }
 
 export function newHouseholdCode() { return store.uid(20); }
@@ -131,7 +172,9 @@ export async function start() {
   const loc = store.local();
   if (!loc.sync || !loc.sync.config || !loc.sync.household) { setStatus('Nicht verbunden'); return false; }
   await stop();
+  problem = null;
   setStatus('Verbinde…');
+  let authErr = null;
   try {
     const appMod = await import(`${BASE}/firebase-app.js`);
     fs = await import(`${BASE}/firebase-firestore.js`);
@@ -139,8 +182,18 @@ export async function start() {
     const app = appMod.getApps().find(a => a.name === name) || appMod.initializeApp(loc.sync.config, name);
     try {
       const authMod = await import(`${BASE}/firebase-auth.js`);
-      await authMod.signInAnonymously(authMod.getAuth(app));
-    } catch (e) { console.warn('Anonyme Anmeldung nicht möglich (optional):', e.message); }
+      // initializeAuth without the popup/redirect helper – getAuth() loads an iframe that is not needed in the app
+      let auth;
+      try {
+        auth = authMod.initializeAuth(app, { persistence: [authMod.indexedDBLocalPersistence, authMod.browserLocalPersistence, authMod.inMemoryPersistence] });
+      } catch (e) {
+        auth = authMod.getAuth(app);
+      }
+      if (!auth.currentUser) await authMod.signInAnonymously(auth);
+    } catch (e) {
+      authErr = (e.code || e.message || 'unbekannt').toLowerCase();
+      console.warn('Anonyme Anmeldung fehlgeschlagen:', authErr);
+    }
     try {
       db = fs.initializeFirestore(app, { localCache: fs.persistentLocalCache({ tabManager: fs.persistentMultipleTabManager() }) });
     } catch (e) {
@@ -149,9 +202,15 @@ export async function start() {
     household = loc.sync.household;
     store.setPusher((col, rec) => {
       if (!db) return;
-      fs.setDoc(fs.doc(db, 'households', household, col, rec.id), clean(rec)).catch(err => setStatus('Fehler: ' + err.code));
+      fs.setDoc(fs.doc(db, 'households', household, col, rec.id), clean(rec)).catch(err => fail(err.code || err.message));
     });
-    let ready = 0;
+    let ready = 0, settled = false, resolveFirst;
+    const first$ = new Promise(r => (resolveFirst = r));
+    const fail = code => {
+      problem = explain(code, authErr);
+      setStatus('Fehler: ' + (code === 'permission-denied' ? 'Zugriff verweigert' : code));
+      if (!settled) { settled = true; resolveFirst(false); }
+    };
     for (const col of store.COLS) {
       let first = true;
       const u = fs.onSnapshot(fs.collection(db, 'households', household, col), snap => {
@@ -169,16 +228,30 @@ export async function start() {
             }
           });
           ready++;
-          if (ready === store.COLS.length) setStatus('Synchronisiert');
-        } else {
+          if (ready === store.COLS.length) {
+            problem = null;
+            setStatus('Synchronisiert');
+            if (!settled) { settled = true; resolveFirst(true); }
+          }
+        } else if (!problem) {
           setStatus(snap.metadata.fromCache ? 'Offline – wird nachgeholt' : 'Synchronisiert');
         }
-      }, err => setStatus('Fehler: ' + (err.code || err.message)));
+      }, err => fail(err.code || err.message));
       unsubs.push(u);
     }
-    return true;
+    // wait for the first answer from the server (or an error) so the caller can tell the truth
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      if (!problem) { problem = explain('timeout'); setStatus('Offline – wird nachgeholt'); }
+      resolveFirst(false);
+    }, 15000);
+    const ok = await first$;
+    clearTimeout(timer);
+    return ok;
   } catch (e) {
     console.error(e);
+    problem = { title: 'Firebase konnte nicht gestartet werden', hint: esc0(e.message) + ' – Konfiguration prüfen oder Internetverbindung herstellen.' };
     setStatus('Fehler: ' + e.message);
     db = null;
     return false;

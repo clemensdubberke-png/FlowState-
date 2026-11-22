@@ -377,6 +377,17 @@ export function kidsSettingsView() {
 }
 
 // ---------------- sync ----------------
+function problemBox() {
+  const p = sync.syncProblem();
+  if (!p) return '';
+  return `<div class="group pad sync-problem">
+    <b>⚠️ ${esc(p.title)}</b>
+    <p class="small">${p.hint}</p>
+    ${p.rules ? `<p class="small"><b>Firestore-Regeln:</b></p><pre class="rules">${esc(sync.RULES)}</pre><div class="btn-row"><button class="btn light" data-copyrules>Regeln kopieren</button></div>` : ''}
+    <div class="btn-row"><button class="btn orange" data-retry>Erneut verbinden</button></div>
+  </div>`;
+}
+
 export function syncView() {
   const loc = store.local();
   const cfg = loc.sync?.config;
@@ -387,6 +398,7 @@ export function syncView() {
     html: `${appbar('Synchronisation', { backTo: '/settings' })}
       <main class="content settings">
         <div class="group pad"><div class="row-between"><b>Status</b><span data-status class="sync-status">${esc(sync.syncStatus())}</span></div></div>
+        ${cfg ? `<div data-problem>${problemBox()}</div>` : ''}
         ${cfg ? `
           <h2 class="sec">Weiteres Handy verbinden</h2>
           <div class="group pad">
@@ -424,14 +436,31 @@ service cloud.firestore {
     bind(root) {
       bindSettings(root);
       const stEl = root.querySelector('[data-status]');
-      const off = sync.onStatus(t => { if (stEl.isConnected) stEl.textContent = t; else off(); });
+      const probEl = root.querySelector('[data-problem]');
+      const bindProblem = () => {
+        if (!probEl) return;
+        const retry = probEl.querySelector('[data-retry]');
+        if (retry) retry.onclick = async () => {
+          retry.disabled = true; retry.textContent = 'Verbinde…';
+          const ok = await sync.start();
+          toast(ok ? 'Verbunden – Daten werden geteilt 🎉' : 'Noch nicht – siehe Hinweis');
+        };
+        const cr = probEl.querySelector('[data-copyrules]');
+        if (cr) cr.onclick = async () => { try { await navigator.clipboard.writeText(sync.RULES); toast('Regeln kopiert'); } catch (e) { toast('Bitte markieren und kopieren'); } };
+      };
+      bindProblem();
+      const off = sync.onStatus(t => {
+        if (!stEl.isConnected) { off(); return; }
+        stEl.textContent = t;
+        if (probEl) { probEl.innerHTML = problemBox(); bindProblem(); }
+      });
       const connect = root.querySelector('[data-connect]');
       if (connect) connect.onclick = async () => {
         let cfg2;
         try { cfg2 = sync.parseConfig(root.querySelector('[data-cfg]').value); } catch (e) { toast('Konfiguration ungültig: ' + e.message); return; }
         store.setLocal({ sync: { config: cfg2, household: sync.newHouseholdCode() } });
         const ok = await sync.start();
-        toast(ok ? 'Verbunden! Jetzt das zweite Handy einladen.' : 'Verbindung fehlgeschlagen – Konfiguration prüfen.');
+        toast(ok ? 'Verbunden! Jetzt das zweite Handy einladen.' : 'Verbindung noch nicht möglich – siehe Hinweis unter „Status“.');
         window.dispatchEvent(new Event('bb:render'));
       };
       const jl = root.querySelector('[data-joinlink]');
@@ -477,8 +506,14 @@ export function joinView(payload) {
       if (j) j.onclick = async () => {
         store.setLocal({ sync: { config: inv.c, household: inv.h } });
         store.setSettings({ setupDone: true });
+        j.disabled = true; j.textContent = 'Verbinde…';
         const ok = await sync.start();
-        toast(ok ? 'Willkommen im Haushalt! 🎉' : 'Verbindung fehlgeschlagen');
+        if (!ok) {
+          toast('Beitritt gespeichert, aber die Verbindung klappt noch nicht – siehe Hinweis.');
+          go('/settings/sync', { replace: true });
+          return;
+        }
+        toast('Willkommen im Haushalt! 🎉');
         go(L.persons().length ? '/settings/me' : '/', { replace: true });
       };
     },
