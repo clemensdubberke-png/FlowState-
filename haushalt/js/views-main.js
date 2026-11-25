@@ -312,7 +312,9 @@ export function todoView(filter = 'all') {
   let tasks = store.all('tasks').filter(t => !t.anytime);
   if (filter === 'mine' && meId) tasks = tasks.filter(t => !L.responsible(t) || L.responsible(t) === meId);
   const sortDue = ['due', 'effort', 'effortAsc'].includes(s.sortDue) ? s.sortDue : 'due';
-  const due = L.sortTasks(tasks.filter(t => L.isDue(t)), sortDue);
+  const withAnytime = !!s.dueShowAnytime;
+  const anytime = withAnytime ? store.all('tasks').filter(t => t.anytime && (filter !== 'mine' || !meId || !L.responsible(t) || L.responsible(t) === meId)) : [];
+  const due = L.sortTasks([...tasks.filter(t => L.isDue(t)), ...anytime], sortDue);
   const soon = L.sortTasks(tasks.filter(t => L.activeAt(t) && !L.isDue(t) && L.daysUntilDue(t) <= 3), sortDue);
   const doneToday = store.all('completions').filter(c => c.at >= L.startOfDay(Date.now())).sort((a, b) => b.at - a.at);
   const showFilter = s.multiPerson && s.responsibility && meId;
@@ -320,8 +322,8 @@ export function todoView(filter = 'all') {
     html: `${appbar('Heute', { backTo: '/' })}
       <main class="content list-page">
         ${showFilter ? `<div class="seg"><button class="${filter === 'all' ? 'on' : ''}" data-go="/todo">Alle</button><button class="${filter === 'mine' ? 'on' : ''}" data-go="/todo/mine">Meine</button></div>` : ''}
-        <div class="sort-row"><span>Sortieren:</span>${[['due', 'Fälligkeit'], ['effort', 'Aufwand ↓'], ['effortAsc', 'Aufwand ↑']].map(([k, l]) => `<button class="chip ${sortDue === k ? 'on' : ''}" data-sortdue="${k}">${l}</button>`).join('')}</div>
-        <h2 class="sec">Fällig (${due.length})</h2>
+        <div class="sort-row"><span>Sortieren:</span>${[['due', 'Fälligkeit'], ['effort', 'Aufwand ↓'], ['effortAsc', 'Aufwand ↑']].map(([k, l]) => `<button class="chip ${sortDue === k ? 'on' : ''}" data-sortdue="${k}">${l}</button>`).join('')}<button class="chip ${withAnytime ? 'on' : ''}" data-anytime>${withAnytime ? '✓ ' : '＋ '}Jederzeit</button></div>
+        <h2 class="sec">${withAnytime ? 'Fällig & jederzeit' : 'Fällig'} (${due.length})</h2>
         <div class="card-list">${due.length ? due.map(t => taskRow(t, { showArea: true, quick: true })).join('') : `<div class="empty-ok">${monsterSvg('sad', 'mini-mon', { tickle: true })}<p>Alles erledigt! ${MONSTER_NAME} ist beleidigt.</p></div>`}</div>
         ${soon.length ? `<h2 class="sec">Bald fällig</h2><div class="card-list">${soon.map(t => taskRow(t, { showArea: true, quick: true })).join('')}</div>` : ''}
         ${doneToday.length ? `<h2 class="sec">Heute erledigt (${doneToday.length})</h2><div class="card-list done-list">${doneToday.map(c => `<div class="task-row slim"><span class="done-ic">${icons.done}</span><div class="task-main"><div class="task-name">${esc(c.taskName)}</div></div>${c.personId ? personChip(c.personId, true) : ''}<b class="pts">${c.cheat ? '🕵️ 0' : '+' + c.points}</b></div>`).join('')}</div>` : ''}
@@ -329,6 +331,8 @@ export function todoView(filter = 'all') {
     bind(root) {
       bindCommon(root); bindRows(root);
       root.querySelectorAll('[data-sortdue]').forEach(b => (b.onclick = () => store.setSettings({ sortDue: b.dataset.sortdue })));
+      const at = root.querySelector('[data-anytime]');
+      if (at) at.onclick = () => store.setSettings({ dueShowAnytime: !s.dueShowAnytime });
     },
   };
 }
