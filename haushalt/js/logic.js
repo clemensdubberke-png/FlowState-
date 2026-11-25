@@ -166,6 +166,12 @@ export function sortTasks(list, mode = 'due', at = now()) {
   const arr = [...list];
   if (mode === 'name') return arr.sort((a, b) => a.name.localeCompare(b.name, 'de'));
   if (mode === 'freq') return arr.sort((a, b) => intervalDays(a) - intervalDays(b) || a.name.localeCompare(b.name, 'de'));
+  if (mode === 'effort' || mode === 'effortAsc') {
+    const dir = mode === 'effort' ? -1 : 1; // effort: Schwer zuerst · effortAsc: Leicht zuerst
+    const byDue = sortTasks(arr, 'due', at);
+    const pos = new Map(byDue.map((t, i) => [t.id, i]));
+    return arr.sort((a, b) => dir * ((a.effort || 1) - (b.effort || 1)) || pos.get(a.id) - pos.get(b.id));
+  }
   return arr.sort((a, b) => {
     const sa = !activeAt(a, at), sb = !activeAt(b, at);
     if (sa !== sb) return sa ? 1 : -1; // sleeping seasonal tasks at the end
@@ -225,12 +231,26 @@ export function pointsFor(t) {
   return t.effort || 1;
 }
 
+// Anti-cheat: the same task ticked off more than CHEAT_FREE times within CHEAT_WINDOW scores nothing from then on.
+export const CHEAT_WINDOW = 5 * 60000;
+export const CHEAT_FREE = 3;
+export function recentCompletions(t, at = Date.now()) {
+  return store.all('completions').filter(c => c.taskId === t.id && c.at <= at && at - c.at < CHEAT_WINDOW).length;
+}
+let lastComp = null;
+/** the completion record created by the latest completeTask() call */
+export function lastCompletion() { return lastComp; }
+export function wouldCheat(t, at = Date.now()) { return recentCompletions(t, at) >= CHEAT_FREE; }
+
 export function completeTask(t, personId, { kid = false } = {}) {
-  const pts = pointsFor(t);
-  store.put('completions', {
+  const cheat = wouldCheat(t);
+  const pts = cheat ? 0 : pointsFor(t);
+  const rec = {
     taskId: t.id, areaId: t.areaId, taskName: t.name, personId: personId || null,
     at: Date.now(), points: pts, kid,
-  });
+  };
+  if (cheat) rec.cheat = true;
+  lastComp = store.put('completions', rec);
   const patch = { id: t.id, lastDone: now(), mSince: Date.now(), seasonFrom: seasonStart(t), legacy: false };
   if (t.anytime) patch.anytimeCount = (todayCount(t) || 0) + 1;
   const s = store.settings();

@@ -40,6 +40,8 @@ const REACT = {
   kidTick: { mood: 'angry', anim: 'a-stomp' },
   kidAllSteps: { mood: 'shock', anim: 'a-faint' },
   kidDone: { mood: 'sad', anim: 'a-melt' },
+  cheat: { mood: 'taunt', anim: 'a-stomp' },
+  kidCheat: { mood: 'taunt', anim: 'a-stomp' },
 };
 
 /** Schmuddel speaks outside kids mode too, unless switched off on this phone */

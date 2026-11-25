@@ -4,6 +4,7 @@ import { roomSvg, splatSvg, monsterSvg, MONSTER_NAME } from './art.js';
 import { esc, icons, sheet, toast, vibrate, confetti } from './ui.js';
 import { go, back } from './router.js';
 import * as mascot from './mascot.js';
+import { taskTopic } from './lines.js';
 import * as voice from './voice.js';
 import { conditionPicker, bindConditionPickers } from './condition.js';
 
@@ -177,9 +178,14 @@ export function doComplete(t, personId) {
   const before = { status: L.status(t), race: L.race() };
   const pts = L.completeTask(t, personId);
   vibrate(25);
-  const comp = store.all('completions').filter(c => c.taskId === t.id).sort((a, b) => b.at - a.at)[0];
+  const comp = L.lastCompletion();
   const s = store.settings();
   const who = personId && s.multiPerson ? store.get('persons', personId)?.name + ': ' : '';
+  if (comp?.cheat) {
+    toast(`${who}Erledigt – aber 0 Pkt. 🕵️ Mehr als ${L.CHEAT_FREE}× in 5 Minuten zählt nicht.`, { action: 'Rückgängig', onAction: () => { L.undoCompletion(comp, prev); mascot.react('undo'); }, ms: 5000 });
+    mascot.react('cheat', { delay: 250, force: true });
+    return;
+  }
   toast(`${who}Erledigt! +${pts} Pkt.`, { action: 'Rückgängig', onAction: () => { L.undoCompletion(comp, prev); mascot.react('undo'); }, ms: 4000 });
   // pick the most fitting reaction
   const r = L.race();
@@ -191,6 +197,12 @@ export function doComplete(t, personId) {
   else if (before.status === 'overdue' || before.status === 'bad') kind = 'doneOverdue';
   else if ((t.effort || 1) >= 3) kind = 'doneHard';
   else if (t.anytime) kind = 'doneAnytime';
+  // often a line that fits the task itself (Staubsaugen, Fenster, Müll …)
+  const topic = taskTopic(t.name);
+  if (topic && ['done', 'doneHard', 'doneAnytime', 'doneOverdue'].includes(kind) && Math.random() < 0.65) {
+    mascot.react(kind, { delay: 250, text: mascot.line('doneTask_' + topic) });
+    return;
+  }
   mascot.react(kind, { delay: 250 });
 }
 
@@ -299,20 +311,25 @@ export function todoView(filter = 'all') {
   const meId = L.me()?.id;
   let tasks = store.all('tasks').filter(t => !t.anytime);
   if (filter === 'mine' && meId) tasks = tasks.filter(t => !L.responsible(t) || L.responsible(t) === meId);
-  const due = L.sortTasks(tasks.filter(t => L.isDue(t)));
-  const soon = L.sortTasks(tasks.filter(t => L.activeAt(t) && !L.isDue(t) && L.daysUntilDue(t) <= 3));
+  const sortDue = ['due', 'effort', 'effortAsc'].includes(s.sortDue) ? s.sortDue : 'due';
+  const due = L.sortTasks(tasks.filter(t => L.isDue(t)), sortDue);
+  const soon = L.sortTasks(tasks.filter(t => L.activeAt(t) && !L.isDue(t) && L.daysUntilDue(t) <= 3), sortDue);
   const doneToday = store.all('completions').filter(c => c.at >= L.startOfDay(Date.now())).sort((a, b) => b.at - a.at);
   const showFilter = s.multiPerson && s.responsibility && meId;
   return {
     html: `${appbar('Heute', { backTo: '/' })}
       <main class="content list-page">
         ${showFilter ? `<div class="seg"><button class="${filter === 'all' ? 'on' : ''}" data-go="/todo">Alle</button><button class="${filter === 'mine' ? 'on' : ''}" data-go="/todo/mine">Meine</button></div>` : ''}
+        <div class="sort-row"><span>Sortieren:</span>${[['due', 'Fälligkeit'], ['effort', 'Aufwand ↓'], ['effortAsc', 'Aufwand ↑']].map(([k, l]) => `<button class="chip ${sortDue === k ? 'on' : ''}" data-sortdue="${k}">${l}</button>`).join('')}</div>
         <h2 class="sec">Fällig (${due.length})</h2>
         <div class="card-list">${due.length ? due.map(t => taskRow(t, { showArea: true, quick: true })).join('') : `<div class="empty-ok">${monsterSvg('sad', 'mini-mon', { tickle: true })}<p>Alles erledigt! ${MONSTER_NAME} ist beleidigt.</p></div>`}</div>
         ${soon.length ? `<h2 class="sec">Bald fällig</h2><div class="card-list">${soon.map(t => taskRow(t, { showArea: true, quick: true })).join('')}</div>` : ''}
-        ${doneToday.length ? `<h2 class="sec">Heute erledigt (${doneToday.length})</h2><div class="card-list done-list">${doneToday.map(c => `<div class="task-row slim"><span class="done-ic">${icons.done}</span><div class="task-main"><div class="task-name">${esc(c.taskName)}</div></div>${c.personId ? personChip(c.personId, true) : ''}<b class="pts">+${c.points}</b></div>`).join('')}</div>` : ''}
+        ${doneToday.length ? `<h2 class="sec">Heute erledigt (${doneToday.length})</h2><div class="card-list done-list">${doneToday.map(c => `<div class="task-row slim"><span class="done-ic">${icons.done}</span><div class="task-main"><div class="task-name">${esc(c.taskName)}</div></div>${c.personId ? personChip(c.personId, true) : ''}<b class="pts">${c.cheat ? '🕵️ 0' : '+' + c.points}</b></div>`).join('')}</div>` : ''}
       </main>`,
-    bind(root) { bindCommon(root); bindRows(root); },
+    bind(root) {
+      bindCommon(root); bindRows(root);
+      root.querySelectorAll('[data-sortdue]').forEach(b => (b.onclick = () => store.setSettings({ sortDue: b.dataset.sortdue })));
+    },
   };
 }
 

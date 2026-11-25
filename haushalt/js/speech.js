@@ -29,6 +29,7 @@ const TAGS = {
   done_plant: ['[whining] [annoyed]', '[annoyed] [grumpy]', '[sad] [dramatic]'],
   done_toybox: ['[whining] [sad]', '[crying] [dramatic]', '[panicked] [sighs]'],
   done_lamp: ['[shivers] [whining]', '[disgusted] [annoyed]', '[shocked] [screams]'],
+  kidCheat: ['[suspicious] [laughs]', '[mischievously] [sighs]', '[suspicious] [giggles]', '[mischievously] [laughs]'],
   kidLead: ['[shocked] [angry]', '[whining] [sad]', '[excited] [sad]', '[panting] [whining]'],
   kidBehind: ['[excited] [laughs]', '[mischievously] [laughs]', '[nervous] [giggles]', '[proudly] [giggles]'],
   kidTied: ['[nervous] [excited]', '[nervous] [giggles]', '[confused] [laughs]'],
@@ -56,18 +57,19 @@ const CATEGORY_TAGS = {
   timerStart: '[mischievously]', timerDone: '[mischievously] [laughs]', areaCreated: '[excited] [laughs]',
   taskCreated: '[sarcastic]', taskDeleted: '[laughs]', greetMorning: '[cheerfully] [mischievously]', greetDay: '[cheerfully]',
   greetEvening: '[mischievously]', greetNight: '[whispers]', greetAway: '[mischievously] [laughs]', areaHint: '[cheerfully]',
-  catalogAdd: '[shocked]',
+  catalogAdd: '[shocked]', cheat: '[suspicious] [laughs]',
   // race-banner lines (Home screen)
   start: '[mischievously] [laughs]', aheadBig: '[proudly] [mischievously]', aheadSmall: '[mischievously] [giggles]',
   tied: '[annoyed] [nervous]', behindSmall: '[angry] [whining]', behindBig: '[crying] [dramatic]',
 };
 // everything Schmuddel can say in kids mode (shared by the voice generator and the audit)
-export const KID_CATEGORIES = ['intro', 'kids', 'kidStep', 'kidTick', 'kidAllSteps', 'kidDone', 'kidLead', 'kidBehind', 'kidTied', 'kidAllClear', 'kidJoke', 'tickle', 'tickleMany',
+export const KID_CATEGORIES = ['intro', 'kids', 'kidStep', 'kidTick', 'kidAllSteps', 'kidDone', 'kidCheat', 'kidLead', 'kidBehind', 'kidTied', 'kidAllClear', 'kidJoke', 'tickle', 'tickleMany',
   ...Object.keys(LINES).filter(k => k.startsWith('scene_') || k.startsWith('done_'))];
-export const ADULT_CATEGORIES = [...Object.keys(CATEGORY_TAGS), ...Object.keys(LINES).filter(k => k.startsWith('dirtyRoom_'))];
+export const ADULT_CATEGORIES = [...Object.keys(CATEGORY_TAGS), ...Object.keys(LINES).filter(k => k.startsWith('dirtyRoom_') || k.startsWith('doneTask_'))];
 const SPOKEN = new Map();
 for (const [k, tag] of Object.entries(CATEGORY_TAGS)) (LINES[k] || []).forEach(text => SPOKEN.set(text, `${tag} ${text}`));
 for (const k of Object.keys(LINES).filter(x => x.startsWith('dirtyRoom_'))) (LINES[k] || []).forEach(text => SPOKEN.set(text, `[excited] [mischievously] ${text}`));
+for (const k of Object.keys(LINES).filter(x => x.startsWith('doneTask_'))) (LINES[k] || []).forEach(text => SPOKEN.set(text, `[annoyed] [dramatic] ${text}`));
 for (const [k, tags] of Object.entries(TAGS)) {
   (LINES[k] || []).forEach((text, i) => {
     const t = tags[i];

@@ -74,6 +74,14 @@ export const LINES = {
     'Mein Anwalt wird sich bei euch melden. Er heißt Herr Fussel.',
     'Das riecht jetzt nach Zitrone. ZITRONE! Wie widerlich.',
     'Wie kann man nur so fleißig sein? Ist das ansteckend?',
+    'Staub ist eine Schutzschicht für edle Möbel! Und ihr habt sie einfach weggewischt!',
+    'Ihr wisst schon, dass das in ein paar Tagen wieder dreckig ist? Ich hab Zeit. Ich warte.',
+    'Putzen ist wie Schneeschippen, während es noch schneit. Und rate mal, wer der Schnee ist!',
+    'Nach vier Jahren wird Dreck gar nicht mehr schlimmer. Ihr hättet nur durchhalten müssen!',
+    'Mein Putzplan: einmal streng gucken, fertig. Eurer ist viel zu anstrengend!',
+    'Staub wächst normalerweise schneller als eure Motivation. Was ist heute bloß los?',
+    'Oh nein, ein Erfolgserlebnis! Bleibt mir bloß fern damit, das ist ansteckend!',
+    'Sauber gemacht? Pah! Ich nenne das: Platz schaffen für neuen Dreck.',
   ],
   doneOverdue: [
     'Hey, der Fleck war schon volljährig!',
@@ -95,6 +103,8 @@ export const LINES = {
     'Spülen, spülen, spülen. Gääähn.',
     'Kaum dreckig, schon sauber. Wo bleibt da der Spaß?',
     'Ich hatte mich gerade an diesen Teller gewöhnt.',
+    'Kaum fertig, geht es von vorne los. Haushalt ist eine Endlosschleife. Und ich bin der DJ!',
+    'Schon wieder erledigt? Ihr seid ja schlimmer als ein Putzroboter mit Kaffee!',
   ],
   allDone: [
     'Alles erledigt?! Ich… ich brauche einen Moment.',
@@ -457,4 +467,125 @@ export const LINES = {
     'Hmpf! Ich geh jetzt in meine Schmollecke. Dort ist es dreckig und gemütlich.',
     'Was ist das für ein Glanz?! Meine Augen! Ich bin geblendet! Autsch!',
   ],
+
+  // ---- anti-cheat: same task ticked off more than 3 times within 5 minutes ----
+  cheat: [
+    'Moment mal! So oft in fünf Minuten? Hier wird doch geschummelt! Dafür gibt es keine Punkte mehr!',
+    'Abhaken vergessen und jetzt alles auf einmal nachholen? Tja, Pech gehabt! Denk einfach vorher dran. Null Punkte!',
+    'Ich hab genau mitgezählt! So schnell putzt nicht mal ein Saugroboter auf Koffein. Keine Punkte!',
+    'Schummel-Alarm! Wer zu spät abhakt, den bestraft das Monster. Null Punkte, hehe!',
+    'Netter Versuch! Ich bin zwar ein Monster, aber nicht doof. Ab jetzt gibt es hier keine Punkte mehr.',
+    'Ui, ein Abhak-Marathon! Vergessen ist menschlich, Punkte gibt es trotzdem nicht. Nächstes Mal gleich abhaken!',
+    'Hast du gerade den Knopf geputzt statt die Wohnung? Null Punkte für dich!',
+    'Das kommt in mein Schummel-Tagebuch. Geschrieben in Staub. Dick unterstrichen.',
+  ],
+  kidCheat: [
+    'Halt, halt, halt! So schnell hintereinander? Das ist geschummelt! Dafür gibt es keinen Punkt. Ätsch!',
+    'Hast du vergessen abzuhaken und machst jetzt alles auf einmal? Pech gehabt! Denk nächstes Mal gleich dran!',
+    'Ich hab dich gesehen! Tipp, tipp, tipp. So schnell kann keiner aufräumen. Kein Punkt!',
+    'Mein Schummel-Detektor piept! Biep, biep, biep! Diesmal gibt es keinen Punkt.',
+  ],
+
+  // ---- adults: reactions that fit the finished task (see taskTopic) ----
+  doneTask_saugen: [
+    'Der Staubsauger hat meine ganze Fussel-Familie gefressen! Tante Wollmaus! Onkel Krümel! Alle weg!',
+    'Brumm, schlürf, weg. So endet eine stolze Krümel-Dynastie.',
+    'Ich hab mich gerade noch unters Sofa gerettet. Da kommt ihr doch nicht hin… oder? ODER?',
+  ],
+  doneTask_staub: [
+    'Mein Staub war ein Wintermantel für eure Möbel! Jetzt frieren die Regale!',
+    'Da stand gerade „Schmuddel war hier“ im Staub geschrieben. Das war Kunst!',
+    'Kaum gewischt, rieselt schon der nächste Staub. Ich schick ihn gleich los. Hehe.',
+  ],
+  doneTask_boden: [
+    'Nasser Boden! Ich bin ausgerutscht! Auf meinem eigenen Schleim! Autsch!',
+    'Der Boden glänzt so, dass ich mich darin sehe. Okay, ich seh echt gut aus. Aber trotzdem!',
+    'Gewischt? Da waren meine Fußspuren drauf! Das war ein Wanderweg!',
+  ],
+  doneTask_fenster: [
+    'Saubere Fenster? Jetzt sieht die ganze Straße, wie ordentlich ihr seid. Wie peinlich!',
+    'Ein Vogel wollte gerade durchfliegen. Er dachte, da ist gar keine Scheibe. Seid ihr jetzt stolz?',
+    'Die Fingerabdrücke waren Beweismittel! Jetzt kann ich nie mehr beweisen, wer das war!',
+  ],
+  doneTask_bad: [
+    'Kalk weg? Ich hatte da eine Tropfsteinhöhle angefangen! Zwanzig Jahre Arbeit!',
+    'Es riecht nach Zitrone und Verrat.',
+    'Das Bad glänzt! Mein Wellness-Schimmel ist in Rente gegangen.',
+  ],
+  doneTask_klo: [
+    'Die Toilette glänzt! Mein Lieblings-Aussichtspunkt ist weg!',
+    'Klo geputzt? Respekt. Und ekelhaft. Vor allem Respekt.',
+    'Da drin war mein Ferien-Whirlpool! Spül, spül, weg!',
+  ],
+  doneTask_geschirr: [
+    'In der Tasse hatte ich eine Kultur gezüchtet! Die hatte Nobelpreis-Chancen!',
+    'Ein leeres Spülbecken. Wie traurig. Wie leer. Wie… sauber.',
+    'Der Teller mit der Soße von gestern war mein Abendessen! Und mein Frühstück!',
+  ],
+  doneTask_kuehlschrank: [
+    'Der Joghurt von Ostern war mein Mitbewohner! Ruhe in Frieden, Herr Joghurt.',
+    'Kühlschrank geputzt? Da wohnten doch die netten blauen Flusen auf dem Käse!',
+  ],
+  doneTask_herd: [
+    'Die eingebrannte Lasagne war moderne Kunst! Ihr habt ein Museum abgerissen!',
+    'Fettfilm weg? Das war meine Sonnencreme!',
+    'Der Herd glänzt. Ich koche vor Wut. Ha, Wortwitz!',
+  ],
+  doneTask_waesche: [
+    'Frische Wäsche? Ihr riecht jetzt alle wie eine Blumenwiese. Widerlich!',
+    'Die Socken sind wieder Paare? Ich hatte sie so schön auseinandergebracht!',
+    'Ein Spannbettlaken ordentlich gefaltet? Das geht doch gar nicht! Seid ihr Zauberer?',
+  ],
+  doneTask_bett: [
+    'Bett frisch bezogen? Die Krümel unter der Decke waren mein Picknick!',
+    'Ein glattes Laken! Wo sollen meine Falten jetzt wohnen?',
+  ],
+  doneTask_muell: [
+    'Den Müll rausgebracht? Das war mein Buffet! Mit Bananenschalen-Dessert!',
+    'Tschüss, Mülltüte! Du warst die beste Nachbarin der Welt.',
+    'Der Mülleimer ist leer. Mein Kühlschrank ist leer. Ich habe Hunger!',
+  ],
+  doneTask_aufraeumen: [
+    'Aufgeräumt? Ich wusste genau, wo alles lag! Auf dem Boden!',
+    'Ordnung ist das halbe Leben. Ich lebe lieber die andere Hälfte.',
+    'Wer aufräumt, findet Sachen wieder. Wer nicht aufräumt, findet mich. Ich bin viel netter!',
+  ],
+  doneTask_pflanzen: [
+    'Die Pflanzen leben noch? Ich hatte sie schon für mein Team eingeplant.',
+    'Gießen, gießen, gießen. Und mich gießt keiner. Ich trockne hier aus!',
+  ],
+  doneTask_garten: [
+    'Rasen gemäht? Ich hatte mir gerade einen Dschungel-Urlaub gebucht!',
+    'Das Laub war meine Kuscheldecke! Jetzt liege ich im Freien. Brrr!',
+    'Unkraut weg? Das waren meine Lieblingsblumen! Die heißen nur so gemein.',
+  ],
+  doneTask_auto: [
+    'Das Auto glänzt? Jetzt parkt es neben dreckigen Autos und gibt an.',
+    'Die Krümel auf dem Rücksitz waren Proviant für schlechte Zeiten!',
+  ],
 };
+
+/** Which "doneTask_" reaction fits a task name (null if none). Order matters: specific before general. */
+const TOPICS = [
+  ['klo', /toilette|\bwc\b|\bklo|urinal/i],
+  ['kuehlschrank', /kühlschrank|gefrier|tiefkühl/i],
+  ['herd', /herd|backofen|\bofen|mikrowelle|dunstabzug|abzugshaube|ceran|kochfeld|grill/i],
+  ['geschirr', /geschirr|spülmaschine|abwasch|abspülen|spülbecken|spüle|töpfe/i],
+  ['muell', /müll|abfall|tonne|altglas|altpapier|papierkorb|gelber sack|pfand/i],
+  ['saugen', /saug/i],
+  ['bad', /\bbad|dusch|wanne|waschbecken|armatur|fliesen|fugen/i],
+  ['fenster', /fenster|scheibe|spiegel/i],
+  ['staub', /staub|abstauben|regal|spinnweb|heizkörper|möbel|oberfläch|abwisch/i],
+  ['boden', /boden|fegen|kehren|fußmatte/i],
+  ['bett', /bett|bezieh|laken/i],
+  ['waesche', /wäsche|waschmaschine|flusensieb|bügel|socken|kleidung|handt|vorhänge|kuscheltiere/i],
+  ['pflanzen', /pflanz|blumen|gieß/i],
+  ['garten', /rasen|garten|unkraut|laub|hecke|beet|terrasse|balkon/i],
+  ['auto', /auto|wagen/i],
+  ['aufraeumen', /aufräum|ordnung|sortier|ausmisten|entrümpel|spielzeug/i],
+];
+export function taskTopic(name) {
+  const n = String(name || '');
+  for (const [k, re] of TOPICS) if (re.test(n) && LINES['doneTask_' + k]) return k;
+  return null;
+}

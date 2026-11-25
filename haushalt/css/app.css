@@ -906,3 +906,5 @@ h2.sec:first-child { margin-top: 8px; }
 .sync-problem p { margin: 8px 0; }
 .sync-problem pre.rules { background: #0f2a47; color: #e8f2ff; border-radius: 10px; padding: 10px; font-size: 12px; overflow-x: auto; white-space: pre; margin: 6px 0; }
 .group.pad .muted { color: rgba(255, 255, 255, .8); }
+.sort-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 12px 8px 0; color: var(--ink); font-size: 14px; }
+.sort-row .chip { padding: 5px 10px; font-size: 13px; }

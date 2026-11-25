@@ -241,9 +241,16 @@ function kidTaskSheet(id, kid) {
       }));
       box.querySelector('[data-done]').onclick = () => {
         const personId = kid.id === '_kids' ? null : kid.id;
+        const cheat = L.wouldCheat(t);
         L.completeTask(t, personId, { kid: true });
         kidScene = pickKidScene(kid.id, kidScene);
         close();
+        if (cheat) {
+          const monLine = mascot.line('kidCheat');
+          voice.say(monLine, 'monster');
+          celebrate(kid, monLine, null, true);
+          return;
+        }
         confetti(90);
         const { main: monLine, joke } = pickDoneLines(t, kid);
         voice.say(monLine, 'monster').then(() => (joke ? voice.say(joke, 'monster') : null));
@@ -272,11 +279,11 @@ function pickDoneLines(t, kid) {
   return { main, joke };
 }
 
-function celebrate(kid, monLine, joke) {
+function celebrate(kid, monLine, joke, cheat = false) {
   const r = L.kidsRace();
-  sheet(`<div class="celebrate">${monsterSvg('sad', 'kid-mon big a-melt-loop', { tickle: true })}
-      <h2>Geschafft, ${esc(kid.name)}! 🏁</h2>
-      <p class="cel-line">Ein Punkt mehr im Rennen gegen Schmuddel!</p>
+  sheet(`<div class="celebrate">${monsterSvg(cheat ? 'taunt' : 'sad', `kid-mon big ${cheat ? '' : 'a-melt-loop'}`, { tickle: true })}
+      <h2>${cheat ? `Erwischt, ${esc(kid.name)}! 🕵️` : `Geschafft, ${esc(kid.name)}! 🏁`}</h2>
+      <p class="cel-line">${cheat ? 'Zu oft hintereinander abgehakt – diesmal gibt es keinen Punkt.' : 'Ein Punkt mehr im Rennen gegen Schmuddel!'}</p>
       ${store.settings().race ? `<div class="cel-score"><span>Ihr <b>${r.user}</b></span><span>:</span><span><b>${r.monster}</b> Schmuddel</span></div>` : ''}
       <p>${esc(MONSTER_NAME)}: „${esc(monLine)}“</p>
       ${joke ? `<p class="cel-joke">😜 „${esc(joke)}“</p>` : ''}
