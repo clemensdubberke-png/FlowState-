@@ -20,7 +20,7 @@ const WERT_MIN = 0, WERT_MAX = 100;
 const EFFEKT_MAX = 30;                 // |effekt| pro Antwort
 const OPTIONEN_MIN = 3, OPTIONEN_MAX = 4;
 const MAX_SCHRITTE = 12;               // längster Pfad
-const MIN_LAENGSTER_PFAD_DIALOG = 6;   // „etwa 6 bis 10 Schritte“
+const MIN_LAENGSTER_PFAD_DIALOG = 8;   // „8 bis 12 Schritte“
 const BEWERTUNGEN = ["gut", "teils", "ungünstig"];
 const BAUSTEIN_ARTEN = ["zug", "kunstgriff", "stolperfalle"];
 const SZENARIO_ARTEN = ["dialog", "pausentest"];
@@ -31,14 +31,16 @@ const ZAHL_MIT_EINHEIT = /\d[\d.,]*\s*(Mrd|Milliarde|Million|Mio|Prozent|%|Euro|
 const ERLAUBT = {
   root: ["version", "bausteine", "szenarien"],
   baustein: ["name", "art", "farbe", "kurz", "kunstgriffe"],
-  szenario: ["id", "titel", "ort", "thema", "art", "icon", "gegenueber", "einleitung", "startwerte", "balken", "start", "fakten", "knoten"],
+  szenario: ["id", "titel", "ort", "thema", "art", "icon", "gegenueber", "einleitung", "startwerte", "balken", "nachwirkung", "start", "kipp_ende", "fakten", "knoten"],
   gegenueber: ["name", "rolle", "typ", "beschreibung"],
   werte: ["vertrauen", "erkenntnis", "anspannung"],
   balken: ["vertrauen", "erkenntnis"],
   fakt: ["id", "text", "stand", "quelle_pruefen", "quelle"],
   knoten: ["id", "sagt", "erzaehler", "optionen", "ende", "sterne", "auswertung"],
-  variante: ["text", "anspannung_ab", "anspannung_bis"],
-  option: ["text", "bausteine", "bewertung", "effekt", "warum", "reaktion", "weiter", "weiter_bei_anspannung", "fakten"],
+  variante: ["text", "anspannung_ab", "anspannung_bis", "vertrauen_ab", "vertrauen_bis", "kraenkung_ab", "merker", "ohne_merker"],
+  bedingung: ["anspannung_ab", "anspannung_bis", "vertrauen_ab", "vertrauen_bis", "kraenkung_ab", "merker", "ohne_merker"],
+  option: ["text", "bausteine", "bewertung", "effekt", "warum", "reaktion", "weiter", "weiter_bei_anspannung", "fakten", "kraenkt", "repariert", "merkt", "nur_wenn", "falls"],
+  fall: ["wenn", "effekt", "bewertung", "warum", "notiz", "reaktion", "weiter", "kraenkt", "merkt"],
   bedingt: ["ab", "ziel"],
   auswertung: ["titel", "gut", "anders", "selbstcheck"],
 };
@@ -56,7 +58,26 @@ function inRange(where, v, lo, hi, name) {
   else if (v < lo || v > hi) err(where, `${name} = ${v} liegt außerhalb ${lo}…${hi}`);
 }
 
-// Varianten: Text vorhanden, Bereiche gültig, und für JEDE Anspannung 0..100 gibt es mind. eine Variante.
+// Bedingungen (nur_wenn, falls.wenn, Varianten): Bereiche und Merker prüfen.
+let merkerGelesen, merkerGesetzt;
+function checkBedingung(where, b, { variante = false } = {}) {
+  for (const k of ["anspannung_ab", "anspannung_bis", "vertrauen_ab", "vertrauen_bis"]) {
+    if (b[k] !== undefined) inRange(where, b[k], 0, 100, k);
+  }
+  if (b.kraenkung_ab !== undefined && !(typeof b.kraenkung_ab === "number" && b.kraenkung_ab > 0 && b.kraenkung_ab <= 6)) err(where, "kraenkung_ab muss eine Zahl > 0 und ≤ 6 sein");
+  for (const k of ["merker", "ohne_merker"]) {
+    if (b[k] === undefined) continue;
+    if (!Array.isArray(b[k]) || b[k].some((m) => !/^[a-z][a-z0-9_]*$/.test(m))) err(where, `${k} muss eine Liste von IDs (a-z, 0-9, _) sein`);
+    else b[k].forEach((m) => merkerGelesen?.add(m));
+  }
+  if ((b.anspannung_ab ?? 0) > (b.anspannung_bis ?? 100)) err(where, "anspannung_ab > anspannung_bis");
+  if ((b.vertrauen_ab ?? 0) > (b.vertrauen_bis ?? 100)) err(where, "vertrauen_ab > vertrauen_bis");
+  if (!variante && Object.keys(b).length === 0) err(where, "leere Bedingung");
+}
+const istSpeziell = (v) => ["vertrauen_ab", "vertrauen_bis", "kraenkung_ab", "merker", "ohne_merker"].some((k) => v[k] !== undefined);
+
+// Varianten: Text vorhanden, Bereiche gültig, und für JEDE Anspannung 0..100 gibt es mind. eine
+// Variante OHNE Zusatzbedingung (Rückfall, wenn kein Rückbezug passt).
 function checkVarianten(where, list, { minAnzahl = 2, abdeckung = true } = {}) {
   if (!Array.isArray(list) || list.length === 0) { err(where, `keine Varianten`); return; }
   if (list.length < minAnzahl) err(where, `nur ${list.length} Variante(n), mindestens ${minAnzahl} nötig (damit es nicht auswendig wirkt)`);
@@ -65,16 +86,14 @@ function checkVarianten(where, list, { minAnzahl = 2, abdeckung = true } = {}) {
     if (!keys(w, v, "variante")) return;
     needStr(w, v, "text");
     if (ZAHL_MIT_EINHEIT.test(v.text ?? "")) err(w, `Zahl mit Einheit in Gegenüber-Text. Zahlen nur in Optionen mit „fakten“-Verweis`);
-    if (v.anspannung_ab !== undefined) inRange(w, v.anspannung_ab, 0, 100, "anspannung_ab");
-    if (v.anspannung_bis !== undefined) inRange(w, v.anspannung_bis, 0, 100, "anspannung_bis");
-    if ((v.anspannung_ab ?? 0) > (v.anspannung_bis ?? 100)) err(w, `anspannung_ab > anspannung_bis`);
+    checkBedingung(w, v, { variante: true });
   });
   if (abdeckung) {
     const luecken = [];
     for (let a = 0; a <= 100; a++) {
-      if (!list.some((v) => (v.anspannung_ab ?? 0) <= a && a <= (v.anspannung_bis ?? 100))) luecken.push(a);
+      if (!list.some((v) => !istSpeziell(v) && (v.anspannung_ab ?? 0) <= a && a <= (v.anspannung_bis ?? 100))) luecken.push(a);
     }
-    if (luecken.length) err(where, `keine Variante für Anspannung ${luecken[0]}${luecken.length > 1 ? `…${luecken.at(-1)}` : ""}`);
+    if (luecken.length) err(where, `keine allgemeine Variante (ohne Merker/Vertrauen/Kränkung) für Anspannung ${luecken[0]}${luecken.length > 1 ? `…${luecken.at(-1)}` : ""}`);
   }
 }
 
@@ -134,6 +153,10 @@ for (const s of szenarien) {
     for (const k of ERLAUBT.balken) if (s.balken[k] !== undefined) needStr(`${sw}.balken`, s.balken, k);
   }
 
+  merkerGelesen = new Set();
+  merkerGesetzt = new Set();
+  if (s.nachwirkung !== undefined) needStr(sw, s, "nachwirkung");
+
   // Fakten: Stand und Prüfvermerk sind Pflicht.
   const faktIds = new Set();
   for (const f of s.fakten ?? []) {
@@ -153,6 +176,8 @@ for (const s of szenarien) {
     knoten.set(k?.id, k);
   }
   if (!knoten.has(s.start)) err(sw, `Startknoten „${s.start}“ existiert nicht`);
+  if (s.kipp_ende !== undefined && !knoten.get(s.kipp_ende)?.ende) err(sw, `kipp_ende „${s.kipp_ende}“ muss ein existierender Endknoten sein`);
+  if (s.art === "dialog" && s.kipp_ende === undefined) err(sw, "Dialog-Szenario braucht ein kipp_ende (Gespräch kippt bei gehäuften Kränkungen)");
 
   const kanten = new Map(); // id -> [ziel-ids]
   for (const k of knoten.values()) {
@@ -176,8 +201,9 @@ for (const s of szenarien) {
     if (k.id === s.start || k.sagt !== undefined) checkVarianten(`${kw}.sagt`, k.sagt);
 
     const opts = Array.isArray(k.optionen) ? k.optionen : [];
+    const fest = opts.filter((o) => o.nur_wenn === undefined).length;
     if (opts.length === 0) err(kw, "Sackgasse: kein Ende und keine Optionen");
-    else if (opts.length < OPTIONEN_MIN || opts.length > OPTIONEN_MAX) err(kw, `${opts.length} Optionen, erlaubt sind ${OPTIONEN_MIN} bis ${OPTIONEN_MAX}`);
+    else if (fest < OPTIONEN_MIN || opts.length > OPTIONEN_MAX) err(kw, `${fest} feste + ${opts.length - fest} bedingte Optionen: es müssen immer ${OPTIONEN_MIN} bis ${OPTIONEN_MAX} sichtbar sein`);
     if (opts.length && !opts.some((o) => o.bewertung === "gut")) warn(kw, "keine Option mit Bewertung „gut“");
 
     const ziele = [];
@@ -204,6 +230,27 @@ for (const s of szenarien) {
         err(ow, "Zahl mit Einheit ohne „fakten“-Verweis (stand + quelle_pruefen nötig)");
       }
 
+      if (o.kraenkt !== undefined && ![0, 1, 2].includes(o.kraenkt)) err(ow, "kraenkt muss 0, 1 oder 2 sein");
+      if (o.kraenkt > 0 && o.bewertung === "gut") err(ow, "eine kränkende Antwort kann nicht „gut“ sein");
+      if (o.repariert !== undefined && typeof o.repariert !== "boolean") err(ow, "repariert muss true/false sein");
+      if (o.bewertung === "ungünstig" && !o.kraenkt && !(o.falls ?? []).some((f) => f.kraenkt)) warn(ow, "ungünstige Antwort ohne kraenkt – wirkt sie wirklich nicht nach?");
+      for (const m of o.merkt ?? []) { if (!/^[a-z][a-z0-9_]*$/.test(m)) err(ow, `Merker „${m}“ ungültig`); merkerGesetzt.add(m); }
+      if (o.nur_wenn !== undefined && keys(`${ow}.nur_wenn`, o.nur_wenn, "bedingung")) checkBedingung(`${ow}.nur_wenn`, o.nur_wenn);
+      (o.falls ?? []).forEach((f, j) => {
+        const fw = `${ow}.falls[${j}]`;
+        if (!keys(fw, f, "fall")) return;
+        if (keys(`${fw}.wenn`, f.wenn, "bedingung")) checkBedingung(`${fw}.wenn`, f.wenn);
+        if (f.bewertung !== undefined && !BEWERTUNGEN.includes(f.bewertung)) err(fw, "bewertung ungültig");
+        if (f.effekt !== undefined && keys(`${fw}.effekt`, f.effekt, "werte")) for (const kk of ERLAUBT.werte) inRange(`${fw}.effekt`, f.effekt[kk], -EFFEKT_MAX, EFFEKT_MAX, kk);
+        if (f.reaktion !== undefined) checkVarianten(`${fw}.reaktion`, f.reaktion);
+        if (f.kraenkt !== undefined && ![0, 1, 2].includes(f.kraenkt)) err(fw, "kraenkt muss 0, 1 oder 2 sein");
+        if (f.kraenkt > 0 && (f.bewertung ?? o.bewertung) === "gut") err(fw, "eine kränkende Antwort kann nicht „gut“ sein");
+        if ((f.effekt !== undefined || f.bewertung !== undefined || f.kraenkt !== undefined) && f.warum === undefined && f.notiz === undefined) warn(fw, "Fall ändert die Wirkung ohne warum/notiz – die Auswertung erklärt es nicht");
+        for (const m of f.merkt ?? []) merkerGesetzt.add(m);
+        if (f.weiter !== undefined) { if (!knoten.has(f.weiter)) err(fw, `weiter → „${f.weiter}“ existiert nicht`); else ziele.push(f.weiter); }
+        if ([f.warum, f.notiz].some((t) => ZAHL_MIT_EINHEIT.test(t ?? "")) && !(o.fakten ?? []).length) err(fw, "Zahl mit Einheit ohne „fakten“-Verweis");
+      });
+
       if (!isStr(o.weiter)) err(ow, "weiter fehlt");
       else if (!knoten.has(o.weiter)) err(ow, `weiter → „${o.weiter}“ existiert nicht`);
       else ziele.push(o.weiter);
@@ -220,6 +267,8 @@ for (const s of szenarien) {
   }
 
   for (const f of faktIds) if (!benutzteFakten.has(f)) warn(sw, `Fakt „${f}“ wird nirgends verwendet`);
+  for (const m of merkerGelesen) if (!merkerGesetzt.has(m)) err(sw, `Merker „${m}“ wird abgefragt, aber nie gesetzt`);
+  for (const m of merkerGesetzt) if (!merkerGelesen.has(m)) warn(sw, `Merker „${m}“ wird gesetzt, aber nie abgefragt`);
 
   // Erreichbarkeit
   const erreichbar = new Set();
@@ -230,6 +279,7 @@ for (const s of szenarien) {
     erreichbar.add(id);
     for (const z of kanten.get(id) ?? []) stapel.push(z);
   }
+  if (s.kipp_ende) erreichbar.add(s.kipp_ende);
   for (const id of knoten.keys()) if (!erreichbar.has(id)) err(`${sw}.${id}`, "Knoten ist vom Start aus nicht erreichbar");
 
   // Schleifen: Jeder Pfad muss ein Ende erreichen → Graph muss kreisfrei sein.
@@ -268,7 +318,7 @@ for (const s of szenarien) {
     };
     const st = stat(s.start);
     if (st.max > MAX_SCHRITTE) err(sw, `längster Pfad hat ${st.max} Schritte (max. ${MAX_SCHRITTE})`);
-    if (s.art === "dialog" && st.max < MIN_LAENGSTER_PFAD_DIALOG) warn(sw, `längster Pfad nur ${st.max} Schritte (Ziel: etwa 6 bis 10)`);
+    if (s.art === "dialog" && st.max < MIN_LAENGSTER_PFAD_DIALOG) err(sw, `längster Pfad nur ${st.max} Schritte (Ziel: 8 bis 12)`);
     const endKnoten = [...knoten.values()].filter((k) => k.ende);
     if (!endKnoten.some((k) => k.sterne === 3)) err(sw, "kein Ende mit 3 Sternen");
     if (s.art === "pausentest") {

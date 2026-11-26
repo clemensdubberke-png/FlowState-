@@ -66,20 +66,31 @@ class ScreenshotTour {
         warte("Deine Antwort")
         shot("$prefix-04-spielstart")
 
-        antworte("Das klingt, als würde dich das richtig ärgern")
-        antworte("Die Renten werden doch gar nicht gekürzt")
-        shot("$prefix-05-rueckmeldung")
-        antworte("Darf ich dir einen Punkt zeigen")
-        antworte("Der Bund schießt etwa")
-        antworte("Ja, das ist viel, darüber darf man streiten")
-        antworte("Das ist ein neues Thema")
-        antworte("Mir geht's nicht ums Gewinnen", danach = "Auswertung ansehen")
-        if (alles) shot("$prefix-06-ende")
+        // Absichtlich ein leichter Fehler (Abwiegeln), damit die Nachwirkung sichtbar wird.
+        antworte("Das Bild regt dich richtig auf")
+        antworte("Dir geht's doch gut, Rainer")
+        shot("$prefix-05-gespraech")
+        antworte("Darf ich dir dazu was zeigen?")
+        antworte("Gute Frage, ehrlich.")
+        antworte("Das ist ein eigenes großes Thema")
+        if (alles) shot("$prefix-06-publikum")
+        antworte("Jana, lass mal.")
+        antworte("Ja, das ist viel Geld, darüber kann man")
+        antworte("Lass uns nach dem Kaffee", danach = "Auswertung ansehen")
+        if (alles) shot("$prefix-07-ende")
 
         klick("Auswertung ansehen")
         warte("Was gut lief")
         vergehe(2500) // Sterne-Animation
-        shot("$prefix-07-auswertung")
+        shot("$prefix-08-auswertung")
+        rule.onNode(hasText("Das Gespräch Schritt für Schritt", substring = true, ignoreCase = true)).performScrollTo()
+        vergehe(400)
+        shot("$prefix-09-verlauf")
+        if (alles) {
+            rule.onAllNodes(hasText("Das hat gekränkt", substring = true))[0].performScrollTo()
+            vergehe(400)
+            shot("$prefix-10-nachwirkung")
+        }
 
         if (alles) {
             rule.activity.onBackPressedDispatcher.onBackPressed()
@@ -87,7 +98,7 @@ class ScreenshotTour {
             rule.activity.onBackPressedDispatcher.onBackPressed()
             warte("Gesprächskompass")
             vergehe(600)
-            shot("$prefix-08-start-mit-fortschritt")
+            shot("$prefix-11-start-mit-fortschritt")
         }
     }
 

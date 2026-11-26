@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.clemens.gespraechskompass.data.Scenario
 import de.clemens.gespraechskompass.data.typName
-import de.clemens.gespraechskompass.ui.components.FeedbackCard
 import de.clemens.gespraechskompass.ui.components.GkCard
 import de.clemens.gespraechskompass.ui.components.IconBadge
 import de.clemens.gespraechskompass.ui.components.MineBubble
@@ -69,7 +68,6 @@ import de.clemens.gespraechskompass.ui.components.AnswerCard
 import de.clemens.gespraechskompass.ui.components.Avatar
 import de.clemens.gespraechskompass.ui.components.szenarioIcon
 import de.clemens.gespraechskompass.ui.theme.LocalGk
-import de.clemens.gespraechskompass.ui.theme.hexColor
 
 @Composable
 fun PlayScreen(vm: PlayViewModel, onExit: () -> Unit) {
@@ -231,8 +229,8 @@ private fun GameContent(
             // Am Ende bis zum Knopf „Auswertung ansehen“ scrollen (er folgt direkt auf den Verlauf).
             st.phase == Phase.ENDE -> st.items.size
             st.optionen.isNotEmpty() -> {
-                val nachFeedback = st.items.indexOfLast { it is ChatItem.Feedback }
-                if (nachFeedback >= 0) (nachFeedback + 1).coerceAtMost(st.items.lastIndex) else 0
+                val nachAntwort = st.items.indexOfLast { it is ChatItem.Mine }
+                if (nachAntwort >= 0) (nachAntwort + 1).coerceAtMost(st.items.lastIndex) else 0
             }
             letzteEigene >= 0 -> letzteEigene
             else -> st.items.lastIndex.coerceAtLeast(0)
@@ -270,17 +268,8 @@ private fun GameContent(
                     when (item) {
                         is ChatItem.Their -> TheirBubble(s.gegenueber.name, item.text, farbe, item.zeigeKopf)
                         is ChatItem.Narrator -> NarratorText(item.text)
-                        is ChatItem.Mine -> MineBubble(item.text, item.akzent?.let { hexColor(it) })
+                        is ChatItem.Mine -> MineBubble(item.text, null)
                         is ChatItem.Typing -> TypingIndicator(s.gegenueber.name, farbe)
-                        is ChatItem.Feedback -> FeedbackCard(
-                            bewertung = item.zug.bewertung,
-                            warum = item.zug.option.warum,
-                            bausteine = item.zug.option.bausteine.mapNotNull { st.bausteine[it] },
-                            deltaVertrauen = item.zug.delta.vertrauen,
-                            deltaErkenntnis = item.zug.delta.erkenntnis,
-                            labelVertrauen = s.balken.vertrauen,
-                            labelErkenntnis = s.balken.erkenntnis,
-                        )
                     }
                 }
             }

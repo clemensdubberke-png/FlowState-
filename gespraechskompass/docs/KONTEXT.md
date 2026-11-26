@@ -64,3 +64,31 @@ Mein Diskussions-Coach (Skill „schopenhauer-diskussionscoach“) hat diese Bau
   optional KI-Gegenüber (online, nicht in v1).
 - **Nicht in v1:** KI-Modus, Online-Funktionen, Konten, Werbung, Tracking, Play Store.
   Die App fordert keine Internet-Berechtigung an.
+
+### 2026-11-26 – Version 1.1 (realistischere Dialoge)
+Wunsch von Clemens: Fehler sollen realistisch nachwirken. Wer mit etwas Kränkendem startet,
+soll das Gespräch nicht mit dem nächsten guten Zug sofort retten können. Die Dialoge sollen so
+klingen, wie Menschen in solchen Lagen wirklich argumentieren. Recherche: `docs/RECHERCHE.md`.
+
+Seine Entscheidungen:
+- **Strenge „Mittel“:**
+  - Eine versteckte **Kränkung** (Pausentest: „Verbissenheit“) entsteht durch kränkende Antworten: `kraenkt` 1 = leicht, 2 = schwer.
+  - Solange sie besteht, wirken gute Züge gedämpft (Faktor 1/(1+0,6·K)), und Fehler wiegen schwerer (1+0,25·K).
+  - Sie klingt langsam ab: −0,5 je guter, −0,25 je teils guter Antwort, −1 zusätzlich bei einem ehrlichen Eingeständnis (`repariert`).
+  - Ab einer Kränkung von 3,5 kippt das Gespräch zum `kipp_ende`.
+  - Ab 2 Kränkungspunkten insgesamt (eine schwere oder zwei leichte) gibt es höchstens 2 Sterne. Ein einzelner kleiner Ausrutscher ist verzeihlich.
+- **Asymmetrie:** Vertrauen wächst grundsätzlich langsamer (×0,7), als es verloren geht.
+- **Keine Bewertung im Gespräch:**
+  - Während des Spiels gibt es nur Reaktionen, weder „Warum“-Karten noch Baustein-Farben noch +/−-Zahlen. Die Balken bewegen sich weiter wie ein Stimmungsbarometer.
+  - Die Auswertung fasst das Gespräch chronologisch zusammen: was das Gegenüber gesagt hat, deine Antwort, die Bewertung mit Begründung, wo eine Kränkung ausgelöst wurde oder nachgewirkt hat, ein Eingeständnis, das Kippen und eine stärkere Alternative.
+- **Ton:** alltagsnah. Rau nur, wo es zur Figur passt (Kommentarspalte), ohne Hetze gegen Gruppen.
+- **Länge:** Dialoge haben 8 bis 12 Schritte (Prüfskript: längster Pfad ≥ 8), der Pausentest bleibt kurz.
+
+Neue Datenfelder: `kraenkt`, `repariert`, `merkt` (das Gegenüber merkt sich etwas), `nur_wenn`
+(Option erscheint nur in bestimmter Lage, z. B. Entschuldigung nach einer Kränkung), `falls`
+(dieselbe Antwort wirkt je nach Lage anders, z. B. Fakten prallen bei Vertrauen < 45 ab),
+Bedingungen in Varianten (`merker`, `vertrauen_ab/bis`, `kraenkung_ab`) für Rückbezüge auf
+frühere Fehler, `kipp_ende` und `nachwirkung` je Szenario. Details in `docs/SZENARIEN.md`.
+
+Fakten aktualisiert: Bürgergeld heißt seit 1.7.2026 „Grundsicherungsgeld“. Beim Verbrenner-Aus
+ist eine Lockerung auf −90 % vorgeschlagen, aber noch nicht beschlossen.

@@ -64,14 +64,53 @@ Der Git-Hook (`scripts/pre-commit`) führt das Skript vor jedem Commit automatis
 }
 ```
 
+## Realistische Nachwirkung (ab Version 1.1)
+
+```jsonc
+// Szenario-Ebene
+"kipp_ende": "ende_streit",        // Pflicht bei Dialogen: hierhin kippt das Gespräch ab Kränkung 3,5
+"nachwirkung": "Kränkung",         // Name in der Auswertung (Pausentest: "Verbissenheit")
+
+// Option
+"kraenkt": 2,                      // 0 nein, 1 leicht (belehren, abwiegeln), 2 schwer (Etikett, Spott, Publikum)
+"repariert": true,                 // ehrliches Eingeständnis: senkt bestehende Kränkung zusätzlich um 1
+"merkt": ["etikett"],              // das Gegenüber merkt sich etwas → spätere Rückbezüge
+"nur_wenn": { "kraenkung_ab": 1 }, // Option erscheint nur in dieser Lage (z. B. Entschuldigung)
+"falls": [{                        // gleiche Antwort, andere Wirkung je nach Lage (erster Treffer gilt)
+  "wenn": { "vertrauen_bis": 44 },
+  "effekt": { "vertrauen": -3, "erkenntnis": 3, "anspannung": 6 },
+  "bewertung": "teils",
+  "notiz": "Die Fakten waren richtig, aber sie sind abgeprallt …",   // erscheint in der Auswertung
+  "reaktion": [ … ],               // optional: andere Reaktion
+  "weiter": "…"                    // optional: anderes Ziel
+}]
+
+// Bedingungen (in nur_wenn, falls.wenn und in Varianten von sagt/reaktion)
+{ "anspannung_ab", "anspannung_bis", "vertrauen_ab", "vertrauen_bis", "kraenkung_ab",
+  "merker": ["…"], "ohne_merker": ["…"] }
+```
+
+- **Varianten mit Rückbezug** (z. B. `"merker": ["etikett"]`) haben Vorrang vor allgemeinen Varianten.
+  Für jede Anspannung muss es trotzdem eine allgemeine Variante geben (Rückfall).
+- **Wirkung:**
+  - Solange Kränkung K besteht, wirken positive Effekte × 1/(1+0,6·K) und negative × (1+0,25·K).
+  - Vertrauen wächst grundsätzlich × 0,7.
+  - Die Kränkung sinkt um 0,5 je guter und 0,25 je teils guter Antwort.
+- **Sterne:**
+  - Der Endknoten legt sie fest.
+  - Ab 2 Kränkungspunkten insgesamt gibt es höchstens 2 Sterne.
+  - Liegt das Vertrauen am Ende unter 35, gibt es einen Stern weniger.
+- **Im Spiel keine Bewertung:** `warum`, `notiz` und Nachwirkungen erscheinen nur in der
+  chronologischen Auswertung am Ende.
+
 ## Ablauf im Spiel
 
 1. Das Gegenüber sagt den `sagt`-Text des Startknotens (Variante passend zur Anspannung).
 2. Du wählst eine von 3 bis 4 Optionen (Reihenfolge wird gemischt).
-3. Es erscheinen deine Antwort, die Rückmeldung (`warum` und Bausteine) und die Balken ändern sich.
+3. Deine Antwort erscheint, und die Balken ändern sich. Eine Bewertung gibt es erst in der Auswertung.
 4. Das Gegenüber reagiert mit einer `reaktion`-Variante (gewählt nach der Anspannung **vor** deiner Antwort).
 5. Hat der nächste Knoten einen `sagt`-Text, folgt er (gewählt nach der **neuen** Anspannung).
-6. Bei einem Endknoten folgt die Auswertung. Die Sterne kommen vom Endknoten, minus 1, wenn der erste Balken unter 35 liegt.
+6. Bei einem Endknoten folgt die Auswertung mit dem chronologischen Gesprächsverlauf.
 
 Ganz in Klammern gesetzte Texte, z. B. `(steht auf und geht)`, werden als Erzählung dargestellt.
 
@@ -80,7 +119,9 @@ Ganz in Klammern gesetzte Texte, z. B. `(steht auf und geht)`, werden als Erzäh
 - Alle Pflichtfelder sind da, und es gibt keine unbekannten Felder (Tippfehler).
 - Jede `weiter`- bzw. `ziel`-ID existiert, und jeder Knoten ist vom Start aus erreichbar.
 - Keine Sackgassen: Jeder Nicht-Endknoten hat 3 bis 4 Optionen.
-- Keine Schleifen, also erreicht jeder Pfad ein Ende. Längster Pfad höchstens 12 Schritte, bei Dialogen ein Hinweis unter 6.
+- Keine Schleifen, also erreicht jeder Pfad ein Ende. Längster Pfad höchstens 12 Schritte, bei Dialogen mindestens 8.
+- Merker, die abgefragt werden, müssen irgendwo gesetzt werden. Eine kränkende Antwort kann nicht „gut“ sein.
+- Es sind immer 3 bis 4 Optionen sichtbar (feste plus bedingte). Dialoge brauchen ein `kipp_ende`.
 - Werte: Start 0 bis 100, Effekte −30 bis +30, Sterne 1 bis 3.
 - Mindestens 2 Formulierungsvarianten je Aussage und Reaktion, und für jede Anspannung 0 bis 100 passt mindestens eine Variante.
 - Zahlen mit Einheit (Mrd., %, Euro …) nur in Optionen mit `fakten`-Verweis. Jeder Fakt hat `stand` und `quelle_pruefen: true`.

@@ -184,7 +184,7 @@ fun StarRow(sterne: Int, max: Int = 3, size: Dp = 18.dp, animiert: Boolean = fal
 
 /** Sichtbarer Balken (Vertrauen/Erkenntnis) mit kurz aufblitzender Änderung. */
 @Composable
-fun ValueBar(label: String, value: Int, color: Color, modifier: Modifier = Modifier) {
+fun ValueBar(label: String, value: Int, color: Color, modifier: Modifier = Modifier, zeigeAenderung: Boolean = false) {
     val fraction by animateFloatAsState(value / 100f, tween(700, easing = FastOutSlowInEasing), label = "bar")
     var letzter by remember { mutableStateOf(value) }
     var delta by remember { mutableStateOf(0) }
@@ -200,7 +200,7 @@ fun ValueBar(label: String, value: Int, color: Color, modifier: Modifier = Modif
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.weight(1f))
-            AnimatedVisibility(delta != 0, enter = fadeIn() + slideInVertically { it / 2 }, exit = fadeOut()) {
+            AnimatedVisibility(zeigeAenderung && delta != 0, enter = fadeIn() + slideInVertically { it / 2 }, exit = fadeOut()) {
                 Text(
                     (if (delta > 0) "+" else "") + delta,
                     style = MaterialTheme.typography.labelMedium,

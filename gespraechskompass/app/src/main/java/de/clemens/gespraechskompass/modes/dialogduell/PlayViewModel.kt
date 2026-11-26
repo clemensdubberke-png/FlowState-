@@ -19,8 +19,7 @@ sealed interface ChatItem {
 
     data class Their(override val key: Long, val text: String, val zeigeKopf: Boolean) : ChatItem
     data class Narrator(override val key: Long, val text: String) : ChatItem
-    data class Mine(override val key: Long, val text: String, val akzent: String?) : ChatItem
-    data class Feedback(override val key: Long, val zug: Zug) : ChatItem
+    data class Mine(override val key: Long, val text: String) : ChatItem
     data class Typing(override val key: Long) : ChatItem
 }
 
@@ -78,17 +77,18 @@ class PlayViewModel(private val app: AppContainer, private val szenarioId: Strin
         val st = _state.value
         if (st.wartet || st.phase != Phase.SPIEL) return
         val ergebnis = e.waehle(option)
-        val akzent = option.bausteine.firstOrNull()?.let { st.bausteine[it]?.farbe }
+        // Keine Bewertung während des Gesprächs: nur deine Antwort, dann die Reaktion.
+        // Warum etwas (nicht) funktioniert hat, erklärt erst die Auswertung.
         _state.update {
             it.copy(
                 wartet = true,
                 optionen = emptyList(),
-                items = it.items + ChatItem.Mine(key(), option.text, akzent) + ChatItem.Feedback(key(), ergebnis.zug),
+                items = it.items + ChatItem.Mine(key(), option.text),
                 werte = e.werte,
             )
         }
         viewModelScope.launch {
-            delay(700)
+            delay(500)
             sprich(ergebnis.reaktion, erzaehler = false)
             if (ergebnis.naechsterText != null) {
                 delay(250)

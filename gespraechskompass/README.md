@@ -13,7 +13,7 @@ stehen in [`docs/KONTEXT.md`](docs/KONTEXT.md).
 ```
 gespraechskompass/
 ├─ data/scenarios.json        Szenarien und Bausteine (einzige Quelle, wird als Asset gepackt)
-├─ docs/                      KONTEXT.md, SZENARIEN.md, RELEASE.md
+├─ docs/                      KONTEXT.md, SZENARIEN.md, RECHERCHE.md, RELEASE.md
 ├─ scripts/
 │  ├─ validate-scenarios.mjs  Prüfskript (Node, ohne Abhängigkeiten)
 │  └─ pre-commit              Git-Hook, ruft das Prüfskript auf
@@ -53,6 +53,6 @@ Debug-Schlüssels installiert sich jede neue Debug-APK über die alte, und der F
 `docs/screenshots/` enthält Aufnahmen aus einem automatischen Durchlauf (Robolectric, hell und dunkel).
 Neu erzeugen: `./gradlew testDebugUnitTest -Pscreenshots` (legt PNGs ab).
 
-| Start | Gespräch | Auswertung |
+| Gespräch | Auswertung | Verlauf mit Nachwirkung |
 | --- | --- | --- |
-| ![](docs/screenshots/hell-01-start.webp) | ![](docs/screenshots/hell-05-rueckmeldung.webp) | ![](docs/screenshots/hell-07-auswertung.webp) |
+| ![](docs/screenshots/hell-05-gespraech.webp) | ![](docs/screenshots/hell-08-auswertung.webp) | ![](docs/screenshots/hell-10-nachwirkung.webp) |
