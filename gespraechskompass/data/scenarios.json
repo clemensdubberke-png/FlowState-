@@ -1,0 +1,2469 @@
+{
+  "version": 1,
+  "bausteine": {
+    "pausentest": { "name": "Pausentest", "art": "zug", "farbe": "#6B7FD7", "kurz": "Ändert sich etwas Wichtiges, wenn der andere mich voll versteht? Wenn nein: nicken, „Interessanter Blickwinkel“, Energie sparen." },
+    "gespraechsoeffner": { "name": "Gesprächsöffner", "art": "zug", "farbe": "#2A9D8F", "kurz": "„Wie bist du zu dem Schluss gekommen?“ Zuhören. „Ich kenne dazu einen anderen Punkt, darf ich ihn zeigen?“" },
+    "gefuehl_ansprechen": { "name": "Gefühl ansprechen", "art": "zug", "farbe": "#E07A5F", "kurz": "Bei Typ 2 zuerst: „Das klingt, als machst du dir Sorgen. Was beunruhigt dich konkret?“ Fakten erst später." },
+    "absurd_frage": { "name": "Sachliche Absurd-Frage", "art": "zug", "farbe": "#8E6CC9", "kurz": "Behauptung ernst nehmen und als Frage formulieren, was daraus folgen müsste. Die Person zieht den Schluss selbst, mit Ausweg." },
+    "trojanisches_pferd": { "name": "Trojanisches Pferd", "art": "zug", "farbe": "#B07D62", "kurz": "Bei Machtgefälle: kleiner, befristeter Test mit vorher vereinbartem Maßstab statt großer Forderung." },
+    "street_epistemology": { "name": "Street Epistemology", "art": "zug", "farbe": "#3D85C6", "kurz": "Behauptung wiederholen, Begriffe klären, Sicherheit 0 bis 100 erfragen, Weg dorthin erfragen, Quelle prüfen, bedanken." },
+    "fakt_sandwich": { "name": "Fakt-Sandwich", "art": "zug", "farbe": "#D99A2B", "kurz": "Fakt zuerst, Mythos kurz, warum er trügt, Fakt wiederholen plus Alternativerklärung." },
+    "wahrer_kern": { "name": "Wahren Kern zugeben", "art": "zug", "farbe": "#4F9D69", "kurz": "Was an der Sorge oder Behauptung stimmt, offen anerkennen. Das senkt den Druck und macht dich glaubwürdig." },
+    "gegenbeispiel": { "name": "Gegenbeispiel", "art": "zug", "farbe": "#3E9CB0", "kurz": "Bei „die alle“: ein konkretes Gegenbeispiel, ruhig und ohne Triumph." },
+    "ausstieg": { "name": "Ausstieg", "art": "zug", "farbe": "#7A8B99", "kurz": "„Ich glaube, wir drehen uns im Kreis. Lassen wir es für heute dabei.“ Keine letzte Spitze." },
+    "selbstcheck": { "name": "Selbstcheck", "art": "zug", "farbe": "#C27BA0", "kurz": "Was müsste ich hören, damit ich meine Meinung ändere? Hat der andere einen Punkt?" },
+
+    "strohmann": { "name": "Strohmann", "art": "kunstgriff", "kunstgriffe": [1, 23, 24], "farbe": "#C8553D", "kurz": "Die Aussage wird verzerrt oder übertrieben, damit sie leichter anzugreifen ist." },
+    "wortspiel": { "name": "Wortspiel", "art": "kunstgriff", "kunstgriffe": [2], "farbe": "#B5651D", "kurz": "Ein Wort wird in anderer Bedeutung benutzt, als es gemeint war." },
+    "verallgemeinern": { "name": "Verallgemeinern", "art": "kunstgriff", "kunstgriffe": [3, 11, 19], "farbe": "#D17A22", "kurz": "Aus Einzelfällen wird „die alle“ oder „immer“." },
+    "zirkel": { "name": "Zirkelschluss", "art": "kunstgriff", "kunstgriffe": [6, 22], "farbe": "#A86A3D", "kurz": "Das, was bewiesen werden soll, steckt schon in der Begründung." },
+    "fragenflut": { "name": "Fragenflut", "art": "kunstgriff", "kunstgriffe": [7, 9], "farbe": "#B85C5C", "kurz": "Viele Fragen auf einmal, damit keine richtig beantwortet werden kann." },
+    "wuetend_machen": { "name": "Wütend machen", "art": "kunstgriff", "kunstgriffe": [8, 27], "farbe": "#C0392B", "kurz": "Provozieren, damit der andere unsachlich wird." },
+    "siegbehauptung": { "name": "Siegbehauptung", "art": "kunstgriff", "kunstgriffe": [14], "farbe": "#A4434F", "kurz": "„Siehst du, ich hab recht“, obwohl nichts geklärt ist." },
+    "ad_hominem": { "name": "Ad hominem", "art": "kunstgriff", "kunstgriffe": [16, 38], "farbe": "#8C2F39", "kurz": "Die Person wird angegriffen statt ihr Argument." },
+    "ablenken": { "name": "Ablenken", "art": "kunstgriff", "kunstgriffe": [18, 29], "farbe": "#B23A48", "kurz": "Plötzlich ein neues Thema, wenn es beim alten eng wird." },
+    "publikum": { "name": "Publikum", "art": "kunstgriff", "kunstgriffe": [28], "farbe": "#9C4F6B", "kurz": "Andere werden als Richter oder Lacher ins Gespräch geholt." },
+    "autoritaet": { "name": "Autorität ohne Quelle", "art": "kunstgriff", "kunstgriffe": [30], "farbe": "#A0522D", "kurz": "„Experten sagen“, „die Studien zeigen“, ohne zu sagen, welche." },
+    "etikett": { "name": "Etikett", "art": "kunstgriff", "kunstgriffe": [32], "farbe": "#B4533A", "kurz": "Ein Schlagwort („Fake News“, „Schlafschaf“, „rechts“) ersetzt das Argument." },
+    "nur_theorie": { "name": "„Nur Theorie“", "art": "kunstgriff", "kunstgriffe": [33], "farbe": "#9A6B4F", "kurz": "„In der Theorie mag das stimmen, in der Praxis nicht“, ohne Begründung." },
+    "gefuehl_statt_gruende": { "name": "Gefühl statt Gründe", "art": "kunstgriff", "kunstgriffe": [35], "farbe": "#C46A5A", "kurz": "Man soll etwas glauben, weil es sich richtig anfühlt oder zur Gruppe passt." },
+    "wortschwall": { "name": "Wortschwall", "art": "kunstgriff", "kunstgriffe": [36], "farbe": "#8F5E5E", "kurz": "So viel reden, dass der andere den Faden verliert." },
+    "schwacher_beleg": { "name": "Schwacher Beleg", "art": "kunstgriff", "kunstgriffe": [37], "farbe": "#AD5F3C", "kurz": "Ein schwaches Argument wird widerlegt und so getan, als wäre damit alles widerlegt." },
+
+    "kontern": { "name": "Kontern", "art": "stolperfalle", "farbe": "#5F6B7A", "kurz": "Direkter Widerspruch als Gegenangriff. Das Gegenüber verteidigt dann sich, nicht mehr die Sache." },
+    "belehren": { "name": "Belehren", "art": "stolperfalle", "farbe": "#6E6A86", "kurz": "Erklären von oben herab. Selbst richtige Fakten kommen dann als Kränkung an." },
+    "beschwichtigen": { "name": "Abwiegeln", "art": "stolperfalle", "farbe": "#7C7F8C", "kurz": "„Wird schon nicht so schlimm“: Das nimmt die Sorge nicht ernst." },
+    "ueberrumpeln": { "name": "Überrumpeln", "art": "stolperfalle", "farbe": "#6B5E73", "kurz": "Große Veränderung auf einmal fordern, ohne Absicherung für den anderen." },
+    "letzte_spitze": { "name": "Letzte Spitze", "art": "stolperfalle", "farbe": "#74596B", "kurz": "Ein Seitenhieb zum Schluss. Er kostet oft alles, was vorher gewonnen war." }
+  },
+
+  "szenarien": [
+    {
+      "id": "onkel-ukraine",
+      "titel": "Das Familienessen",
+      "ort": "Sonntagsessen bei der Familie",
+      "thema": "„Die Ukraine nimmt uns aus, dafür kürzen sie die Rente.“",
+      "art": "dialog",
+      "icon": "essen",
+      "gegenueber": {
+        "name": "Onkel Rainer",
+        "rolle": "Onkel, seit Kurzem in Rente",
+        "typ": [1, 2],
+        "beschreibung": "Selbstsicher, liest viel auf Facebook. Hinter dem Ärger steckt die Sorge, dass das Geld im Alter nicht reicht."
+      },
+      "einleitung": "Zwischen Braten und Nachtisch legt Onkel Rainer sein Handy auf den Tisch. Die anderen werden still. Alle schauen kurz zu dir.",
+      "startwerte": { "vertrauen": 55, "erkenntnis": 10, "anspannung": 55 },
+      "start": "k1",
+      "fakten": [
+        { "id": "f_ukraine", "text": "Ukraine-Hilfe im Bundeshaushalt 2026: etwa 11,5 Mrd. Euro", "stand": "Haushalt 2026", "quelle_pruefen": true, "quelle": "Bundeshaushalt 2026 (bundeshaushalt.de) – vor Verwendung prüfen" },
+        { "id": "f_rente", "text": "Bundeszuschuss zur gesetzlichen Rentenversicherung 2026: etwa 127,8 Mrd. Euro", "stand": "Haushalt 2026", "quelle_pruefen": true, "quelle": "Bundeshaushalt 2026, Einzelplan 11 (Arbeit und Soziales) – vor Verwendung prüfen" },
+        { "id": "f_faktencheck", "text": "Einen belegten Zusammenhang „Rente wird für die Ukraine gekürzt“ haben Faktenchecker nicht gefunden.", "stand": "2026", "quelle_pruefen": true, "quelle": "Faktenchecks großer Redaktionen – vor Verwendung prüfen" },
+        { "id": "f_rentengarantie", "text": "Die jährliche Rentenanpassung darf die Renten nicht senken (Schutzklausel, sog. Rentengarantie).", "stand": "2026, § 68a SGB VI", "quelle_pruefen": true, "quelle": "SGB VI § 68a – vor Verwendung prüfen" }
+      ],
+      "knoten": [
+        {
+          "id": "k1",
+          "sagt": [
+            { "text": "Hast du das gesehen? Die Ukraine nimmt uns aus. Und dafür kürzen sie bei der Rente. Steht hier schwarz auf weiß.", "anspannung_bis": 59 },
+            { "text": "Ich sag's dir, die Ukraine kriegt Milliarden, und wir Rentner gucken in die Röhre. Hat einer ganz genau ausgerechnet.", "anspannung_bis": 59 },
+            { "text": "Und komm mir jetzt nicht mit Putin-Versteher. Die Ukraine nimmt uns aus, und an der Rente wird gespart. Punkt.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Das ist doch Quatsch. Das sind Fake News von Facebook.",
+              "bausteine": ["etikett", "kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": -5, "anspannung": 15 },
+              "warum": "„Fake News“ ist ein Etikett statt eines Arguments. Für Rainer klingt es wie „Du bist dumm“. Er verteidigt jetzt sich, nicht mehr die Behauptung.",
+              "reaktion": [
+                { "text": "Ach so. Und du weißt es natürlich besser. Typisch.", "anspannung_bis": 59 },
+                { "text": "Siehst du, genau das meine ich. Man darf nichts mehr sagen, ohne dass man gleich der Dumme ist.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_abwehr"
+            },
+            {
+              "text": "Wie bist du darauf gekommen? Was steht da genau?",
+              "bausteine": ["gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Ein echter Gesprächsöffner: Du nimmst ihn ernst und erfährst, worauf seine Sicherheit beruht. Wer erklärt, hört sich selbst zu.",
+              "reaktion": [
+                { "text": "Na hier. Da hat einer aufgelistet, was die alles kriegen. Und gleichzeitig heißt es, die Rente ist nicht mehr sicher.", "anspannung_bis": 59 },
+                { "text": "Was soll da stehen? Das, was jeder sieht. … Na gut, guck selbst.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2"
+            },
+            {
+              "text": "Das klingt, als würde dich das richtig ärgern. Geht's dir um deine eigene Rente?",
+              "bausteine": ["gefuehl_ansprechen"], "bewertung": "gut",
+              "effekt": { "vertrauen": 12, "erkenntnis": 3, "anspannung": -12 },
+              "warum": "Rainer ist teils Typ 2: Hinter dem Satz steckt Sorge. Wenn du das Gefühl zuerst ansprichst, muss er nicht mehr kämpfen, um gehört zu werden.",
+              "reaktion": [
+                { "text": "Ärgern? … Ja. Ich hab mein Leben lang geschuftet, und dann liest man so was.", "anspannung_bis": 59 },
+                { "text": "Mir geht's ums Prinzip! … Na ja. Auch um meine Rente, klar.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_gefuehl"
+            },
+            {
+              "text": "Für die Ukraine sind es etwa 11,5 Milliarden, für die Rente schießt der Bund rund 127,8 Milliarden zu. Das passt nicht zusammen.",
+              "bausteine": ["belehren"], "bewertung": "teils",
+              "fakten": ["f_ukraine", "f_rente"],
+              "effekt": { "vertrauen": -5, "erkenntnis": 5, "anspannung": 10 },
+              "warum": "Die Zahlen sind ein guter Punkt (Stand prüfen!). Als Eröffnung wirken sie aber wie ein Konter. Bei einer Mischform aus Typ 1 und 2 kommt ein Fakt ohne Beziehung als Angriff an. Erst öffnen, dann Fakten.",
+              "reaktion": [
+                { "text": "Zahlen, Zahlen. Die kann man sich hindrehen, wie man will.", "anspannung_bis": 59 },
+                { "text": "Ach, jetzt kommst du mir mit Zahlen. Woher hast du die denn? Aus dem Staatsfernsehen?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_abwehr"
+            }
+          ]
+        },
+        {
+          "id": "k2",
+          "sagt": [
+            { "text": "Das Geld muss doch irgendwo herkommen. Und bei wem wird gespart? Bei den kleinen Leuten.", "anspannung_bis": 59 },
+            { "text": "Irgendwo muss das Geld ja herkommen. Das ist doch logisch.", "anspannung_bis": 59 },
+            { "text": "Logisch ist das. Das Geld wächst nicht auf Bäumen.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Wenn ich dich richtig verstehe: Weil die Ukraine Geld bekommt, wird bei der Rente gekürzt. Wie sicher bist du dir da, von 0 bis 100?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 10, "anspannung": -5 },
+              "warum": "Behauptung wiederholen und Sicherheit erfragen: Rainer muss selbst einschätzen, wie fest seine Grundlage ist. Du urteilst nicht, du fragst.",
+              "reaktion": [
+                { "text": "Hm. Achtzig? Ich hab's jetzt nicht selbst nachgerechnet.", "anspannung_bis": 59 },
+                { "text": "Hundert! … Na gut. Achtzig.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Da hast du einen Punkt: Die Hilfe ist wirklich viel Geld. Und über Prioritäten darf man streiten.",
+              "bausteine": ["wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 12, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Der wahre Kern stimmt: Die Hilfe ist hoch, und Prioritäten sind eine politische Frage. Wer das zugibt, wirkt nicht wie ein Gegner.",
+              "reaktion": [
+                { "text": "Eben! Endlich sagt das mal einer.", "anspannung_bis": 59 },
+                { "text": "… Ja. Ja, genau das mein ich ja.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Das Geld kommt aus ganz verschiedenen Töpfen. So funktioniert ein Haushalt nicht, das ist komplizierter.",
+              "bausteine": ["belehren"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 12 },
+              "warum": "Inhaltlich nicht falsch, aber „das ist komplizierter“ klingt nach „du verstehst das nicht“. Das kostet Vertrauen und bringt keine Erkenntnis.",
+              "reaktion": [
+                { "text": "Ah, ist mir zu kompliziert, ja? Ich bin doch nicht blöd.", "anspannung_bis": 59 },
+                { "text": "Jetzt erklärst du mir die Welt. Ich hab Steuern gezahlt, da warst du noch gar nicht geboren.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3",
+              "weiter_bei_anspannung": { "ab": 70, "ziel": "k_eskalation" }
+            },
+            {
+              "text": "Und wer sagt das? Der Typ auf Facebook? Der hat doch keine Ahnung.",
+              "bausteine": ["ad_hominem"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -12, "erkenntnis": -5, "anspannung": 15 },
+              "warum": "Das ist selbst ein Kunstgriff (Ad hominem, 16/38): Du greifst den Absender an statt die Behauptung. Besser: fragen, woran man merken würde, dass die Quelle danebenliegt.",
+              "reaktion": [
+                { "text": "Der hat mehr Ahnung als manche Politiker, das kann ich dir sagen.", "anspannung_bis": 59 },
+                { "text": "Und du hast Ahnung, oder was? Hör doch auf.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k_eskalation"
+            }
+          ]
+        },
+        {
+          "id": "k2_gefuehl",
+          "sagt": [
+            { "text": "Weißt du, was mich wurmt? Man hört jeden Tag, dass das Geld knapp ist. Und dann ist für alles andere Geld da.", "anspannung_bis": 59 },
+            { "text": "Die Preise steigen, die Rente reicht hinten und vorne nicht, und dann liest man von Milliarden fürs Ausland.", "anspannung_bis": 59 },
+            { "text": "Ich hab nichts gegen die Ukrainer. Aber irgendwann ist auch mal gut.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Was beunruhigt dich konkret, wenn du an deine Rente denkst?",
+              "bausteine": ["gefuehl_ansprechen", "gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 8, "anspannung": -10 },
+              "warum": "Du bleibst beim Gefühl und machst es konkret. Aus „die da oben“ wird eine echte Sorge, über die man reden kann.",
+              "reaktion": [
+                { "text": "Konkret? … Dass es irgendwann nicht mehr reicht. Für deine Tante und mich.", "anspannung_bis": 59 },
+                { "text": "Was mich beunruhigt? Dass keiner an uns denkt. … Und dass es irgendwann nicht mehr reicht.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3_sorge"
+            },
+            {
+              "text": "Die Renten werden doch gar nicht gekürzt. Die jährliche Anpassung darf sie gar nicht senken.",
+              "bausteine": ["belehren"], "bewertung": "teils",
+              "fakten": ["f_rentengarantie"],
+              "effekt": { "vertrauen": -5, "erkenntnis": 3, "anspannung": 8 },
+              "warum": "Der Fakt ist ein guter Punkt (prüfen!). Aber gerade hat Rainer sich geöffnet, und du springst sofort in die Sache. Bei Typ 2 kommt das wie „deine Sorge zählt nicht“ an.",
+              "reaktion": [
+                { "text": "Gekürzt, nicht gekürzt. Wenn alles teurer wird, ist es dasselbe.", "anspannung_bis": 59 },
+                { "text": "Das sagen die immer. Und am Ende bleibt weniger übrig.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Dass das Geld knapp wirkt, verstehe ich. Die Preise merke ich auch.",
+              "bausteine": ["wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 3, "anspannung": -8 },
+              "warum": "Du gibst den wahren Kern zu: Die Preise sind ein echtes Problem. Damit steht ihr auf derselben Seite, bevor es um die Behauptung geht.",
+              "reaktion": [
+                { "text": "Siehst du. Und dann fragt man sich halt, wo das Geld hingeht.", "anspannung_bis": 59 },
+                { "text": "Na eben. Endlich mal einer, der nicht gleich alles schönredet.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3_sorge"
+            },
+            {
+              "text": "Jetzt übertreib mal nicht. Dir geht's doch gut.",
+              "bausteine": ["beschwichtigen", "kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": -3, "anspannung": 15 },
+              "warum": "Abwiegeln nimmt seine Sorge nicht ernst. Wer sich nicht gehört fühlt, wird lauter, nicht leiser.",
+              "reaktion": [
+                { "text": "Woher willst du das wissen? Du kennst meine Kontoauszüge nicht.", "anspannung_bis": 59 },
+                { "text": "Mir geht's gut? Du hast ja keine Ahnung!", "anspannung_ab": 60 }
+              ],
+              "weiter": "k_eskalation"
+            }
+          ]
+        },
+        {
+          "id": "k2_abwehr",
+          "sagt": [
+            { "text": "Ihr Jüngeren glaubt auch alles, was im Fernsehen kommt.", "anspannung_bis": 59 },
+            { "text": "Ich lass mir doch von dir nicht erzählen, was ich zu denken hab.", "anspannung_bis": 59 },
+            { "text": "Weißt du was? Mit dir kann man ja nicht reden.", "anspannung_ab": 60 },
+            { "text": "Ihr glaubt doch alle alles, was euch vorgesetzt wird.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Du hast recht, das kam schroff rüber. Ich will dich verstehen: Was genau hast du gelesen?",
+              "bausteine": ["gespraechsoeffner", "wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 3, "anspannung": -12 },
+              "warum": "Fehler zugeben und neu öffnen: Das ist die stärkste Reparatur. Du zeigst, dass es dir um Verstehen geht, nicht ums Gewinnen.",
+              "reaktion": [
+                { "text": "… Na gut. Hier, guck. Da steht, was die alles kriegen.", "anspannung_bis": 59 },
+                { "text": "Hm. … Okay. Hier, lies selbst.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2"
+            },
+            {
+              "text": "Ich glaube gar nicht alles. Ich hab mir die Zahlen angeschaut, im Gegensatz zu dir.",
+              "bausteine": ["kontern", "ad_hominem"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -12, "erkenntnis": 0, "anspannung": 15 },
+              "warum": "„Im Gegensatz zu dir“ ist ein Angriff auf die Person. Jetzt geht es nur noch darum, wer der Klügere ist.",
+              "reaktion": [
+                { "text": "Ach, und ich bin zu blöd zum Lesen, oder was?", "anspannung_bis": 59 },
+                { "text": "Jetzt reicht's aber!", "anspannung_ab": 60 }
+              ],
+              "weiter": "k_eskalation"
+            },
+            {
+              "text": "„Ihr glaubt alles“ ist ein bisschen pauschal, oder? Ich versuche gerade nur zu verstehen, was du meinst.",
+              "bausteine": ["verallgemeinern"], "bewertung": "teils",
+              "effekt": { "vertrauen": 3, "erkenntnis": 2, "anspannung": -3 },
+              "warum": "Verallgemeinern (Kunstgriff 3/11/19) ruhig benannt, ohne Gegenangriff: gut. Noch wirksamer wäre gewesen, zuerst die eigene Schroffheit einzuräumen.",
+              "reaktion": [
+                { "text": "Na ja. Nicht alle. Aber viele.", "anspannung_bis": 59 },
+                { "text": "Pauschal, pauschal … Na gut. Du willst also wissen, was ich meine?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2"
+            },
+            {
+              "text": "Ich glaube, wir drehen uns gerade im Kreis. Lassen wir es für heute dabei, ja? Wer will Nachtisch?",
+              "bausteine": ["ausstieg"], "bewertung": "teils",
+              "effekt": { "vertrauen": 3, "erkenntnis": 0, "anspannung": -15 },
+              "warum": "Ein sauberer Ausstieg ohne letzte Spitze schützt die Beziehung. Da du das Gespräch selbst angeheizt hast, wäre eine Reparatur aber noch möglich gewesen.",
+              "reaktion": [
+                { "text": "Ja, ist gut. Gib mal die Soße rüber.", "anspannung_bis": 59 },
+                { "text": "Pff. Meinetwegen.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_ausstieg"
+            }
+          ]
+        },
+        {
+          "id": "k_eskalation",
+          "sagt": [
+            { "text": "Immer diese Besserwisserei. Ich sag nur, was alle denken.", "anspannung_bis": 69 },
+            { "text": "Du redest wie die im Fernsehen.", "anspannung_bis": 69 },
+            { "text": "(lauter) Ich muss mir das am eigenen Familientisch nicht anhören!", "anspannung_ab": 70 }
+          ],
+          "optionen": [
+            {
+              "text": "Entschuldige, ich bin zu forsch geworden. Mir ist wichtig, dass wir uns nicht streiten. Was ist dir an dem Thema am wichtigsten?",
+              "bausteine": ["gefuehl_ansprechen", "gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 12, "erkenntnis": 3, "anspannung": -15 },
+              "warum": "Entschuldigen und nach dem Wichtigsten fragen holt das Gespräch aus der Kampfzone. Erst die Beziehung, dann die Sache.",
+              "reaktion": [
+                { "text": "… Ist ja gut. Mir ist wichtig, dass unsereins nicht vergessen wird.", "anspannung_bis": 69 },
+                { "text": "(atmet durch) Ja. Ist gut. Mir geht's darum, dass keiner an uns Rentner denkt.", "anspannung_ab": 70 }
+              ],
+              "weiter": "k3_sorge"
+            },
+            {
+              "text": "Ich glaube, wir drehen uns im Kreis. Lassen wir es für heute dabei.",
+              "bausteine": ["ausstieg"], "bewertung": "gut",
+              "effekt": { "vertrauen": 3, "erkenntnis": 0, "anspannung": -15 },
+              "warum": "Bei hoher Anspannung bringt kein Argument mehr etwas. Der Ausstieg ohne letzte Spitze ist hier die reife Wahl.",
+              "reaktion": [
+                { "text": "Ja. Ist besser so.", "anspannung_bis": 69 },
+                { "text": "(brummt) Gut.", "anspannung_ab": 70 }
+              ],
+              "weiter": "ende_ausstieg"
+            },
+            {
+              "text": "„Was alle denken“ ist kein Argument. Und laut werden auch nicht.",
+              "bausteine": ["kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 15 },
+              "warum": "Sachlich stimmt es, aber im Streit wirkt es wie eine Zurechtweisung. Bei hoher Anspannung hört niemand mehr auf Logik.",
+              "reaktion": [
+                { "text": "Ach, jetzt bin ich auch noch zu laut. Toll.", "anspannung_bis": 69 },
+                { "text": "Ich werde so laut, wie ich will!", "anspannung_ab": 70 }
+              ],
+              "weiter": "ende_streit"
+            },
+            {
+              "text": "(zu den anderen am Tisch) Hört ihr das? Begründen kann er's nicht.",
+              "bausteine": ["publikum"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -20, "erkenntnis": -5, "anspannung": 20 },
+              "warum": "Publikum einbinden (Kunstgriff 28) macht aus dem Gespräch einen Wettkampf vor Zuschauern. Rainer kann jetzt nur noch verlieren oder angreifen.",
+              "reaktion": [
+                { "text": "Ach, jetzt holst du dir Verstärkung. Feige.", "anspannung_bis": 69 },
+                { "text": "(steht auf) Das muss ich mir nicht geben.", "anspannung_ab": 70 }
+              ],
+              "weiter": "ende_streit"
+            }
+          ]
+        },
+        {
+          "id": "k3",
+          "sagt": [
+            { "text": "Aber irgendwie muss das doch zusammenhängen. Warum sollte das sonst einer schreiben?", "anspannung_bis": 59 },
+            { "text": "Ich weiß ja auch nicht genau, wo das Geld hingeht. Weißt du's?", "anspannung_bis": 59 },
+            { "text": "Na und? Dann ist es eben nicht genau so. Ungefähr stimmt's schon.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Darf ich dir einen Punkt zeigen, den ich dazu kenne?",
+              "bausteine": ["gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 5, "anspannung": -5 },
+              "warum": "Um Erlaubnis fragen macht aus einem Konter ein Angebot. Rainer entscheidet selbst, ob er zuhört, und hört dann besser zu.",
+              "reaktion": [
+                { "text": "Na, dann zeig mal.", "anspannung_bis": 59 },
+                { "text": "Wenn's sein muss. Aber kurz.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_fakt"
+            },
+            {
+              "text": "Woran würdest du merken, dass der Post danebenliegt?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 3, "erkenntnis": 12, "anspannung": 0 },
+              "warum": "Die Quellenfrage aus der Street Epistemology: Rainer überlegt selbst, wie er Wahres von Falschem trennt. Das wirkt länger als jedes Gegenargument.",
+              "reaktion": [
+                { "text": "Merken? … Gute Frage. Wenn's woanders anders stünde, vielleicht.", "anspannung_bis": 59 },
+                { "text": "Ich muss gar nichts merken. … Na ja. Wenn's woanders anders stünde.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_quelle"
+            },
+            {
+              "text": "Wenn die Ukraine-Hilfe wirklich aus der Rente bezahlt würde: Müssten die Renten dann nicht gesunken sein, seit die Hilfe läuft? Sind sie das?",
+              "bausteine": ["absurd_frage"], "bewertung": "gut",
+              "fakten": ["f_rentengarantie"],
+              "effekt": { "vertrauen": 0, "erkenntnis": 12, "anspannung": 5 },
+              "warum": "Sachliche Absurd-Frage für den Typ-1-Anteil: Du nimmst die Behauptung ernst und fragst, was daraus folgen müsste. Die Folgerung folgt wirklich, und Rainer zieht den Schluss selbst.",
+              "reaktion": [
+                { "text": "Gesunken … nee, eigentlich nicht. Gestiegen sind sie halt nicht genug.", "anspannung_bis": 59 },
+                { "text": "Gesunken nicht, aber … das ist doch Haarspalterei.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_quelle"
+            },
+            {
+              "text": "Weil Klicks Geld bringen. Die Leute, die so was schreiben, verdienen an deiner Wut.",
+              "bausteine": ["belehren"], "bewertung": "teils",
+              "effekt": { "vertrauen": -5, "erkenntnis": 3, "anspannung": 8 },
+              "warum": "Der Gedanke stimmt oft, aber so gesagt heißt er: „Du lässt dich benutzen.“ Als Frage („Wer verdient eigentlich an dem Post?“) wäre er leichter anzunehmen.",
+              "reaktion": [
+                { "text": "Ach, jetzt bin ich manipuliert, oder was?", "anspannung_bis": 59 },
+                { "text": "Ich bin doch kein Schaf, das alles nachplappert!", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_quelle"
+            }
+          ]
+        },
+        {
+          "id": "k3_sorge",
+          "sagt": [
+            { "text": "Ich hab halt Angst, dass es am Ende nicht reicht. Wenn die Heizung kaputtgeht, weiß ich nicht, wovon.", "anspannung_bis": 59 },
+            { "text": "Da wird man halt sauer, wenn man so was liest. Man fühlt sich vergessen.", "anspannung_bis": 59 },
+            { "text": "Ach, was weißt du schon von Rente. Du hast ja noch Jahrzehnte.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Das verstehe ich. Darf ich dir trotzdem zu dem Post was zeigen? Nicht um dich zu widerlegen. Vielleicht beruhigt's dich sogar.",
+              "bausteine": ["gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 8, "anspannung": -5 },
+              "warum": "Erst die Angst gewürdigt, jetzt der Übergang zur Sache, mit Erlaubnis. Das Timing stimmt: Fakten wirken jetzt als Hilfe, nicht als Angriff.",
+              "reaktion": [
+                { "text": "Beruhigen? Da bin ich gespannt. Na los.", "anspannung_bis": 59 },
+                { "text": "Hm. Na gut. Zeig.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_fakt"
+            },
+            {
+              "text": "Die Angst ist echt, und über die Rente muss man streiten. Ich frag mich nur, ob die Ukraine da der richtige Gegner ist.",
+              "bausteine": ["wahrer_kern", "gefuehl_ansprechen"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 8, "anspannung": -5 },
+              "warum": "Du gibst der Sorge recht und lenkst den Blick auf die eigentliche Frage. Kein „Du liegst falsch“, sondern ein gemeinsames Nachdenken.",
+              "reaktion": [
+                { "text": "Wer denn sonst? … Weiß ich ehrlich gesagt auch nicht genau.", "anspannung_bis": 59 },
+                { "text": "Hm. Kann sein. Erklär mal.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_fakt"
+            },
+            {
+              "text": "Dann solltest du dich mal beraten lassen, statt Facebook zu glauben.",
+              "bausteine": ["belehren"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": 0, "anspannung": 12 },
+              "warum": "Rainer hat gerade seine Angst gezeigt. Ein Ratschlag von oben in diesem Moment wirkt wie eine Ohrfeige. Er macht dicht.",
+              "reaktion": [
+                { "text": "Ach, lass gut sein.", "anspannung_bis": 59 },
+                { "text": "Danke auch. Ich wusste, dass es ein Fehler war, was zu sagen.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_zu"
+            }
+          ]
+        },
+        {
+          "id": "k4_quelle",
+          "sagt": [
+            { "text": "Der schreibt halt oft so Sachen. Meistens stimmt's ja.", "anspannung_bis": 59 },
+            { "text": "Ich weiß nicht. Denen im Fernsehen glaub ich ja auch nicht alles.", "anspannung_bis": 59 },
+            { "text": "Ich seh doch, was los ist. Dafür brauch ich keine Quelle.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Ehrliche Antwort, danke. Wem würdest du denn trauen, wenn's um den Bundeshaushalt geht?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 10, "anspannung": -5 },
+              "warum": "Bedanken und weiterfragen: Rainer benennt selbst eine Quelle, der er traut. Damit habt ihr eine gemeinsame Grundlage.",
+              "reaktion": [
+                { "text": "Hm. Den offiziellen Zahlen vielleicht. Wenn man sie selbst nachlesen kann.", "anspannung_bis": 59 },
+                { "text": "Keinem! … Na gut. Den echten Zahlen vielleicht. Wenn man sie sehen kann.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_fakt"
+            },
+            {
+              "text": "Siehst du, du kannst es nicht sagen. Also glaubst du einfach irgendwas.",
+              "bausteine": ["siegbehauptung"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": -5, "anspannung": 15 },
+              "warum": "Siegbehauptung (Kunstgriff 14): Du erklärst dich zum Gewinner, obwohl nichts geklärt ist. Rainer fühlt sich vorgeführt und blockt ab.",
+              "reaktion": [
+                { "text": "Ich glaub nicht irgendwas. Jetzt hör aber auf.", "anspannung_bis": 59 },
+                { "text": "So, jetzt reicht's. Ich lass mich doch nicht vorführen!", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_streit"
+            },
+            {
+              "text": "Mir geht's ähnlich, ich prüf auch nicht alles nach. Magst du's mal zusammen mit mir nachschauen?",
+              "bausteine": ["gespraechsoeffner", "selbstcheck"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 8, "anspannung": -8 },
+              "warum": "Du stellst dich auf Augenhöhe und gibst eigene Schwächen zu. Gemeinsam nachschauen ist kein Verhör, sondern ein Projekt.",
+              "reaktion": [
+                { "text": "Zusammen? … Ja, warum nicht.", "anspannung_bis": 59 },
+                { "text": "Hm. Na gut. Aber du zeigst mir, wo das steht.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_fakt"
+            }
+          ]
+        },
+        {
+          "id": "k4_fakt",
+          "sagt": [
+            { "text": "Also, was weißt du?", "anspannung_bis": 59 },
+            { "text": "Gut. Aber ehrlich, ja? Nicht irgendwas aus dem Internet.", "anspannung_bis": 59 },
+            { "text": "Na los. Ich bin gespannt.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Der Bund schießt etwa 127,8 Milliarden zur Rente zu. Der Post klingt, als würde die Ukraine-Hilfe von etwa 11,5 Milliarden davon abgehen. Das sind aber getrennte Posten, und Faktenchecker haben keinen Beleg für Kürzungen gefunden. Die Rente bleibt der viel größere Posten. Streiten kann man trotzdem, wie hoch die Hilfe sein soll.",
+              "bausteine": ["fakt_sandwich"], "bewertung": "gut",
+              "fakten": ["f_rente", "f_ukraine", "f_faktencheck"],
+              "effekt": { "vertrauen": 5, "erkenntnis": 15, "anspannung": -5 },
+              "warum": "Ein vollständiges Fakt-Sandwich: Fakt zuerst, Mythos kurz, warum er trügt, Fakt wiederholt, und der berechtigte Streitpunkt bleibt stehen. (Zahlen vor Verwendung prüfen.)",
+              "reaktion": [
+                { "text": "Zehnmal so viel für die Rente? Das hätte ich jetzt nicht gedacht.", "anspannung_bis": 59 },
+                { "text": "Hm. Zahlen kann man sich auch zurechtlegen. … Aber zehnmal so viel?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5"
+            },
+            {
+              "text": "Die Zahlen sind eindeutig: 11,5 gegen 127,8 Milliarden. Dein Post ist schlicht falsch.",
+              "bausteine": ["belehren", "kontern"], "bewertung": "teils",
+              "fakten": ["f_ukraine", "f_rente"],
+              "effekt": { "vertrauen": -8, "erkenntnis": 8, "anspannung": 10 },
+              "warum": "Die Zahlen stimmen (Stand prüfen!), aber „schlicht falsch“ macht daraus ein Urteil über Rainer. Ein Fakt ohne Brücke wird als Niederlage erlebt, nicht als Information.",
+              "reaktion": [
+                { "text": "Hm. Na ja. Kann sein.", "anspannung_bis": 59 },
+                { "text": "Schlicht falsch, ja? Du machst es dir aber einfach.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5",
+              "weiter_bei_anspannung": { "ab": 70, "ziel": "ende_streit" }
+            },
+            {
+              "text": "Für die Ukraine sind es etwa 11,5 Milliarden, das ist echt viel Geld, da hast du recht. Zur Rente schießt der Bund aber etwa 127,8 Milliarden zu, das ist ein eigener Posten.",
+              "bausteine": ["wahrer_kern", "fakt_sandwich"], "bewertung": "gut",
+              "fakten": ["f_ukraine", "f_rente"],
+              "effekt": { "vertrauen": 8, "erkenntnis": 10, "anspannung": -5 },
+              "warum": "Wahrer Kern plus Fakt: Du gibst zu, was stimmt, und stellst die Größenordnung daneben. Nicht ganz ein Sandwich (der Mythos wird nicht erklärt), aber sehr wirksam.",
+              "reaktion": [
+                { "text": "Hm. Zehnmal so viel. Das hätte ich nicht gedacht.", "anspannung_bis": 59 },
+                { "text": "Viel Geld ist es trotzdem. … Aber gut, das mit der Rente ist was anderes.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5"
+            }
+          ]
+        },
+        {
+          "id": "k5",
+          "sagt": [
+            { "text": "Na gut. Aber die Ukraine kriegt trotzdem viel.", "anspannung_bis": 59 },
+            { "text": "Dann hat der im Post vielleicht übertrieben. Kann sein.", "anspannung_bis": 59 },
+            { "text": "Trotzdem. Irgendwas stimmt da nicht.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Ja, das ist viel, darüber darf man streiten. Mir war nur wichtig, dass das mit der Rente nicht stimmt. Danke, dass du zugehört hast.",
+              "bausteine": ["wahrer_kern", "street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Kern zugeben, Ergebnis kurz festhalten, bedanken. So kann Rainer seine Meinung ändern, ohne das Gesicht zu verlieren.",
+              "reaktion": [
+                { "text": "Ja, schon gut. Aber warte, da ist noch was …", "anspannung_bis": 59 },
+                { "text": "Bitte. Aber eins sag ich dir noch …", "anspannung_ab": 60 }
+              ],
+              "weiter": "k6"
+            },
+            {
+              "text": "Siehst du, ich hatte recht.",
+              "bausteine": ["siegbehauptung", "letzte_spitze"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": -5, "anspannung": 15 },
+              "warum": "Siegbehauptung plus letzte Spitze: Rainer war kurz davor, nachzudenken. Jetzt muss er sein Gesicht wahren und hält erst recht fest.",
+              "reaktion": [
+                { "text": "Jaja, du hast ja immer recht.", "anspannung_bis": 59 },
+                { "text": "Gar nichts hast du. Typisch Besserwisser.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_mittel"
+            },
+            {
+              "text": "Was müsste passieren, damit du dem Post nicht mehr glaubst? Ich frag mich übrigens selbst, was mich umstimmen würde.",
+              "bausteine": ["street_epistemology", "selbstcheck"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 10, "anspannung": -5 },
+              "warum": "Du stellst die Frage, die du dir auch selbst stellst. Das ist kein Trick, sondern echte Offenheit, und genau deshalb wirkt sie.",
+              "reaktion": [
+                { "text": "Hm. Wenn ich's schwarz auf weiß sehe, vielleicht. Aber was anderes …", "anspannung_bis": 59 },
+                { "text": "Weiß nicht. Muss ich drüber nachdenken. Aber was anderes …", "anspannung_ab": 60 }
+              ],
+              "weiter": "k6"
+            }
+          ]
+        },
+        {
+          "id": "k6",
+          "sagt": [
+            { "text": "Was ist eigentlich mit dem Bürgergeld? Da wird doch auch Geld verschleudert, und keiner redet drüber.", "anspannung_bis": 59 },
+            { "text": "Und die Heizungsgeschichte damals? Da haben sie uns auch was erzählt.", "anspannung_bis": 59 },
+            { "text": "Ist ja egal. Dann eben das Bürgergeld. Irgendwo wird's verschleudert.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Das ist ein neues Thema, über das wir gern mal in Ruhe reden können. Bei der Rente sind wir uns jetzt einig, dass da kein Zusammenhang belegt ist?",
+              "bausteine": ["ablenken"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 10, "anspannung": 0 },
+              "warum": "Ablenken (Kunstgriff 18/29) freundlich erkannt: Du würdigst das neue Thema, vertagst es und sicherst, was ihr gerade geklärt habt.",
+              "reaktion": [
+                { "text": "Ja … mit der Rente, das war wohl übertrieben.", "anspannung_bis": 59 },
+                { "text": "Hm. Na gut. Die Rente vielleicht nicht.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k7"
+            },
+            {
+              "text": "Jetzt lenkst du ab, weil du verloren hast.",
+              "bausteine": ["siegbehauptung", "kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": 0, "anspannung": 15 },
+              "warum": "Das Ablenken richtig erkannt, aber als Triumph benannt. Damit entwertest du alles, was ihr vorher gemeinsam herausgefunden habt.",
+              "reaktion": [
+                { "text": "Verloren? Wir sind hier doch nicht im Wettkampf.", "anspannung_bis": 59 },
+                { "text": "Ich hab gar nichts verloren. Was bildest du dir ein?", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_mittel"
+            },
+            {
+              "text": "Beim Bürgergeld ist es auch nicht so, wie viele denken. Pass auf, da gibt es nämlich …",
+              "bausteine": ["belehren"], "bewertung": "teils",
+              "effekt": { "vertrauen": -3, "erkenntnis": 0, "anspannung": 8 },
+              "warum": "Du läufst dem neuen Thema hinterher (Ablenken, 18/29). Das Gespräch verzettelt sich, und das gerade Geklärte geht unter. Besser: kurz benennen und vertagen.",
+              "reaktion": [
+                { "text": "Siehst du, da weißt du auch nicht alles.", "anspannung_bis": 59 },
+                { "text": "Ach, jetzt kommt die nächste Vorlesung.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_verzettelt"
+            }
+          ]
+        },
+        {
+          "id": "k7",
+          "sagt": [
+            { "text": "Aber ich bleib dabei: Es ist zu viel Geld, das wir da rüberschicken.", "anspannung_bis": 59 },
+            { "text": "Na gut, die Rente nicht. Aber du gibst zu, dass es viel Geld ist.", "anspannung_bis": 59 },
+            { "text": "Meinetwegen. Aber gewonnen hast du trotzdem nicht.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Ja, das ist viel Geld, und man kann darüber unterschiedlich denken. Danke, dass du dir das angehört hast.",
+              "bausteine": ["wahrer_kern", "street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Ein ruhiger Abschluss: Kern zugeben, bedanken, keine Spitze. Unterschiedliche Meinungen dürfen stehen bleiben, die Falschinfo nicht.",
+              "reaktion": [
+                { "text": "Ja, ja. War gar nicht so schlimm mit dir.", "anspannung_bis": 59 },
+                { "text": "Hm. Ja. Schon gut.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gut"
+            },
+            {
+              "text": "Mir geht's nicht ums Gewinnen. Ehrlich gesagt frage ich mich selbst, was mich bei der Hilfe umstimmen würde.",
+              "bausteine": ["selbstcheck"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 8, "anspannung": -8 },
+              "warum": "Selbstcheck laut gemacht: Du zeigst, dass auch du dich bewegen kannst. Das lädt Rainer ein, es dir gleichzutun.",
+              "reaktion": [
+                { "text": "Siehst du, so kann man doch reden.", "anspannung_bis": 59 },
+                { "text": "Na gut. Dann sind wir quitt.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gut"
+            },
+            {
+              "text": "Gut, dann sind wir uns ja einig, dass du falschlagst.",
+              "bausteine": ["siegbehauptung", "letzte_spitze"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": -5, "anspannung": 15 },
+              "warum": "Die letzte Spitze kostet das Gewonnene. Wer die Einsicht des anderen zur Niederlage macht, bekommt sie beim nächsten Mal nicht.",
+              "reaktion": [
+                { "text": "Moment mal, das hab ich so nicht gesagt.", "anspannung_bis": 59 },
+                { "text": "Falsch gelegen? Ich? Das wird ja immer schöner.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_mittel"
+            }
+          ]
+        },
+        {
+          "id": "ende_gut", "ende": true, "sterne": 3,
+          "sagt": [
+            { "text": "Weißt du was, schick mir das mal. Und jetzt gib mir den Nachtisch." },
+            { "text": "Na gut, ich schau mir das noch mal an. Aber über die Hilfe reden wir noch!" }
+          ],
+          "auswertung": {
+            "titel": "Gespräch statt Schlagabtausch",
+            "gut": "Du hast erst verstanden, dann gezeigt. Den wahren Kern (die Hilfe ist hoch) hast du zugegeben, und die Zahlen kamen erst, als Rainer bereit war.",
+            "anders": "Bleib dran, ohne nachzutreten. Ein Gespräch wirkt oft erst Tage später, wenn Rainer selbst nachliest.",
+            "selbstcheck": "Was müsste ich hören, damit ich meine Meinung zur Höhe der Ukraine-Hilfe ändere?"
+          }
+        },
+        {
+          "id": "ende_mittel", "ende": true, "sterne": 2,
+          "sagt": [
+            { "text": "(schiebt den Teller weg) Jaja. Du hast ja immer recht." },
+            { "text": "(winkt ab) Lassen wir das." }
+          ],
+          "auswertung": {
+            "titel": "Fast geschafft",
+            "gut": "Du hast Fakten ins Gespräch gebracht und Rainer zum Nachdenken gebracht.",
+            "anders": "Am Ende hat eine Spitze oder Siegbehauptung das Gewonnene wieder gekostet. Nach einem guten Punkt ist Schweigen oft stärker als „Siehst du“.",
+            "selbstcheck": "Wollte ich Rainer verstehen oder gewinnen?"
+          }
+        },
+        {
+          "id": "ende_verzettelt", "ende": true, "sterne": 2,
+          "sagt": [
+            { "text": "(Und so ging es weiter, vom Bürgergeld zur Heizung bis zum Kaffee. Am Ende wusste keiner mehr, worum es ging.)" },
+            { "text": "(Eine Stunde später redet ihr über alles Mögliche. Die Rente ist längst vergessen, das Geklärte auch.)" }
+          ],
+          "erzaehler": true,
+          "auswertung": {
+            "titel": "Verzettelt",
+            "gut": "Zur Rente habt ihr einiges geklärt, und du bist sachlich geblieben.",
+            "anders": "Als Rainer das Thema gewechselt hat (Ablenken, Kunstgriff 18/29), bist du mitgegangen. Besser: kurz benennen, vertagen und das Geklärte festhalten.",
+            "selbstcheck": "Muss ich jedes Thema heute klären, oder reicht ein Punkt?"
+          }
+        },
+        {
+          "id": "ende_ausstieg", "ende": true, "sterne": 2,
+          "sagt": [
+            { "text": "(Die Tante bringt den Nachtisch. Das Thema ist für heute vom Tisch.)" },
+            { "text": "(Rainer brummt noch etwas, dann redet ihr über den Garten.)" }
+          ],
+          "erzaehler": true,
+          "auswertung": {
+            "titel": "Rechtzeitig ausgestiegen",
+            "gut": "Du bist ohne letzte Spitze ausgestiegen. Das schützt die Beziehung, und ihr könnt ein anderes Mal weiterreden.",
+            "anders": "Beim nächsten Mal früher fragen statt kontern. Dann musst du vielleicht gar nicht aussteigen.",
+            "selbstcheck": "Hat Rainer einen Punkt, den ich übersehen habe?"
+          }
+        },
+        {
+          "id": "ende_zu", "ende": true, "sterne": 1,
+          "sagt": [
+            { "text": "(Rainer schaut auf seinen Teller und sagt den Rest des Essens nicht mehr viel.)" }
+          ],
+          "erzaehler": true,
+          "auswertung": {
+            "titel": "Er hat dichtgemacht",
+            "gut": "Du hast es geschafft, dass Rainer seine Sorge gezeigt hat. Das ist viel wert.",
+            "anders": "Genau in dem Moment kam ein Ratschlag von oben. Bei Typ 2 gilt: Wenn das Gefühl auf dem Tisch liegt, erst würdigen, dann um Erlaubnis für einen Punkt fragen.",
+            "selbstcheck": "Wie hätte ich reagiert, wenn mir jemand in meiner Sorge einen Rat gibt?"
+          }
+        },
+        {
+          "id": "ende_streit", "ende": true, "sterne": 1,
+          "sagt": [
+            { "text": "(Rainer steht auf.) Ich geh mal eine rauchen." },
+            { "text": "(Stille am Tisch. Die Tante räumt demonstrativ die Teller ab.)" }
+          ],
+          "auswertung": {
+            "titel": "Der Streit hat gewonnen",
+            "gut": "Du hast dich getraut zu widersprechen, statt eine Falschinfo stehen zu lassen.",
+            "anders": "Kontern, Belehren oder Publikum machen aus einem Gespräch einen Wettkampf. Bei Typ 2 erst das Gefühl ansprechen, dann um Erlaubnis für Fakten fragen.",
+            "selbstcheck": "Hat Rainer einen Punkt, den ich übersehen habe?"
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "kollege-die-alle",
+      "titel": "„Die alle“",
+      "ort": "Pausenraum bei der Arbeit",
+      "thema": "„Die Bürgergeld-Leute wollen doch alle nicht arbeiten.“",
+      "art": "dialog",
+      "icon": "pause",
+      "gegenueber": {
+        "name": "Jens",
+        "rolle": "Kollege, arbeitet seit Jahren im Team",
+        "typ": [1],
+        "beschreibung": "Hilfsbereit, schlagfertig, hat zu vielem eine feste Meinung. Was er gestern im Netz gesehen hat, ist heute „bekannt“."
+      },
+      "einleitung": "Mittagspause. Jens scrollt durch sein Handy, lacht kurz auf und hält dir den Bildschirm hin. Ein kurzes Video, viele Likes.",
+      "startwerte": { "vertrauen": 60, "erkenntnis": 10, "anspannung": 35 },
+      "start": "k1",
+      "fakten": [
+        { "id": "f_aufstocker", "text": "Ein Teil der Bürgergeld-Beziehenden ist erwerbstätig und stockt nur auf. Viele weitere sind Kinder oder aus anderen Gründen nicht erwerbsfähig (Pflege, Krankheit, Ausbildung).", "stand": "2026, Statistik der Bundesagentur für Arbeit; Bürgergeld wird bzw. wurde zur „Neuen Grundsicherung“ umgebaut, Begriff prüfen", "quelle_pruefen": true, "quelle": "statistik.arbeitsagentur.de – vor Verwendung prüfen" },
+        { "id": "f_verweigerer", "text": "Leistungsminderungen wegen wiederholter Ablehnung zumutbarer Arbeit betreffen nur einen kleinen Teil der Beziehenden.", "stand": "2026, Statistik der Bundesagentur für Arbeit", "quelle_pruefen": true, "quelle": "statistik.arbeitsagentur.de (Sanktionsstatistik) – vor Verwendung prüfen" }
+      ],
+      "knoten": [
+        {
+          "id": "k1",
+          "sagt": [
+            { "text": "Guck dir das an. Die Bürgergeld-Leute wollen doch alle nicht arbeiten. Warum auch, wenn das Geld so kommt.", "anspannung_bis": 59 },
+            { "text": "Ich sag's dir, die alle liegen auf der faulen Haut. Und wir buckeln hier und zahlen für die mit.", "anspannung_bis": 59 },
+            { "text": "Die alle wollen nicht arbeiten, Punkt. Da musst du mir nichts erzählen.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Alle? Ich kenne jemanden, der Vollzeit arbeitet und trotzdem aufstocken muss.",
+              "bausteine": ["gegenbeispiel"], "bewertung": "gut",
+              "fakten": ["f_aufstocker"],
+              "effekt": { "vertrauen": 3, "erkenntnis": 10, "anspannung": 3 },
+              "warum": "Bei „die alle“ ist ein konkretes Gegenbeispiel der direkteste Weg. Ruhig gesagt, ohne Triumph, öffnet es einen Riss in der Verallgemeinerung.",
+              "reaktion": [
+                { "text": "Ja gut, so einer. Ausnahmen gibt's immer.", "anspannung_bis": 59 },
+                { "text": "Jetzt komm mir nicht mit Einzelfällen.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_gegen"
+            },
+            {
+              "text": "Wie kommst du darauf? Was war in dem Video?",
+              "bausteine": ["gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 5, "anspannung": -5 },
+              "warum": "Gesprächsöffner: Du erfährst, worauf Jens' Sicherheit beruht. Meist ist es weniger, als der Satz klingt, und er merkt es beim Erzählen selbst.",
+              "reaktion": [
+                { "text": "Da sagt einer ganz offen, dass er lieber Bürgergeld nimmt, weil Arbeit sich nicht lohnt.", "anspannung_bis": 59 },
+                { "text": "Na, das, was alle sehen. Einer sagt ganz offen, er geht nicht arbeiten.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2"
+            },
+            {
+              "text": "Das ist rechte Hetze, das weißt du schon, oder?",
+              "bausteine": ["etikett", "kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": -5, "anspannung": 20 },
+              "warum": "Ein Etikett (Kunstgriff 32) beendet das Nachdenken. Jens muss sich jetzt gegen den Vorwurf wehren und hat keinen Raum mehr, seine Aussage zu prüfen.",
+              "reaktion": [
+                { "text": "Bitte? Ich sag nur, was ich sehe.", "anspannung_bis": 59 },
+                { "text": "Ach, jetzt bin ich rechts, oder was? Geht's noch?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k_abwehr"
+            },
+            {
+              "text": "(nicken) Mhm.",
+              "bausteine": ["pausentest"], "bewertung": "teils",
+              "effekt": { "vertrauen": 0, "erkenntnis": 0, "anspannung": -3 },
+              "warum": "Der Pausentest ist erlaubt. Aber ihr arbeitet täglich zusammen, und solche Sätze prägen das Klima im Team. Hier lohnt sich ein freundlicher Einstieg mehr als Schweigen.",
+              "reaktion": [
+                { "text": "Siehst du. Und da war einer, der hat's sogar offen zugegeben.", "anspannung_bis": 59 },
+                { "text": "Na eben. Weiß doch jeder.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2"
+            }
+          ]
+        },
+        {
+          "id": "k2",
+          "sagt": [
+            { "text": "So sind die halt. Das sagt doch alles.", "anspannung_bis": 59 },
+            { "text": "Und solche Videos gibt's ohne Ende. Das kann kein Zufall sein.", "anspannung_bis": 59 },
+            { "text": "Das sieht man doch überall. Muss man nur mal die Augen aufmachen.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Also: Ein Mann im Video sagt das, und daraus schließt du auf alle. Hab ich das richtig verstanden?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 12, "anspannung": 0 },
+              "warum": "Die Behauptung neutral wiederholen ist der erste Schritt der Street Epistemology. Jens hört seinen eigenen Schluss und merkt den Sprung von einem zu allen.",
+              "reaktion": [
+                { "text": "Na ja … so gesagt klingt's dünn. Aber es sind ja nicht nur der eine.", "anspannung_bis": 59 },
+                { "text": "Nicht nur aus einem! … Aber gut, das Video war halt das letzte.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Wenn wirklich alle nicht arbeiten wollen: Dürfte es dann Leute geben, die arbeiten gehen und trotzdem aufstocken müssen? Gibt's die?",
+              "bausteine": ["absurd_frage"], "bewertung": "gut",
+              "fakten": ["f_aufstocker"],
+              "effekt": { "vertrauen": 3, "erkenntnis": 15, "anspannung": 3 },
+              "warum": "Sachliche Absurd-Frage bei Typ 1: Du nimmst „alle“ ernst und fragst nach einer Folge, die wirklich folgen müsste. Jens zieht den Schluss selbst.",
+              "reaktion": [
+                { "text": "Hm. Doch, so Leute gibt's wohl.", "anspannung_bis": 59 },
+                { "text": "Das ist doch was anderes, das weißt du genau.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3_absurd"
+            },
+            {
+              "text": "Solche Videos sind für Klicks gemacht. Das ist nicht repräsentativ.",
+              "bausteine": ["belehren"], "bewertung": "teils",
+              "effekt": { "vertrauen": -5, "erkenntnis": 3, "anspannung": 8 },
+              "warum": "Inhaltlich ein guter Punkt, aber als Feststellung von oben. Als Frage („Was meinst du, warum gerade so ein Video viral geht?“) könnte Jens selbst draufkommen.",
+              "reaktion": [
+                { "text": "Repräsentativ, ja ja. Du immer mit deinen Fremdwörtern.", "anspannung_bis": 59 },
+                { "text": "Ach, und du weißt, was repräsentativ ist?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Ein einzelnes Video beweist gar nichts. Das ist ein klassischer Denkfehler.",
+              "bausteine": ["belehren", "kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 12 },
+              "warum": "„Denkfehler“ heißt für Jens „du denkst falsch“. Richtig, aber er hört nur den Angriff und verteidigt sich.",
+              "reaktion": [
+                { "text": "Danke für die Nachhilfe.", "anspannung_bis": 59 },
+                { "text": "Ich hab keinen Denkfehler. Du bist einfach naiv.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k_abwehr"
+            }
+          ]
+        },
+        {
+          "id": "k2_gegen",
+          "sagt": [
+            { "text": "Die Mehrheit will trotzdem nicht. Das ist doch klar.", "anspannung_bis": 59 },
+            { "text": "Einer. Und die anderen?", "anspannung_bis": 59 },
+            { "text": "Ein Beispiel ändert gar nichts.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Stimmt, ein Einzelfall beweist wenig. Das Video ist allerdings auch ein Einzelfall, oder?",
+              "bausteine": ["gegenbeispiel", "absurd_frage"], "bewertung": "gut",
+              "effekt": { "vertrauen": 0, "erkenntnis": 12, "anspannung": 5 },
+              "warum": "Du gibst ihm recht und legst denselben Maßstab an sein Beispiel an. Weil es als Frage kommt, kann Jens zustimmen, ohne das Gesicht zu verlieren.",
+              "reaktion": [
+                { "text": "Hm. … Ja, okay. Erwischt.", "anspannung_bis": 59 },
+                { "text": "Das ist was anderes! … Na ja. Vielleicht.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Was meinst du mit „die Mehrheit“? Woher weißt du das?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 10, "anspannung": 0 },
+              "warum": "Begriffe klären und nach dem Weg zur Überzeugung fragen. Jens merkt selbst, dass „die Mehrheit“ ein Gefühl ist, keine Zahl.",
+              "reaktion": [
+                { "text": "Wissen … Man hört das halt ständig.", "anspannung_bis": 59 },
+                { "text": "Das weiß man halt. … Okay, gezählt hab ich's nicht.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Ich hab gelesen, dass viele davon Kinder sind oder schon arbeiten. Die Mehrheit sind also gar nicht die, die du meinst.",
+              "bausteine": ["belehren"], "bewertung": "teils",
+              "fakten": ["f_aufstocker"],
+              "effekt": { "vertrauen": -3, "erkenntnis": 8, "anspannung": 5 },
+              "warum": "Der Fakt passt (prüfen!), aber „gelesen“ ohne Quelle lädt zum Abwinken ein, und das Ganze kommt als Korrektur. Mit Erlaubnis und Quelle wäre es stärker.",
+              "reaktion": [
+                { "text": "Wo hast du das denn her?", "anspannung_bis": 59 },
+                { "text": "Gelesen, gelesen. Ich kann auch viel lesen.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            }
+          ]
+        },
+        {
+          "id": "k_abwehr",
+          "sagt": [
+            { "text": "Man darf echt nichts mehr sagen.", "anspannung_bis": 59 },
+            { "text": "Immer gleich mit der Moralkeule.", "anspannung_bis": 59 },
+            { "text": "Weißt du was, spar dir das.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Sorry, das war ein Etikett, kein Argument. Erzähl mal, was dich daran so ärgert.",
+              "bausteine": ["gespraechsoeffner", "gefuehl_ansprechen"], "bewertung": "gut",
+              "effekt": { "vertrauen": 12, "erkenntnis": 3, "anspannung": -15 },
+              "warum": "Den eigenen Fehler benennen und neu öffnen: Die stärkste Reparatur. Hinter dem Satz steckt oft Ärger, und über den kann man ehrlich reden.",
+              "reaktion": [
+                { "text": "… Okay. Mich ärgert, dass wir hier für wenig Geld echt was leisten.", "anspannung_bis": 59 },
+                { "text": "Hm. Na gut. Mich ärgert einfach, dass Arbeit sich kaum lohnt.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3_aerger"
+            },
+            {
+              "text": "Doch, sagen darfst du alles. Ich darf halt auch widersprechen.",
+              "bausteine": ["kontern"], "bewertung": "teils",
+              "effekt": { "vertrauen": -3, "erkenntnis": 0, "anspannung": 5 },
+              "warum": "Stimmt, und es ist ruhig gesagt. Aber es bleibt ein Schlagabtausch über Meinungsfreiheit statt über die Sache. Eine Frage hätte mehr geöffnet.",
+              "reaktion": [
+                { "text": "Ja, ja. Dann widersprich halt.", "anspannung_bis": 59 },
+                { "text": "Na dann. Bin gespannt.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Ich glaube, wir drehen uns gerade im Kreis. Lass uns das ein andermal besprechen.",
+              "bausteine": ["ausstieg"], "bewertung": "teils",
+              "effekt": { "vertrauen": 0, "erkenntnis": 0, "anspannung": -10 },
+              "warum": "Sauberer Ausstieg ohne Spitze. Schade nur, weil das Gespräch nach einer kurzen Entschuldigung noch zu retten gewesen wäre.",
+              "reaktion": [
+                { "text": "Ja, lass mal.", "anspannung_bis": 59 },
+                { "text": "Gute Idee.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_vertagt"
+            }
+          ]
+        },
+        {
+          "id": "k3_aerger",
+          "sagt": [
+            { "text": "Ich mach seit Jahren Schichtdienst, und am Ende bleibt kaum mehr übrig als bei denen. Das ist doch unfair.", "anspannung_bis": 59 },
+            { "text": "Wenn du jeden Tag früh aufstehst und dann so ein Video siehst, da kocht's halt.", "anspannung_bis": 59 },
+            { "text": "Ist doch egal, was mich ärgert.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Das verstehe ich, und dass sich Arbeit lohnen muss, ist ein echter Punkt. Ich frag mich nur, ob „die alle“ stimmt.",
+              "bausteine": ["wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 8, "anspannung": -5 },
+              "warum": "Wahrer Kern: Der Abstand zwischen Lohn und Sozialleistung ist eine echte, faire Debatte. Wer das anerkennt, darf auch die Verallgemeinerung infrage stellen.",
+              "reaktion": [
+                { "text": "Na ja. Alle vielleicht nicht.", "anspannung_bis": 59 },
+                { "text": "Hm. Okay, alle ist vielleicht zu viel.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Dann solltest du mehr Gehalt fordern, statt nach unten zu treten.",
+              "bausteine": ["belehren", "kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -12, "erkenntnis": 3, "anspannung": 12 },
+              "warum": "Vielleicht sogar ein guter Gedanke, aber „nach unten treten“ ist ein Vorwurf. Jens hat dir gerade seinen Ärger anvertraut und bekommt eine Moralpredigt.",
+              "reaktion": [
+                { "text": "Ich tret nicht nach unten. Aber gut zu wissen, was du von mir hältst.", "anspannung_bis": 59 },
+                { "text": "Ach, jetzt bin ich der Böse. Super.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_kalt"
+            },
+            {
+              "text": "Was würde sich für dich ändern, wenn es nur wenige wären, die sich drücken?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 3, "erkenntnis": 10, "anspannung": 0 },
+              "warum": "Eine offene Frage, die Ärger und Behauptung trennt. Jens merkt: Sein Ärger über den eigenen Lohn bleibt, auch wenn „die alle“ nicht stimmt.",
+              "reaktion": [
+                { "text": "Hm. Dann wär ich trotzdem sauer, dass mein Lohn so mies ist.", "anspannung_bis": 59 },
+                { "text": "Weiß nicht. Dann … wär's halt ein anderes Problem.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            }
+          ]
+        },
+        {
+          "id": "k3",
+          "sagt": [
+            { "text": "Weiß nicht. Man hört halt ständig davon.", "anspannung_bis": 59 },
+            { "text": "Also sicher bin ich mir schon. Ziemlich sicher.", "anspannung_bis": 59 },
+            { "text": "Ist doch egal, wie viele. Zu viele.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Wenn wirklich alle nicht wollen: Dürfte es dann Leute geben, die arbeiten und trotzdem aufstocken? Kennst du so jemanden?",
+              "bausteine": ["absurd_frage"], "bewertung": "gut",
+              "fakten": ["f_aufstocker"],
+              "effekt": { "vertrauen": 3, "erkenntnis": 12, "anspannung": 3 },
+              "warum": "Sachliche Absurd-Frage: ernst nehmen, Folge erfragen, Schluss ihm überlassen. Der Ausweg („das sind andere“) bleibt offen, und genau das ist gewollt.",
+              "reaktion": [
+                { "text": "Hm. Die Kassiererin im Laden bei uns, glaub ich. Ja, doch.", "anspannung_bis": 59 },
+                { "text": "Na ja … gibt's wahrscheinlich.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4"
+            },
+            {
+              "text": "Woher kommen die Sachen, die du „ständig hörst“? Woran würdest du merken, dass die Quelle übertreibt?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 10, "anspannung": 0 },
+              "warum": "Quelle prüfen, ohne sie schlechtzumachen. Jens überlegt selbst, ob seine Kanäle eher zeigen, was empört, oder was typisch ist.",
+              "reaktion": [
+                { "text": "Hm. Meistens aus so Videos. Die zeigen halt die krassen Fälle.", "anspannung_bis": 59 },
+                { "text": "Aus dem Netz halt. … Okay, da wird auch viel übertrieben.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4"
+            },
+            {
+              "text": "Du verallgemeinerst einfach.",
+              "bausteine": ["verallgemeinern", "kontern"], "bewertung": "teils",
+              "effekt": { "vertrauen": -5, "erkenntnis": 3, "anspannung": 8 },
+              "warum": "Verallgemeinern (Kunstgriff 3/11/19) richtig erkannt, aber als Vorwurf formuliert. Als Frage wirkt es stärker: „Alle, oder einige?“",
+              "reaktion": [
+                { "text": "Ja, und? Machen alle.", "anspannung_bis": 59 },
+                { "text": "Und du redest alles schön.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4"
+            }
+          ]
+        },
+        {
+          "id": "k3_absurd",
+          "sagt": [
+            { "text": "Aber das sind ja andere. Die meine ich nicht.", "anspannung_bis": 59 },
+            { "text": "Die Kassiererin bei uns um die Ecke, glaub ich. Aber die meine ich ja nicht.", "anspannung_bis": 59 },
+            { "text": "Die zählen nicht.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Genau, das sind andere. Also gibt es beim Bürgergeld verschiedene Gruppen, nicht nur „die alle“?",
+              "bausteine": ["absurd_frage", "street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 12, "anspannung": -3 },
+              "warum": "Du nimmst seinen Ausweg an und machst ihn zur Einsicht. Jens korrigiert sich selbst, das hält länger als jede Widerlegung.",
+              "reaktion": [
+                { "text": "Ja … so gesehen schon.", "anspannung_bis": 59 },
+                { "text": "Hm. Okay. Verschiedene, ja.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4"
+            },
+            {
+              "text": "Siehst du, Widerspruch. Dann stimmt dein Satz eben nicht.",
+              "bausteine": ["siegbehauptung"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -12, "erkenntnis": 0, "anspannung": 12 },
+              "warum": "Siegbehauptung (Kunstgriff 14): Kurz vor der Einsicht wird sie zur Niederlage gemacht. Jetzt muss Jens dagegenhalten, um nicht dumm dazustehen.",
+              "reaktion": [
+                { "text": "Hab ich nicht gesagt. Du drehst mir das Wort im Mund um.", "anspannung_bis": 59 },
+                { "text": "Gar nichts siehst du.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4"
+            },
+            {
+              "text": "Und es gibt sicher auch welche, die keine Lust haben. Die ärgern mich auch.",
+              "bausteine": ["wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -8 },
+              "warum": "Wahren Kern zugeben: Ja, es gibt auch die, die sich drücken. So bist du kein Gegner, sondern jemand, der genauer hinschaut.",
+              "reaktion": [
+                { "text": "Eben. Die mein ich.", "anspannung_bis": 59 },
+                { "text": "Na also. Endlich.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4"
+            }
+          ]
+        },
+        {
+          "id": "k4",
+          "sagt": [
+            { "text": "Okay, „alle“ ist vielleicht übertrieben. Aber es sind doch viele, oder?", "anspannung_bis": 59 },
+            { "text": "Na gut, nicht alle. Aber viel zu viele.", "anspannung_bis": 59 },
+            { "text": "Gut, nicht alle. Zufrieden?", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Wie viele „viele“ sind, weiß ich auch nicht genau. Wollen wir's nachschauen, bevor einer von uns was Falsches erzählt?",
+              "bausteine": ["street_epistemology", "selbstcheck"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 10, "anspannung": -5 },
+              "warum": "Du gibst eigenes Nichtwissen zu und schlägst gemeinsames Nachsehen vor. Ehrlich statt gefällig: Keiner muss recht haben, beide wollen es wissen.",
+              "reaktion": [
+                { "text": "Hm, können wir machen.", "anspannung_bis": 59 },
+                { "text": "Meinetwegen. Aber nicht jetzt.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k_publikum"
+            },
+            {
+              "text": "Die, die sich drücken, gibt es, und das ist ärgerlich. Es ist nur eine viel kleinere Gruppe, als das Video tut.",
+              "bausteine": ["wahrer_kern", "fakt_sandwich"], "bewertung": "gut",
+              "fakten": ["f_verweigerer"],
+              "effekt": { "vertrauen": 8, "erkenntnis": 8, "anspannung": -5 },
+              "warum": "Wahrer Kern und Fakt in einem: Das Problem ist echt, aber kleiner als gezeigt. (Fakt vor Verwendung prüfen.)",
+              "reaktion": [
+                { "text": "Kleiner? Na, mag sein.", "anspannung_bis": 59 },
+                { "text": "Hm. Wenn du meinst.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k_publikum"
+            },
+            {
+              "text": "Gib's doch einfach zu, dass du Unsinn erzählt hast.",
+              "bausteine": ["letzte_spitze", "siegbehauptung"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": 0, "anspannung": 15 },
+              "warum": "Jens hatte sich gerade bewegt. Mit der letzten Spitze machst du aus seinem Schritt eine Niederlage, und er wird ihn zurücknehmen.",
+              "reaktion": [
+                { "text": "Unsinn? Ich hab gesagt, vielleicht übertrieben. Mehr nicht.", "anspannung_bis": 59 },
+                { "text": "Gar nichts geb ich zu.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_kalt"
+            }
+          ]
+        },
+        {
+          "id": "k_publikum",
+          "erzaehler": false,
+          "sagt": [
+            { "text": "(Eine Kollegin kommt rein.) Na, sag du mal: Die wollen doch alle nicht arbeiten, oder?", "anspannung_bis": 59 },
+            { "text": "(Eine Kollegin setzt sich dazu.) Hier wird mir gerade erklärt, dass ich keine Ahnung hab.", "anspannung_bis": 59 },
+            { "text": "(Eine Kollegin kommt rein.) Pass auf, der hier hält mich für einen Rassisten.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "So hab ich das nicht gesagt. Wir reden gerade drüber, ob „alle“ stimmt, und eigentlich waren wir ganz gut dabei.",
+              "bausteine": ["strohmann", "publikum"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 5, "anspannung": -5 },
+              "warum": "Jens holt Publikum dazu (Kunstgriff 28) und verzerrt deine Aussage (Strohmann, 1/23/24). Du stellst ruhig richtig, ohne Gegenangriff, und holst das Gespräch zurück.",
+              "reaktion": [
+                { "text": "Ja gut. Stimmt eigentlich.", "anspannung_bis": 59 },
+                { "text": "Hm. Na ja. Ganz gut dabei, wenn du meinst.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5"
+            },
+            {
+              "text": "(zur Kollegin) Sag du mal, das ist doch Unsinn, oder?",
+              "bausteine": ["publikum"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": -5, "anspannung": 15 },
+              "warum": "Jetzt nutzt du selbst Publikum (Kunstgriff 28). Zwei gegen einen: Jens kann nicht mehr nachdenken, nur noch sein Gesicht wahren.",
+              "reaktion": [
+                { "text": "Ach, jetzt seid ihr zu zweit. Toll.", "anspannung_bis": 59 },
+                { "text": "Klar, verbündet euch nur.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_kalt"
+            },
+            {
+              "text": "Lassen wir's für heute, die Pause ist eh gleich rum.",
+              "bausteine": ["ausstieg"], "bewertung": "teils",
+              "effekt": { "vertrauen": 0, "erkenntnis": 0, "anspannung": -10 },
+              "warum": "Ein fairer Ausstieg. Allerdings bleibt die verzerrte Darstellung vor der Kollegin stehen. Ein kurzer, ruhiger Satz dazu hätte gereicht.",
+              "reaktion": [
+                { "text": "Ja, stimmt.", "anspannung_bis": 59 },
+                { "text": "Gut.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_vertagt"
+            }
+          ]
+        },
+        {
+          "id": "k5",
+          "sagt": [
+            { "text": "Ich hab halt nur das Video gesehen. Vielleicht hab ich mich da reinsteigern lassen.", "anspannung_bis": 59 },
+            { "text": "Mich nervt halt, dass so einer im Video das noch feiert.", "anspannung_bis": 59 },
+            { "text": "Na meinetwegen. Aber richtig find ich's trotzdem nicht.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Das passiert mir auch. Danke, dass du so offen bist.",
+              "bausteine": ["street_epistemology", "selbstcheck"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Bedanken gehört zur Street Epistemology. Wer offen war, soll sich danach gut fühlen und nicht ertappt, sonst ist er es beim nächsten Mal nicht mehr.",
+              "reaktion": [
+                { "text": "Ja, ja. Du bist ja auch nicht so verbohrt, wie ich dachte.", "anspannung_bis": 59 },
+                { "text": "Hm. Schon gut.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gut"
+            },
+            {
+              "text": "Mich nervt das auch. Wollen wir mal schauen, wie das Video zustande kam? Ist ja oft geschnitten.",
+              "bausteine": ["gespraechsoeffner", "wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 8, "anspannung": -5 },
+              "warum": "Du teilst seinen Ärger und lädst zum gemeinsamen Prüfen ein. So wird Medienkompetenz ein gemeinsames Projekt, keine Belehrung.",
+              "reaktion": [
+                { "text": "Okay. Schick's mir nachher, dann gucken wir.", "anspannung_bis": 59 },
+                { "text": "Meinetwegen.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gut"
+            },
+            {
+              "text": "Na also, ich wusste es.",
+              "bausteine": ["siegbehauptung"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -12, "erkenntnis": 0, "anspannung": 12 },
+              "warum": "Siegbehauptung zum Schluss. Jens' Einsicht wird zu deinem Sieg, und beim nächsten Mal wird er sie für sich behalten.",
+              "reaktion": [
+                { "text": "Jaja. Du weißt alles.", "anspannung_bis": 59 },
+                { "text": "Du hast gar nichts gewusst.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_mittel"
+            }
+          ]
+        },
+        {
+          "id": "ende_gut", "ende": true, "sterne": 3,
+          "sagt": [
+            { "text": "Na gut. Ich schau beim nächsten Video mal genauer hin. Kaffee?" },
+            { "text": "Okay, okay. „Alle“ nehm ich zurück. Aber nur „alle“." }
+          ],
+          "auswertung": {
+            "titel": "„Alle“ ist vom Tisch",
+            "gut": "Du hast die Verallgemeinerung mit Fragen, Gegenbeispiel und Absurd-Frage aufgelöst, ohne Jens bloßzustellen. Den wahren Kern hast du nicht verschwiegen.",
+            "anders": "Wenn ihr nachschaut, achte auf eine Quelle, der ihr beide traut, sonst wird der nächste Streit einer über Quellen.",
+            "selbstcheck": "Verallgemeinere ich selbst manchmal „die alle“, nur über andere Gruppen?"
+          }
+        },
+        {
+          "id": "ende_mittel", "ende": true, "sterne": 2,
+          "sagt": [
+            { "text": "(Jens steckt das Handy weg.) Jaja. Ich muss wieder." }
+          ],
+          "auswertung": {
+            "titel": "Gute Fragen, schlechter Schluss",
+            "gut": "Du hast Jens mit Fragen zum Nachdenken gebracht.",
+            "anders": "Am Ende hast du die Einsicht zu deinem Sieg gemacht. Dann rudert man zurück. Lass sie lieber ihm.",
+            "selbstcheck": "Wollte ich, dass Jens nachdenkt, oder dass er mir recht gibt?"
+          }
+        },
+        {
+          "id": "ende_vertagt", "ende": true, "sterne": 2,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Die Pause ist um. Das Thema liegt erst mal auf Eis, aber ihr redet normal miteinander.)" }
+          ],
+          "auswertung": {
+            "titel": "Vertagt",
+            "gut": "Du bist ruhig ausgestiegen, ohne letzte Spitze. Ihr könnt weiter gut zusammenarbeiten.",
+            "anders": "Bei Kollegen lohnt sich ein freundlicher Einstieg oft, weil ihr euch wiederseht. Probier's beim nächsten Mal mit einer Frage oder einem Gegenbeispiel.",
+            "selbstcheck": "Was genau hätte ich gern gesagt, und wie klingt es als Frage?"
+          }
+        },
+        {
+          "id": "ende_kalt", "ende": true, "sterne": 1,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Jens steht auf und geht wortlos raus. Am Nachmittag grüßt er knapp.)" }
+          ],
+          "auswertung": {
+            "titel": "Eiszeit im Team",
+            "gut": "Du hast eine pauschale Aussage nicht unwidersprochen gelassen.",
+            "anders": "Vorwürfe, Etiketten oder Publikum machen aus einer Meinung einen Ehrenhandel. Bei Typ 1 helfen Fragen: Was müsste folgen, wenn „alle“ stimmt?",
+            "selbstcheck": "Hat Jens einen Punkt, zum Beispiel beim Lohnabstand?"
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "kommentar-pausentest",
+      "titel": "Die Kommentarspalte",
+      "ort": "Abends auf dem Sofa, am Handy",
+      "thema": "Ein Fremder pöbelt unter deinem Kommentar.",
+      "art": "pausentest",
+      "icon": "kommentar",
+      "gegenueber": {
+        "name": "Wahrheitsfinder",
+        "rolle": "Unbekannter Account ohne Profilbild",
+        "typ": [],
+        "beschreibung": "Du weißt nichts über diese Person. Vielleicht sitzt dort ein Mensch, der sich ärgert. Vielleicht jemand, der nur Reaktionen will."
+      },
+      "einleitung": "Unter einem Artikel der Lokalzeitung zur Ukraine-Hilfe hast du geschrieben: „Ich finde, man sollte erst mal die Zahlen anschauen.“ Jetzt blinkt eine Antwort auf. In diesem Szenario zählt deine Energie, nicht ob der andere dich versteht.",
+      "startwerte": { "vertrauen": 70, "erkenntnis": 20, "anspannung": 60 },
+      "balken": { "vertrauen": "Energie", "erkenntnis": "Klarheit" },
+      "start": "k1",
+      "fakten": [],
+      "knoten": [
+        {
+          "id": "k1",
+          "sagt": [
+            { "text": "Zahlen? Die Zahlen lügen doch alle. Wach endlich auf, Schlafschaf." },
+            { "text": "Noch so einer, der alles glaubt, was die Regierung sagt. Lächerlich." },
+            { "text": "Hahaha. Typisch. Erst denken, dann schreiben." }
+          ],
+          "optionen": [
+            {
+              "text": "Erst mal Pause. Ändert sich etwas Wichtiges, wenn diese Person mich voll versteht?",
+              "bausteine": ["pausentest"], "bewertung": "gut",
+              "effekt": { "vertrauen": 0, "erkenntnis": 15, "anspannung": -15 },
+              "warum": "Genau der Pausentest: kurz innehalten, bevor du tippst. Fremde Accounts kennen dich nicht und lesen selten, um zu verstehen.",
+              "reaktion": [
+                { "text": "(Der Account schreibt schon den nächsten Kommentar unter einen anderen Beitrag.)", "anspannung_bis": 59 },
+                { "text": "(Drei Punkte erscheinen. Der Account tippt schon wieder.)", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_pause"
+            },
+            {
+              "text": "„Mhm. Interessanter Blickwinkel.“ Abschicken, Handy weglegen.",
+              "bausteine": ["pausentest", "ausstieg"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 10, "anspannung": -20 },
+              "warum": "Pausentest bestanden: Nichts Wichtiges hängt davon ab, dass dieser Account dich versteht. Ein neutraler Satz, dann Energie sparen.",
+              "reaktion": [
+                { "text": "(Eine Antwort blinkt noch auf. Du liest sie nicht.)", "anspannung_bis": 59 },
+                { "text": "(Ein Lach-Smiley kommt zurück. Das Handy liegt schon auf dem Tisch.)", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gelassen"
+            },
+            {
+              "text": "Ich glaube nicht alles. Hier ist die Quelle zum Haushalt, lies selbst.",
+              "bausteine": ["kontern"], "bewertung": "teils",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 10 },
+              "warum": "Eine Quelle ist gut, aber du verteidigst dich gegen einen Account, der nicht diskutieren will. Das kostet Energie und füttert das Spiel.",
+              "reaktion": [
+                { "text": "Quelle? Staatsmedien. Glaubst du echt, die sagen dir die Wahrheit?", "anspannung_bis": 59 },
+                { "text": "LOL. Quelle. Der Klassiker.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_streit"
+            },
+            {
+              "text": "Schlafschaf? Sagt einer ohne Gesicht und ohne Ahnung.",
+              "bausteine": ["ad_hominem", "kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -20, "erkenntnis": 0, "anspannung": 20 },
+              "warum": "Du lässt dich provozieren (Wütend machen, Kunstgriff 8/27) und antwortest persönlich (Ad hominem). Jetzt spielst du genau das Spiel, das der Account will.",
+              "reaktion": [
+                { "text": "Getroffene Hunde bellen.", "anspannung_bis": 59 },
+                { "text": "Ohhh, da ist aber einer empfindlich. 😂", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_streit"
+            }
+          ]
+        },
+        {
+          "id": "k2_pause",
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Du spürst den Ärger im Bauch. Kein Profilbild, keine eigenen Beiträge, nur Kommentare. Unter dem Artikel lesen aber auch andere mit.)" },
+            { "text": "(Dein Daumen schwebt über der Tastatur. Der Account hat heute schon unter zwanzig Beiträge Ähnliches geschrieben. Andere lesen mit.)" }
+          ],
+          "optionen": [
+            {
+              "text": "Nicht antworten. Handy weg, Tee machen.",
+              "bausteine": ["pausentest", "ausstieg"], "bewertung": "gut",
+              "effekt": { "vertrauen": 15, "erkenntnis": 5, "anspannung": -15 },
+              "warum": "Pausentest konsequent umgesetzt. Nicht jede Provokation verdient eine Antwort. Deine Energie gehört Gesprächen, in denen etwas passieren kann.",
+              "reaktion": [
+                { "text": "(Der Tee duftet. Das Handy bleibt dunkel.)", "anspannung_bis": 59 },
+                { "text": "(Der Ärger ebbt langsam ab. Das Handy bleibt im Flur.)", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gelassen"
+            },
+            {
+              "text": "Einen ruhigen Satz für die Mitlesenden schreiben, mit Quelle, und danach nicht mehr reagieren.",
+              "bausteine": ["fakt_sandwich", "ausstieg"], "bewertung": "gut",
+              "effekt": { "vertrauen": -5, "erkenntnis": 10, "anspannung": 0 },
+              "warum": "Auch das ist ein bestandener Pausentest: Der Account versteht dich nicht, aber stille Mitlesende vielleicht. Ein ruhiger Satz, dann raus.",
+              "reaktion": [
+                { "text": "Ach, jetzt kommt der Faktenchecker. Wer bezahlt dich?", "anspannung_bis": 59 },
+                { "text": "Copy & Paste aus der Tagesschau. Originell.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3_mitleser"
+            },
+            {
+              "text": "Doch antworten. So kann man das nicht stehen lassen.",
+              "bausteine": ["kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 10 },
+              "warum": "Das Gefühl ist verständlich, aber der Pausentest sagt: Nichts Wichtiges ändert sich, wenn dieser Account dich versteht. Du investierst Energie ohne Aussicht.",
+              "reaktion": [
+                { "text": "Na, wieder da? Erzähl, ich hab Popcorn.", "anspannung_bis": 59 },
+                { "text": "Oh, der Schlafschaf-Experte meldet sich zurück.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_streit"
+            }
+          ]
+        },
+        {
+          "id": "k2_streit",
+          "sagt": [
+            { "text": "Und schon wieder einer ohne Argumente. Wie erwartet.", "anspannung_bis": 69 },
+            { "text": "Komm, erklär's mir. Ich lach mich jetzt schon kaputt.", "anspannung_bis": 69 },
+            { "text": "Du bist echt das beste Beispiel für das Problem in diesem Land.", "anspannung_ab": 70 }
+          ],
+          "optionen": [
+            {
+              "text": "„Ich glaube, wir drehen uns im Kreis. Ich lass es hier dabei.“ Und dann wirklich nicht mehr reagieren.",
+              "bausteine": ["ausstieg"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -15 },
+              "warum": "Ausstieg ohne letzte Spitze, auch wenn es spät kommt. Das Wichtigste ist das „wirklich nicht mehr reagieren“.",
+              "reaktion": [
+                { "text": "Hahaha, läuft weg. Wusste ich's doch.", "anspannung_bis": 69 },
+                { "text": "Feigling. 😂", "anspannung_ab": 70 }
+              ],
+              "weiter": "ende_ausgestiegen"
+            },
+            {
+              "text": "Dann nenn du doch mal eine Quelle, die du gelten lässt!",
+              "bausteine": ["street_epistemology"], "bewertung": "teils",
+              "effekt": { "vertrauen": -10, "erkenntnis": 3, "anspannung": 5 },
+              "warum": "Eine Street-Epistemology-Frage ist eigentlich gut. Mit Ausrufezeichen und gegenüber einem Account, der nicht reden will, bringt sie aber selten etwas.",
+              "reaktion": [
+                { "text": "Mach doch selbst deine Hausaufgaben.", "anspannung_bis": 69 },
+                { "text": "Ich muss dir gar nichts nennen. Google halt.", "anspannung_ab": 70 }
+              ],
+              "weiter": "k3_eskalation"
+            },
+            {
+              "text": "Lange Antwort: „Pass auf, ich erklär's dir jetzt mal Schritt für Schritt. Erstens …“",
+              "bausteine": ["wortschwall", "belehren"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": 0, "anspannung": 10 },
+              "warum": "Ein Wortschwall (Kunstgriff 36) kostet dich viel Zeit, und die Antwort darauf kostet den anderen eine Sekunde. Das Ungleichgewicht gewinnst du nie.",
+              "reaktion": [
+                { "text": "tl;dr", "anspannung_bis": 69 },
+                { "text": "Zu lang, hab nicht gelesen. 😴", "anspannung_ab": 70 }
+              ],
+              "weiter": "k3_eskalation"
+            },
+            {
+              "text": "Siehst du, keine Argumente, nur Beleidigungen. Hab ich wohl gewonnen.",
+              "bausteine": ["siegbehauptung"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 10 },
+              "warum": "Siegbehauptung (Kunstgriff 14) in der Kommentarspalte: Das lädt nur zur nächsten Runde ein. Es gibt hier nichts zu gewinnen.",
+              "reaktion": [
+                { "text": "Gewonnen? Du? 😂😂", "anspannung_bis": 69 },
+                { "text": "Träum weiter.", "anspannung_ab": 70 }
+              ],
+              "weiter": "k3_eskalation"
+            }
+          ]
+        },
+        {
+          "id": "k3_mitleser",
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Unter deinem ruhigen Satz sammeln sich zwei Likes von Leuten, die du nicht kennst.)" },
+            { "text": "(Jemand anderes antwortet: „Danke für die Quelle.“)" }
+          ],
+          "optionen": [
+            {
+              "text": "Nicht mehr reagieren. Der Satz steht, die Mitlesenden haben die Quelle.",
+              "bausteine": ["pausentest", "ausstieg"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Du hast für die Mitlesenden geschrieben, nicht für den Account. Jetzt aufzuhören, ist der zweite Teil des Pausentests.",
+              "reaktion": [
+                { "text": "(Noch zwei Antworten des Accounts. Du schaust nicht mehr hin.)", "anspannung_bis": 59 },
+                { "text": "(Der Account tobt weiter. Du hast die Benachrichtigungen stumm geschaltet.)", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_mitleser"
+            },
+            {
+              "text": "Dem Account antworten: „Mich bezahlt niemand. Und dich?“",
+              "bausteine": ["kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 10 },
+              "warum": "Der gute Satz für die Mitlesenden steht schon. Jetzt in den Schlagabtausch einzusteigen, verwässert ihn und kostet Energie.",
+              "reaktion": [
+                { "text": "Getroffen, was? 😂", "anspannung_bis": 59 },
+                { "text": "Ich wusste es. Bezahlter Troll.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3_eskalation"
+            },
+            {
+              "text": "Den beleidigenden Kommentar von vorhin melden und dann raus.",
+              "bausteine": ["ausstieg"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 5, "anspannung": -8 },
+              "warum": "Melden ist kein Nachtreten, sondern Hygiene für den Raum. Danach Energie sparen.",
+              "reaktion": [
+                { "text": "(Gemeldet. Das Handy wandert in die Schublade.)", "anspannung_bis": 59 },
+                { "text": "(Gemeldet. Du atmest einmal tief durch.)", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_mitleser"
+            }
+          ]
+        },
+        {
+          "id": "k3_eskalation",
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Es ist inzwischen spät. Du hast fünf Antworten geschrieben. Der Account antwortet schneller, als du tippen kannst.)" },
+            { "text": "(Eine Stunde ist weg. Dein Tee ist kalt, dein Puls hoch.)" }
+          ],
+          "optionen": [
+            {
+              "text": "Jetzt aufhören. Keine letzte Antwort.",
+              "bausteine": ["ausstieg"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Spät, aber richtig. Auch nach einer Stunde Streit ist der Ausstieg ohne letzte Spitze die beste Wahl.",
+              "reaktion": [
+                { "text": "(Du legst das Handy weg. Es vibriert noch zweimal.)", "anspannung_bis": 59 },
+                { "text": "(Dein Daumen zuckt noch einmal. Dann legst du das Handy weg.)", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_spaet_raus"
+            },
+            {
+              "text": "Noch eine letzte Antwort, dann ist Schluss.",
+              "bausteine": ["letzte_spitze"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": 0, "anspannung": 10 },
+              "warum": "„Noch eine letzte“ gibt es in Kommentarspalten nicht. Die letzte Spitze ist immer eine Einladung zur nächsten Runde.",
+              "reaktion": [
+                { "text": "Ach, noch da? 😂", "anspannung_bis": 59 },
+                { "text": "Hahaha, der kann nicht loslassen.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_verbrannt"
+            },
+            {
+              "text": "Screenshot machen und morgen allen zeigen, wie dumm der ist.",
+              "bausteine": ["publikum", "ad_hominem"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 5 },
+              "warum": "Publikum suchen (Kunstgriff 28) und abwerten verlängert den Ärger bis morgen. Der Account bekommt so noch mehr Platz in deinem Kopf.",
+              "reaktion": [
+                { "text": "(Der Screenshot ist gespeichert. Der Ärger auch.)", "anspannung_bis": 59 },
+                { "text": "(Du liegst noch lange wach und formulierst Antworten.)", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_verbrannt"
+            }
+          ]
+        },
+        {
+          "id": "ende_gelassen", "ende": true, "sterne": 3,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Der Abend gehört wieder dir. Morgen erinnerst du dich kaum noch an den Account.)" },
+            { "text": "(Zehn Minuten später hast du es vergessen. Die Energie bleibt für Gespräche, die zählen.)" }
+          ],
+          "auswertung": {
+            "titel": "Pausentest bestanden",
+            "gut": "Du hast erkannt, dass nichts Wichtiges davon abhängt, ob dieser Account dich versteht, und hast deine Energie geschützt.",
+            "anders": "Nichts. Nicken oder Gehen ist hier die richtige Antwort. Gespräche mit Menschen, die dir wichtig sind, verdienen deine Kraft.",
+            "selbstcheck": "Wollte ich antworten, um etwas zu bewirken, oder um mich besser zu fühlen?"
+          }
+        },
+        {
+          "id": "ende_mitleser", "ende": true, "sterne": 3,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Dein ruhiger Satz steht da, mit Quelle. Wer mitliest, kann sich selbst ein Bild machen.)" }
+          ],
+          "auswertung": {
+            "titel": "Für die Stillen geschrieben",
+            "gut": "Du hast erkannt: Der Account versteht dich nicht, aber Mitlesende vielleicht. Ein ruhiger Satz mit Quelle, dann raus. Das ist eine reife Form des Pausentests.",
+            "anders": "Achte darauf, dass es bei einem Satz bleibt. Sobald du dem Account antwortest, schreibst du wieder für ihn statt für die Mitlesenden.",
+            "selbstcheck": "Für wen schreibe ich gerade wirklich?"
+          }
+        },
+        {
+          "id": "ende_ausgestiegen", "ende": true, "sterne": 2,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Du bist raus. Es hat ein bisschen gedauert, aber du hast keine letzte Spitze gesetzt.)" }
+          ],
+          "auswertung": {
+            "titel": "Ausgestiegen",
+            "gut": "Du hast den Ausstieg geschafft, ohne nachzutreten.",
+            "anders": "Der Pausentest vor der ersten Antwort hätte dir die ganze Runde erspart. Fremde Accounts: erst innehalten, dann entscheiden.",
+            "selbstcheck": "Was genau hat mich zum Antworten gebracht?"
+          }
+        },
+        {
+          "id": "ende_spaet_raus", "ende": true, "sterne": 2,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Spät, aber raus. Morgen weißt du, wo dein Haken war.)" }
+          ],
+          "auswertung": {
+            "titel": "Spät, aber raus",
+            "gut": "Du hast am Ende die Notbremse gezogen und keine letzte Antwort geschrieben.",
+            "anders": "Eine Stunde Energie war weg. Nächstes Mal: Pausentest, bevor du das erste Mal tippst.",
+            "selbstcheck": "Woran merke ich früher, dass ich in einer Schleife stecke?"
+          }
+        },
+        {
+          "id": "ende_verbrannt", "ende": true, "sterne": 1,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Es ist weit nach Mitternacht. Der Account schreibt längst unter anderen Beiträgen. Du liegst wach.)" }
+          ],
+          "auswertung": {
+            "titel": "Energie verbrannt",
+            "gut": "Du wolltest eine Falschinformation nicht stehen lassen. Der Impuls ist ehrenwert.",
+            "anders": "Bei Fremden im Netz ändert sich meist nichts Wichtiges, wenn sie dich verstehen. Nicken, gehen, oder ein Satz für Mitlesende, dann raus.",
+            "selbstcheck": "Hätte ich diesem Menschen offline genauso geantwortet?"
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "freund-jobangst",
+      "titel": "Angst um den Job",
+      "ort": "Abends auf dem Balkon eines Freundes",
+      "thema": "„Ab nächstem Jahr sind Verbrenner verboten. Dann war's das mit meinem Job.“",
+      "art": "dialog",
+      "icon": "freund",
+      "gegenueber": {
+        "name": "Sven",
+        "rolle": "Freund seit der Schulzeit, arbeitet bei einem Autozulieferer",
+        "typ": [2],
+        "beschreibung": "Bodenständig und loyal. Seit in seiner Firma Stellen wackeln, schläft er schlecht. Er hat einen Post weitergeleitet, der seine Angst bestätigt."
+      },
+      "einleitung": "Ihr sitzt mit einem Getränk auf Svens Balkon. Er ist stiller als sonst. Dann zeigt er dir sein Handy: Den Post hat er heute in eure Freundesgruppe geschickt.",
+      "startwerte": { "vertrauen": 70, "erkenntnis": 10, "anspannung": 65 },
+      "start": "k1",
+      "fakten": [
+        { "id": "f_verbrenner", "text": "Ein Fahrverbot für vorhandene Verbrenner gibt es nicht. Die EU-Regel betrifft die CO₂-Flottenwerte neu zugelassener Pkw ab 2035; ihre genaue Ausgestaltung wird politisch weiter verhandelt.", "stand": "2026", "quelle_pruefen": true, "quelle": "Verordnung (EU) 2023/851 und laufende Änderungsvorschläge – vor Verwendung prüfen" }
+      ],
+      "knoten": [
+        {
+          "id": "k1",
+          "sagt": [
+            { "text": "Bei uns in der Firma reden alle nur noch davon. Die verbieten die Verbrenner, und wir Zulieferer fliegen als Erste raus.", "anspannung_bis": 59 },
+            { "text": "Ab nächstem Jahr sind Verbrenner verboten, steht hier. Dann war's das mit meinem Job.", "anspannung_bis": 59 },
+            { "text": "Ich kann nachts nicht mehr schlafen. Ab nächstem Jahr sind Verbrenner verboten, und dann? Dann steh ich da.", "anspannung_ab": 60 },
+            { "text": "Lies das mal. Verbrenner-Verbot ab nächstem Jahr. Und keiner sagt's einem offen.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Das stimmt so nicht. Ein Verbot ab nächstem Jahr gibt es nicht, das ist Fake.",
+              "bausteine": ["kontern", "etikett"], "bewertung": "ungünstig",
+              "fakten": ["f_verbrenner"],
+              "effekt": { "vertrauen": -12, "erkenntnis": 3, "anspannung": 12 },
+              "warum": "Inhaltlich hast du recht (prüfen!), aber Sven ist Typ 2: Er hat Angst. Wer zuerst den Fakt hört, hört „deine Angst ist dumm“. Erst das Gefühl, dann die Fakten.",
+              "reaktion": [
+                { "text": "Toll. Du hast leicht reden, dein Job ist sicher.", "anspannung_bis": 59 },
+                { "text": "Ach so. Und die Spätschicht, die sie gestrichen haben, ist auch Fake, oder was?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_zu"
+            },
+            {
+              "text": "Das klingt, als machst du dir richtig Sorgen. Was beunruhigt dich konkret?",
+              "bausteine": ["gefuehl_ansprechen"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -15 },
+              "warum": "Genau der Zug für Typ 2: Gefühl ansprechen und konkret machen. Sven muss nicht mehr mit dem Post kämpfen, um gehört zu werden.",
+              "reaktion": [
+                { "text": "Konkret? Dass ich in einem Jahr ohne Job dastehe.", "anspannung_bis": 59 },
+                { "text": "Was mich beunruhigt? Alles! … Na ja. Vor allem, ob ich den Job behalte.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_sorge"
+            },
+            {
+              "text": "Ach komm, so schlimm wird's schon nicht.",
+              "bausteine": ["beschwichtigen"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -8, "erkenntnis": 0, "anspannung": 5 },
+              "warum": "Abwiegeln ist gut gemeint, nimmt die Sorge aber nicht ernst. Sven fühlt sich allein damit und hält am Post fest, weil der ihn wenigstens ernst nimmt.",
+              "reaktion": [
+                { "text": "Woher willst du das wissen?", "anspannung_bis": 59 },
+                { "text": "Du klingst wie unser Chef. „Wird schon.“", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_zu"
+            },
+            {
+              "text": "Mist. Wie ist die Stimmung bei euch in der Firma gerade?",
+              "bausteine": ["gespraechsoeffner", "gefuehl_ansprechen"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 3, "anspannung": -10 },
+              "warum": "Du gehst mit, statt zu prüfen. Die Frage nach der Stimmung zeigt: Mich interessierst du, nicht der Post.",
+              "reaktion": [
+                { "text": "Mies. Keiner sagt was Genaues, nur Gerüchte.", "anspannung_bis": 59 },
+                { "text": "Beschissen. Jeder guckt nur noch, wer als Nächstes dran ist.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_sorge"
+            }
+          ]
+        },
+        {
+          "id": "k2_sorge",
+          "sagt": [
+            { "text": "Letzte Woche haben sie die Spätschicht gestrichen. Und ich hab den Kredit fürs Haus.", "anspannung_bis": 59 },
+            { "text": "Und dann kommt so ein Post. Da kriegst du Panik.", "anspannung_bis": 59 },
+            { "text": "Zwei Kinder, Kredit, und keiner weiß, wie's weitergeht.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Das ist echt viel auf einmal. Die Unsicherheit in der Branche ist ja real, das bildest du dir nicht ein.",
+              "bausteine": ["wahrer_kern", "gefuehl_ansprechen"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Der wahre Kern: Die Autobranche ist im Umbruch, Svens Sorge hat einen echten Grund. Wer das anerkennt, kann später auch über den falschen Post reden.",
+              "reaktion": [
+                { "text": "Danke. Alle anderen tun so, als wär ich hysterisch.", "anspannung_bis": 59 },
+                { "text": "… Ja. Danke, dass du das sagst.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Okay, aber der Post ist trotzdem falsch. Das muss man auseinanderhalten.",
+              "bausteine": ["belehren"], "bewertung": "teils",
+              "fakten": ["f_verbrenner"],
+              "effekt": { "vertrauen": -5, "erkenntnis": 5, "anspannung": 8 },
+              "warum": "Der Gedanke stimmt (Sorge und Post auseinanderhalten), aber er kommt zu früh und zu glatt. Sven hat gerade erst von Kredit und Kindern erzählt.",
+              "reaktion": [
+                { "text": "Hm. Kann sein. Ist mir gerade aber ziemlich egal.", "anspannung_bis": 59 },
+                { "text": "Mir doch egal, ob der Post falsch ist! Mein Job ist trotzdem in Gefahr!", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3",
+              "weiter_bei_anspannung": { "ab": 70, "ziel": "k2_zu" }
+            },
+            {
+              "text": "Was würde dir gerade am meisten helfen?",
+              "bausteine": ["gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 3, "anspannung": -8 },
+              "warum": "Eine offene Frage, die Sven die Führung gibt. Vielleicht will er Lösungen, vielleicht nur reden. Beides ist in Ordnung.",
+              "reaktion": [
+                { "text": "Wenn ich wüsste, woran ich bin.", "anspannung_bis": 59 },
+                { "text": "Keine Ahnung. Dass mal einer ehrlich ist.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            }
+          ]
+        },
+        {
+          "id": "k2_zu",
+          "sagt": [
+            { "text": "Ja, danke für die Belehrung. Hilft mir echt weiter.", "anspannung_bis": 69 },
+            { "text": "Vielleicht hätte ich nichts sagen sollen.", "anspannung_bis": 69 },
+            { "text": "Weißt du was, vergiss es.", "anspannung_ab": 70 }
+          ],
+          "optionen": [
+            {
+              "text": "Du hast recht, ich bin direkt in die Fakten gesprungen. Wie geht's dir eigentlich mit dem Ganzen?",
+              "bausteine": ["gefuehl_ansprechen", "wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 12, "erkenntnis": 3, "anspannung": -12 },
+              "warum": "Fehler eingestehen und das Gefühl ansprechen: Die Reparatur zeigt Sven, dass du als Freund da bist, nicht als Faktenprüfer.",
+              "reaktion": [
+                { "text": "… Ehrlich? Ziemlich scheiße. Ich hab Angst.", "anspannung_bis": 69 },
+                { "text": "(schweigt lange) … Nicht gut. Gar nicht gut.", "anspannung_ab": 70 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Mein Job ist auch nicht sicher. Das ist doch kein Argument.",
+              "bausteine": ["kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 10 },
+              "warum": "Jetzt vergleicht ihr, wem es schlechter geht. Das ist ein Wettstreit, kein Gespräch, und Svens Angst bleibt ungehört.",
+              "reaktion": [
+                { "text": "Ist ja gut. Lassen wir's.", "anspannung_bis": 69 },
+                { "text": "Dann ist ja alles gesagt.", "anspannung_ab": 70 }
+              ],
+              "weiter": "ende_zu"
+            },
+            {
+              "text": "Okay, ich merk, das ist gerade zu viel. Lass uns ein andermal drüber reden, ja? Ich bin da.",
+              "bausteine": ["ausstieg", "gefuehl_ansprechen"], "bewertung": "teils",
+              "effekt": { "vertrauen": 3, "erkenntnis": 0, "anspannung": -10 },
+              "warum": "Ein warmer Ausstieg: Du vertagst das Thema, aber nicht die Freundschaft. Mit einer kurzen Entschuldigung hättest du das Gespräch vielleicht noch retten können.",
+              "reaktion": [
+                { "text": "Ja. Danke.", "anspannung_bis": 69 },
+                { "text": "(nickt) Ja.", "anspannung_ab": 70 }
+              ],
+              "weiter": "ende_spaeter"
+            }
+          ]
+        },
+        {
+          "id": "k3",
+          "sagt": [
+            { "text": "Ich weiß ja selbst nicht, ob das mit dem Verbot stimmt. Aber es passt halt zu allem.", "anspannung_bis": 59 },
+            { "text": "Wenn's so kommt wie im Post, gibt's unsere Teile bald nicht mehr.", "anspannung_bis": 59 },
+            { "text": "Die da oben machen eh, was sie wollen. Und wir baden's aus.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Darf ich dir sagen, was ich zu dem Verbot weiß? Vielleicht nimmt es ein bisschen Druck raus.",
+              "bausteine": ["gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 5, "anspannung": -5 },
+              "warum": "Um Erlaubnis fragen, und zwar mit einem Angebot, das Sven hilft: weniger Druck. So wird der Fakt zur Entlastung statt zur Korrektur.",
+              "reaktion": [
+                { "text": "Ja. Erzähl.", "anspannung_bis": 59 },
+                { "text": "Druck raus wär gut. Na los.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_fakt"
+            },
+            {
+              "text": "Wie sicher bist du dir, dass der Post stimmt, von 0 bis 100?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 3, "erkenntnis": 10, "anspannung": 0 },
+              "warum": "Sicherheit erfragen, ohne zu urteilen. Weil du vorher das Gefühl gewürdigt hast, ist Sven jetzt offen dafür.",
+              "reaktion": [
+                { "text": "Hm. Siebzig? Der Kollege, der's geteilt hat, kennt sich eigentlich aus.", "anspannung_bis": 59 },
+                { "text": "Hundert. Nee … keine Ahnung. Ich hab's nur überflogen.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_quelle"
+            },
+            {
+              "text": "„Die da oben“ sind auch nicht alle gleich. Aber den Frust verstehe ich.",
+              "bausteine": ["verallgemeinern", "wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 5, "anspannung": -5 },
+              "warum": "Verallgemeinern (3/11/19) sanft angesprochen und gleichzeitig der Frust anerkannt. Du korrigierst, ohne zu kränken.",
+              "reaktion": [
+                { "text": "Ja, ist ja gut. Aber was ist jetzt mit dem Verbot?", "anspannung_bis": 59 },
+                { "text": "Hm. Kann sein. Und das Verbot?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_fakt"
+            },
+            {
+              "text": "Du musst halt umschulen. Die Zukunft ist elektrisch.",
+              "bausteine": ["belehren"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": 0, "anspannung": 15 },
+              "warum": "Ein Ratschlag von oben in einem verletzlichen Moment. Vielleicht sogar sinnvoll, aber jetzt wirkt er wie „dein Problem, nicht meins“.",
+              "reaktion": [
+                { "text": "Mit Mitte vierzig. Klar. Danke für den Tipp.", "anspannung_bis": 59 },
+                { "text": "Ach, so einfach ist das. Gut, dass du's weißt.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_zu"
+            }
+          ]
+        },
+        {
+          "id": "k4_quelle",
+          "sagt": [
+            { "text": "Ich hab's ehrlich gesagt nur überflogen und weitergeschickt.", "anspannung_bis": 59 },
+            { "text": "Der Kollege ist eigentlich nicht der Typ, der Quatsch erzählt.", "anspannung_bis": 59 },
+            { "text": "Ist doch egal, wo's herkommt. Es fühlt sich halt so an.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Danke, dass du das so ehrlich sagst. Wollen wir's zusammen anschauen? Dann weißt du, woran du bist.",
+              "bausteine": ["street_epistemology", "gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 8, "anspannung": -5 },
+              "warum": "Bedanken und gemeinsam prüfen: Sven bleibt Herr des Verfahrens. Er will wissen, woran er ist, und du hilfst ihm dabei.",
+              "reaktion": [
+                { "text": "Ja, lass mal gucken.", "anspannung_bis": 59 },
+                { "text": "Hm. Okay. Zeig.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_fakt"
+            },
+            {
+              "text": "Siehst du, du weißt es gar nicht.",
+              "bausteine": ["siegbehauptung"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -12, "erkenntnis": 0, "anspannung": 12 },
+              "warum": "Siegbehauptung (Kunstgriff 14) gegenüber einem Freund in Sorge. Seine Ehrlichkeit wird bestraft, und das merkt er sich.",
+              "reaktion": [
+                { "text": "Na und? Weißt du's denn?", "anspannung_bis": 59 },
+                { "text": "Super. Jetzt bin ich auch noch blöd.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_zu"
+            },
+            {
+              "text": "Woran würdest du merken, dass der Post übertreibt?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 3, "erkenntnis": 10, "anspannung": 0 },
+              "warum": "Die Quellenfrage, ohne die Quelle schlechtzumachen. Sven entwickelt selbst einen Maßstab, den er auch beim nächsten Post anwenden kann.",
+              "reaktion": [
+                { "text": "Hm. Wenn das nirgends sonst steht, vielleicht.", "anspannung_bis": 59 },
+                { "text": "Keine Ahnung. … Wenn's in den Nachrichten anders klingt?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_fakt"
+            }
+          ]
+        },
+        {
+          "id": "k4_fakt",
+          "sagt": [
+            { "text": "Also, was weißt du?", "anspannung_bis": 59 },
+            { "text": "Okay. Erzähl.", "anspannung_bis": 59 },
+            { "text": "Na dann. Aber ehrlich.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Ein Verbot, alte Autos zu fahren, gibt es nicht, und ab nächstem Jahr kommt auch keins. Der Post macht aus einer Regel für Neuwagen in den 2030ern ein Sofort-Verbot. Das klingt dramatischer und wird deshalb geteilt. Die Autos auf der Straße bleiben, und um die künftige Regel wird noch gestritten.",
+              "bausteine": ["fakt_sandwich"], "bewertung": "gut",
+              "fakten": ["f_verbrenner"],
+              "effekt": { "vertrauen": 5, "erkenntnis": 15, "anspannung": -10 },
+              "warum": "Ein vollständiges Fakt-Sandwich: Fakt, Mythos, warum er trügt (Dramatik wird geteilt), Fakt wiederholt. Ruhig gesagt, nimmt es Druck raus. (Stand vor Verwendung prüfen.)",
+              "reaktion": [
+                { "text": "Moment. Also nicht nächstes Jahr? … Puh.", "anspannung_bis": 59 },
+                { "text": "Echt jetzt? Nicht nächstes Jahr? … Okay. Okay.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5"
+            },
+            {
+              "text": "Steht alles im Netz, musst du nur richtig googeln.",
+              "bausteine": ["belehren"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -8, "erkenntnis": 0, "anspannung": 8 },
+              "warum": "Sven hat dich um Hilfe gebeten, und du schickst ihn weg. „Richtig googeln“ unterstellt außerdem, er hätte es falsch gemacht.",
+              "reaktion": [
+                { "text": "Hab ich ja. Da kam das hier raus.", "anspannung_bis": 59 },
+                { "text": "Danke. Sehr hilfreich.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5"
+            },
+            {
+              "text": "Die Regel betrifft neue Autos, nicht die, die schon fahren. Aber dass sich eure Branche verändert, ist trotzdem echt.",
+              "bausteine": ["fakt_sandwich", "wahrer_kern"], "bewertung": "gut",
+              "fakten": ["f_verbrenner"],
+              "effekt": { "vertrauen": 8, "erkenntnis": 10, "anspannung": -8 },
+              "warum": "Fakt plus wahrer Kern: Du räumst den Mythos ab und nimmst die echte Sorge trotzdem ernst. Der Post war falsch, die Angst ist es nicht.",
+              "reaktion": [
+                { "text": "Also nicht sofort. Na, das ist ja schon mal was.", "anspannung_bis": 59 },
+                { "text": "Hm. Okay. Also nicht nächstes Jahr.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5"
+            }
+          ]
+        },
+        {
+          "id": "k5",
+          "sagt": [
+            { "text": "Dann ist der Post Quatsch. Aber die Angst um den Job bleibt ja trotzdem.", "anspannung_bis": 59 },
+            { "text": "Okay, das beruhigt ein bisschen. Ich hätte den echt nicht teilen sollen.", "anspannung_bis": 59 },
+            { "text": "Na toll. Und jetzt bin ich der Depp, der Falschmeldungen teilt.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Du bist kein Depp. So ein Post ist genau dafür gemacht, dass man ihn in so einer Lage teilt.",
+              "bausteine": ["gefuehl_ansprechen", "wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Gesicht wahren lassen: Du erklärst, warum der Post wirkt, statt Sven zu beschämen. So kann er seinen Fehler annehmen.",
+              "reaktion": [
+                { "text": "Hm. Ja. Der hat genau da reingedrückt, wo's wehtut.", "anspannung_bis": 59 },
+                { "text": "… Danke. Echt.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k6"
+            },
+            {
+              "text": "Schreib doch kurz in die Gruppe, dass es nicht stimmt.",
+              "bausteine": ["belehren"], "bewertung": "teils",
+              "effekt": { "vertrauen": -3, "erkenntnis": 5, "anspannung": 5 },
+              "warum": "Ein sinnvoller Vorschlag, aber gerade zu früh. Sven ist noch mit der Angst beschäftigt. Erst entlasten, dann über die Gruppe reden.",
+              "reaktion": [
+                { "text": "Ja … mach ich vielleicht später.", "anspannung_bis": 59 },
+                { "text": "Jetzt soll ich mich auch noch öffentlich entschuldigen?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k6"
+            },
+            {
+              "text": "Ja, war schon ein bisschen peinlich.",
+              "bausteine": ["letzte_spitze"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -12, "erkenntnis": 0, "anspannung": 12 },
+              "warum": "Eine kleine Spitze, aber im falschen Moment. Wer sich gerade geöffnet hat, merkt sich so einen Satz lange.",
+              "reaktion": [
+                { "text": "Danke auch.", "anspannung_bis": 59 },
+                { "text": "Ja, danke. Echt hilfreich.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_mittel"
+            }
+          ]
+        },
+        {
+          "id": "k6",
+          "sagt": [
+            { "text": "Und was mach ich jetzt mit der Angst?", "anspannung_bis": 59 },
+            { "text": "Ich weiß nicht, wie ich das zu Hause erklären soll, wenn's wirklich eng wird.", "anspannung_bis": 59 },
+            { "text": "Trotzdem. Die Angst geht davon nicht weg.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Lass uns überlegen, was du konkret tun kannst. Mit dem Betriebsrat reden? Und ich bin da, wenn du reden willst.",
+              "bausteine": ["gefuehl_ansprechen", "gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Von der Angst zu den Möglichkeiten, gemeinsam. Du gibst keine Ratschläge von oben, sondern bietest Begleitung an.",
+              "reaktion": [
+                { "text": "Betriebsrat … ja, das könnte ich mal machen. Danke.", "anspannung_bis": 59 },
+                { "text": "Hm. Ja. Das wär ein Anfang.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gut"
+            },
+            {
+              "text": "Was müsste passieren, damit du dich sicherer fühlst?",
+              "bausteine": ["gespraechsoeffner", "street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 8, "anspannung": -5 },
+              "warum": "Eine Frage, die Sven selbst Lösungen finden lässt. Er weiß am besten, was ihm Sicherheit gibt.",
+              "reaktion": [
+                { "text": "Wenn die Firma mal ehrlich sagt, was Sache ist. Vielleicht frag ich einfach mal nach.", "anspannung_bis": 59 },
+                { "text": "Klarheit. Ich glaub, ich frag morgen mal direkt nach.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gut"
+            },
+            {
+              "text": "Ich würde mir an deiner Stelle schon mal was Neues suchen.",
+              "bausteine": ["belehren"], "bewertung": "teils",
+              "effekt": { "vertrauen": -5, "erkenntnis": 0, "anspannung": 8 },
+              "warum": "Vielleicht ein realistischer Rat, aber er kommt ungefragt und verstärkt die Angst. Eine Frage hätte Sven mehr geholfen.",
+              "reaktion": [
+                { "text": "Hm. Na ja. Mal sehen.", "anspannung_bis": 59 },
+                { "text": "Danke. Jetzt geht's mir noch schlechter.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_mittel"
+            }
+          ]
+        },
+        {
+          "id": "ende_gut", "ende": true, "sterne": 3,
+          "sagt": [
+            { "text": "Weißt du was? Ich schreib nachher in die Gruppe, dass der Post Quatsch war. Danke, dass du da warst." },
+            { "text": "Puh. Es tut gut, dass mal einer zuhört. Noch ein Getränk?" }
+          ],
+          "auswertung": {
+            "titel": "Erst der Freund, dann die Fakten",
+            "gut": "Du hast zuerst Svens Angst ernst genommen und die Fakten erst gebracht, als er offen war. Der wahre Kern (die Branche verändert sich) blieb stehen.",
+            "anders": "Bleib in den nächsten Wochen dran. Bei Typ 2 hilft Begleitung oft mehr als jede Richtigstellung.",
+            "selbstcheck": "Wäre ich in Svens Lage auch anfällig für so einen Post?"
+          }
+        },
+        {
+          "id": "ende_mittel", "ende": true, "sterne": 2,
+          "sagt": [
+            { "text": "(Sven nickt, aber er wirkt wieder in sich gekehrt.) Ja. Mal sehen." }
+          ],
+          "auswertung": {
+            "titel": "Fakt geklärt, Freund allein",
+            "gut": "Du hast den falschen Post richtiggestellt.",
+            "anders": "Am Ende kam ein Rat oder eine Spitze, die Sven mit seiner Angst allein gelassen hat. Bei Typ 2: Gefühl vor Fakten, und Begleitung vor Ratschlägen.",
+            "selbstcheck": "Wollte ich Sven helfen oder recht haben?"
+          }
+        },
+        {
+          "id": "ende_spaeter", "ende": true, "sterne": 2,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Ihr schaut eine Weile schweigend in den Abend. Die Freundschaft ist intakt, das Thema offen.)" }
+          ],
+          "auswertung": {
+            "titel": "Vertagt, aber verbunden",
+            "gut": "Du hast gemerkt, dass es zu viel wurde, und bist warm ausgestiegen. „Ich bin da“ war der wichtigste Satz.",
+            "anders": "Der Einstieg mit Fakten hat Sven in die Abwehr gedrängt. Beim nächsten Mal zuerst fragen, was ihn beunruhigt.",
+            "selbstcheck": "Wie fühlt es sich an, wenn jemand meine Angst sofort „korrigiert“?"
+          }
+        },
+        {
+          "id": "ende_zu", "ende": true, "sterne": 1,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Sven wechselt das Thema und redet über Fußball. Den Post erwähnt keiner mehr. Die Angst bleibt.)" }
+          ],
+          "auswertung": {
+            "titel": "Er hat dichtgemacht",
+            "gut": "Du wolltest Sven vor einer Falschinformation bewahren. Das ist ein guter Impuls.",
+            "anders": "Bei Typ 2 wirkt jeder Fakt wie ein Angriff, solange das Gefühl nicht gehört wurde. Erst „Was beunruhigt dich konkret?“, dann um Erlaubnis fragen.",
+            "selbstcheck": "Habe ich Svens Angst gehört, oder nur den falschen Satz?"
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "leitung-ablauf",
+      "titel": "„Haben wir immer so gemacht“",
+      "ort": "Büro der Leitung, kurz vor Dienstbeginn",
+      "thema": "Die Leitung will die feste Hausaufgabenzeit nicht ändern.",
+      "art": "dialog",
+      "icon": "leitung",
+      "gegenueber": {
+        "name": "Frau Berger",
+        "rolle": "Leitung der Einrichtung",
+        "typ": [3],
+        "beschreibung": "Erfahren, verlässlich, unter Druck von Eltern, Träger und Personalmangel. Sie entscheidet, du schlägst vor."
+      },
+      "einleitung": "Die feste Hausaufgabenstunde für alle läuft seit Jahren gleich: ein großer Raum, viele Kinder, viel Unruhe. Du möchtest Lernzeit in kleinen Gruppen ausprobieren. Du hast fünf Minuten bei der Leitung.",
+      "startwerte": { "vertrauen": 55, "erkenntnis": 10, "anspannung": 45 },
+      "start": "k1",
+      "fakten": [],
+      "knoten": [
+        {
+          "id": "k1",
+          "sagt": [
+            { "text": "Das haben wir schon immer so gemacht, und es läuft. Ich sehe keinen Grund, das zu ändern.", "anspannung_bis": 59 },
+            { "text": "Die feste Hausaufgabenzeit ist mit den Eltern so abgesprochen. Da fange ich jetzt nicht an zu experimentieren.", "anspannung_bis": 59 },
+            { "text": "Ich hab dafür ehrlich gesagt gerade keinen Kopf. Wir sind eh unterbesetzt.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Was ist dir an der jetzigen Regel besonders wichtig?",
+              "bausteine": ["gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -8 },
+              "warum": "Bei Machtgefälle zuerst verstehen, was die Leitung schützen will. Dann kannst du einen Vorschlag machen, der genau das absichert.",
+              "reaktion": [
+                { "text": "Dass sich die Eltern drauf verlassen können und die Aufsicht klar ist.", "anspannung_bis": 59 },
+                { "text": "Dass es läuft. Und dass ich nicht noch eine Baustelle hab.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2"
+            },
+            {
+              "text": "„Haben wir immer so gemacht“ ist aber kein Argument.",
+              "bausteine": ["kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -15, "erkenntnis": 0, "anspannung": 15 },
+              "warum": "Logisch richtig, aber gegenüber der Leitung ein Frontalangriff. Bei Typ 3 gewinnt nicht das bessere Argument, sondern der kleinere Schritt.",
+              "reaktion": [
+                { "text": "Für mich schon. Es funktioniert nämlich.", "anspannung_bis": 59 },
+                { "text": "Pass auf, wie du mit mir redest.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2_abwehr"
+            },
+            {
+              "text": "In der Fachliteratur steht aber, dass Lernzeit in kleinen Gruppen besser funktioniert.",
+              "bausteine": ["autoritaet", "belehren"], "bewertung": "teils",
+              "effekt": { "vertrauen": -5, "erkenntnis": 3, "anspannung": 8 },
+              "warum": "„Die Literatur“ ohne konkrete Quelle ist selbst ein Kunstgriff (Autorität ohne Quelle, 30). Und gegenüber der Leitung klingt es nach Belehrung.",
+              "reaktion": [
+                { "text": "In welcher denn? Ich lese auch Fachzeitschriften.", "anspannung_bis": 59 },
+                { "text": "Die Literatur kennt unseren Personalschlüssel nicht.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2"
+            },
+            {
+              "text": "Verstehe. Ihr habt gerade viel um die Ohren, oder?",
+              "bausteine": ["gefuehl_ansprechen"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 3, "anspannung": -10 },
+              "warum": "Auch Leitungen stehen unter Druck. Wer das sieht, wird eher als Unterstützung wahrgenommen und nicht als zusätzliche Baustelle.",
+              "reaktion": [
+                { "text": "(seufzt) Das kannst du laut sagen. Was ist denn dein Anliegen?", "anspannung_bis": 59 },
+                { "text": "Viel ist untertrieben. … Na gut, was willst du?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k2"
+            }
+          ]
+        },
+        {
+          "id": "k2",
+          "sagt": [
+            { "text": "Wenn es chaotisch wird, krieg ich die Beschwerden. Nicht du.", "anspannung_bis": 59 },
+            { "text": "Ruhe und Verlässlichkeit. Wenn jeder macht, was er will, hab ich am Ende das Chaos.", "anspannung_bis": 59 },
+            { "text": "Ich will einfach keine Unruhe. Davon hab ich genug.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Das sind berechtigte Punkte. Gerade die Aufsicht muss klar sein, und die Beschwerden landen bei dir.",
+              "bausteine": ["wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -8 },
+              "warum": "Wahren Kern zugeben: Aufsicht und Verlässlichkeit sind echte Pflichten. Wer sie ernst nimmt, darf danach etwas Neues vorschlagen.",
+              "reaktion": [
+                { "text": "Schön, dass das mal einer sieht.", "anspannung_bis": 59 },
+                { "text": "Ja. Genau so ist es.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Aber gerade jetzt ist es doch chaotisch. Die Kinder sind laut und unkonzentriert.",
+              "bausteine": ["kontern"], "bewertung": "teils",
+              "effekt": { "vertrauen": -5, "erkenntnis": 5, "anspannung": 8 },
+              "warum": "Eine wichtige Beobachtung, aber als Widerspruch formuliert. Als Frage („Wie erlebst du die Stunde gerade?“) könnte die Leitung selbst darauf kommen.",
+              "reaktion": [
+                { "text": "Laut sind sie immer. Das liegt nicht an der Regel.", "anspannung_bis": 59 },
+                { "text": "Willst du mir sagen, ich hab meinen Laden nicht im Griff?", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Was müsste passieren, damit du sagst: Eine Veränderung ist es wert?",
+              "bausteine": ["street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 5, "erkenntnis": 10, "anspannung": 0 },
+              "warum": "Du lässt die Leitung den Maßstab selbst nennen. Genau den kannst du später in einem Test aufgreifen.",
+              "reaktion": [
+                { "text": "Hm. Wenn's ruhiger wird und die Hausaufgaben wirklich fertig sind.", "anspannung_bis": 59 },
+                { "text": "Wenn's nachweislich besser läuft. Nicht nur gefühlt.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k3"
+            }
+          ]
+        },
+        {
+          "id": "k2_abwehr",
+          "sagt": [
+            { "text": "Ich bin hier die Leitung, und ich trage die Verantwortung. Nicht du.", "anspannung_bis": 69 },
+            { "text": "Wenn du alles besser weißt, kannst du ja eine eigene Einrichtung aufmachen.", "anspannung_bis": 69 },
+            { "text": "Das Thema ist für mich erledigt.", "anspannung_ab": 70 }
+          ],
+          "optionen": [
+            {
+              "text": "Das stimmt, du trägst die Verantwortung, und das will ich nicht kleinreden. Darf ich trotzdem kurz einen Vorschlag machen, ganz unverbindlich?",
+              "bausteine": ["wahrer_kern", "gespraechsoeffner"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 3, "anspannung": -12 },
+              "warum": "Die Rolle der Leitung anerkennen und um Erlaubnis bitten: So wird aus dem Machtkampf wieder ein Gespräch.",
+              "reaktion": [
+                { "text": "… Na gut. Aber kurz.", "anspannung_bis": 69 },
+                { "text": "(schaut auf die Uhr) Zwei Minuten.", "anspannung_ab": 70 }
+              ],
+              "weiter": "k3"
+            },
+            {
+              "text": "Ich habe das Recht, Vorschläge zu machen.",
+              "bausteine": ["kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -10, "erkenntnis": 0, "anspannung": 10 },
+              "warum": "Formal richtig, aber jetzt geht es um Rechte statt um die Sache. Gegen ein Machtgefälle gewinnt man keinen Prinzipienstreit.",
+              "reaktion": [
+                { "text": "Hast du. Und ich hab das Recht, sie abzulehnen.", "anspannung_bis": 69 },
+                { "text": "Und ich entscheide. Wir sind fertig.", "anspannung_ab": 70 }
+              ],
+              "weiter": "ende_blockiert"
+            },
+            {
+              "text": "Okay. Ich komme ein andermal darauf zurück, wenn es ruhiger ist.",
+              "bausteine": ["ausstieg"], "bewertung": "teils",
+              "effekt": { "vertrauen": 3, "erkenntnis": 0, "anspannung": -10 },
+              "warum": "Ein ruhiger Ausstieg rettet die Arbeitsbeziehung. Mit einer kurzen Anerkennung ihrer Verantwortung wäre aber noch mehr drin gewesen.",
+              "reaktion": [
+                { "text": "Mach das.", "anspannung_bis": 69 },
+                { "text": "Gut.", "anspannung_ab": 70 }
+              ],
+              "weiter": "ende_vertagt"
+            }
+          ]
+        },
+        {
+          "id": "k3",
+          "sagt": [
+            { "text": "Na gut. Was schwebt dir vor?", "anspannung_bis": 59 },
+            { "text": "Und was willst du konkret ändern?", "anspannung_bis": 59 },
+            { "text": "Mach's kurz.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Ein kleiner Test: vier Wochen, nur meine Gruppe, Lernzeit in kleinen Gruppen. Vorher legen wir fest, woran wir Erfolg messen, und danach entscheidest du.",
+              "bausteine": ["trojanisches_pferd"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 12, "anspannung": -5 },
+              "warum": "Das Trojanische Pferd: klein, befristet, mit vorher vereinbartem Maßstab, und die Entscheidung bleibt bei der Leitung. So kann sie Ja sagen, ohne etwas zu riskieren.",
+              "reaktion": [
+                { "text": "Hm. Nur deine Gruppe … und ich entscheide danach.", "anspannung_bis": 59 },
+                { "text": "Vier Wochen. Hm.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_test"
+            },
+            {
+              "text": "Ich würde das gern ab sofort für die ganze Einrichtung umstellen. Ein Konzept habe ich schon.",
+              "bausteine": ["ueberrumpeln"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -8, "erkenntnis": 3, "anspannung": 12 },
+              "warum": "Zu groß auf einmal (Überrumpeln). Die Leitung trägt das ganze Risiko und hat keinen Ausweg. Ein kleiner Test wäre leichter zuzusagen.",
+              "reaktion": [
+                { "text": "Ab sofort? Für alle? Du weißt schon, was das heißt?", "anspannung_bis": 59 },
+                { "text": "Auf keinen Fall.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_einwand"
+            },
+            {
+              "text": "Alle anderen Einrichtungen machen das längst so.",
+              "bausteine": ["verallgemeinern", "autoritaet"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -8, "erkenntnis": 0, "anspannung": 8 },
+              "warum": "„Alle anderen“ ist eine Verallgemeinerung (3/11/19), und „machen das so“ ersetzt keine Begründung. Die Leitung kann das leicht abtun.",
+              "reaktion": [
+                { "text": "Alle? Das bezweifle ich. Und wir sind nicht alle anderen.", "anspannung_bis": 59 },
+                { "text": "Dann geh doch zu allen anderen.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_einwand"
+            }
+          ]
+        },
+        {
+          "id": "k4_test",
+          "sagt": [
+            { "text": "Und was, wenn es nicht klappt?", "anspannung_bis": 59 },
+            { "text": "Woran würden wir das denn messen?", "anspannung_bis": 59 },
+            { "text": "Und wer erklärt das den Eltern, wenn's schiefgeht?", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Wir nehmen zwei, drei einfache Maßstäbe: Wie viele Hausaufgaben sind fertig, wie oft müssen wir eingreifen, was sagen die Kinder. Klappt es nicht, gehen wir zurück, ohne Diskussion.",
+              "bausteine": ["trojanisches_pferd"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 10, "anspannung": -8 },
+              "warum": "Klare, einfache Maßstäbe und ein Rückweg ohne Gesichtsverlust. Das nimmt der Leitung das Risiko ab.",
+              "reaktion": [
+                { "text": "Ohne Diskussion zurück. Das gefällt mir.", "anspannung_bis": 59 },
+                { "text": "Hm. Das klingt wenigstens überschaubar.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5"
+            },
+            {
+              "text": "Das klappt bestimmt, keine Sorge.",
+              "bausteine": ["beschwichtigen"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -5, "erkenntnis": 0, "anspannung": 8 },
+              "warum": "Abwiegeln beantwortet die Frage nicht. Die Leitung braucht einen Plan B, kein Versprechen.",
+              "reaktion": [
+                { "text": "„Bestimmt“ reicht mir nicht.", "anspannung_bis": 59 },
+                { "text": "Das sagen alle vorher.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5"
+            },
+            {
+              "text": "Was wäre für dich ein Zeichen, dass es funktioniert?",
+              "bausteine": ["trojanisches_pferd", "street_epistemology"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 12, "anspannung": -5 },
+              "warum": "Der stärkste Zug bei Typ 3: Die Leitung legt den Maßstab selbst fest. Dann ist es ihr Test, nicht deiner.",
+              "reaktion": [
+                { "text": "Wenn's ruhiger ist und ich keine Elternbeschwerden kriege.", "anspannung_bis": 59 },
+                { "text": "Weniger Beschwerden. Und die Hausaufgaben sind fertig.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k5"
+            }
+          ]
+        },
+        {
+          "id": "k4_einwand",
+          "sagt": [
+            { "text": "Das ist mir zu groß. Weißt du, was das für ein Aufwand ist?", "anspannung_bis": 59 },
+            { "text": "Und dann bin ich die, die den Eltern erklären muss, warum alles anders ist.", "anspannung_bis": 59 },
+            { "text": "Nein. So nicht.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Verstehe, das war zu viel auf einmal. Was wäre, wenn wir es klein und befristet testen, nur in meiner Gruppe?",
+              "bausteine": ["trojanisches_pferd", "wahrer_kern"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 8, "anspannung": -10 },
+              "warum": "Einwand anerkennen und den Vorschlag verkleinern. Aus einer großen Forderung wird ein Trojanisches Pferd.",
+              "reaktion": [
+                { "text": "Nur deine Gruppe? Hm. Darüber kann man reden.", "anspannung_bis": 59 },
+                { "text": "… Klein und befristet. Na gut, erzähl.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k4_test"
+            },
+            {
+              "text": "Aufwand ist kein Grund, alles beim Alten zu lassen.",
+              "bausteine": ["kontern"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -12, "erkenntnis": 0, "anspannung": 12 },
+              "warum": "Du wischst den Einwand weg, statt ihn zu lösen. Der Aufwand ist für die Leitung real, und jetzt fühlt sie sich nicht ernst genommen.",
+              "reaktion": [
+                { "text": "Für mich schon. Ich hab genug zu tun.", "anspannung_bis": 59 },
+                { "text": "Das entscheide immer noch ich.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_blockiert"
+            },
+            {
+              "text": "Okay. Dann lasse ich es erst mal.",
+              "bausteine": ["ausstieg"], "bewertung": "teils",
+              "effekt": { "vertrauen": 0, "erkenntnis": 0, "anspannung": -8 },
+              "warum": "Ein friedlicher Rückzug, aber du gibst die Idee ganz auf. Ein kleinerer Vorschlag hätte eine echte Chance gehabt.",
+              "reaktion": [
+                { "text": "Ist vielleicht besser so.", "anspannung_bis": 59 },
+                { "text": "Gut.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_vertagt"
+            }
+          ]
+        },
+        {
+          "id": "k5",
+          "sagt": [
+            { "text": "Und die Eltern? Die rufen mich an, sobald sich was ändert.", "anspannung_bis": 59 },
+            { "text": "Und wenn jemand krank ist? Wir sind eh knapp.", "anspannung_bis": 59 },
+            { "text": "Trotzdem. Eltern, Personal … das ist alles nicht so einfach.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Ich schreibe den Eltern meiner Gruppe einen kurzen Brief, den du vorher liest. Und wenn wir unterbesetzt sind, machen wir an dem Tag die normale Hausaufgabenzeit.",
+              "bausteine": ["trojanisches_pferd"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 8, "anspannung": -10 },
+              "warum": "Du löst die Einwände konkret und lässt der Leitung die Kontrolle (sie liest den Brief). Der Test ist jetzt fast ohne Risiko für sie.",
+              "reaktion": [
+                { "text": "Den Brief will ich sehen, ja. Hm.", "anspannung_bis": 59 },
+                { "text": "Mit Plan für den Notfall. Okay.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k6"
+            },
+            {
+              "text": "Die Eltern finden das bestimmt gut, die beschweren sich doch eh über die Hausaufgaben.",
+              "bausteine": ["verallgemeinern"], "bewertung": "teils",
+              "effekt": { "vertrauen": -5, "erkenntnis": 0, "anspannung": 5 },
+              "warum": "„Die Eltern“ ist eine Verallgemeinerung (3/11/19). Die Leitung kennt Eltern, die sich über jede Änderung beschweren, und überzeugt ist sie so nicht.",
+              "reaktion": [
+                { "text": "Manche. Andere beschweren sich über alles, was neu ist.", "anspannung_bis": 59 },
+                { "text": "Das sehe ich anders.", "anspannung_ab": 60 }
+              ],
+              "weiter": "k6"
+            },
+            {
+              "text": "Darüber können wir uns Gedanken machen, wenn es so weit ist.",
+              "bausteine": ["beschwichtigen"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -8, "erkenntnis": 0, "anspannung": 8 },
+              "warum": "Abwiegeln genau bei den Punkten, die der Leitung am wichtigsten sind. Ohne Antwort auf Eltern und Personal sagt sie lieber Nein.",
+              "reaktion": [
+                { "text": "Nein, darüber machen wir uns vorher Gedanken. Sonst gar nicht.", "anspannung_bis": 59 },
+                { "text": "So nicht. Komm wieder, wenn du einen Plan hast.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_vertagt"
+            }
+          ]
+        },
+        {
+          "id": "k6",
+          "sagt": [
+            { "text": "Na gut. Vier Wochen, deine Gruppe. Und danach setzen wir uns zusammen.", "anspannung_bis": 59 },
+            { "text": "Okay. Aber wenn es kippt, brechen wir ab.", "anspannung_bis": 59 },
+            { "text": "Meinetwegen. Aber ich bin skeptisch.", "anspannung_ab": 60 }
+          ],
+          "optionen": [
+            {
+              "text": "Danke, dass du dich darauf einlässt. Ich schreibe die Maßstäbe auf, dann haben wir sie beide schwarz auf weiß.",
+              "bausteine": ["trojanisches_pferd"], "bewertung": "gut",
+              "effekt": { "vertrauen": 10, "erkenntnis": 5, "anspannung": -10 },
+              "warum": "Bedanken und den Maßstab festhalten: So ist später klar, worüber ihr entscheidet, und keiner kann die Ziele nachträglich verschieben.",
+              "reaktion": [
+                { "text": "Gut. Schick sie mir bis Freitag.", "anspannung_bis": 59 },
+                { "text": "Mach das. Ich bin gespannt.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gut"
+            },
+            {
+              "text": "Super. Du wirst sehen, dass ich recht habe.",
+              "bausteine": ["siegbehauptung"], "bewertung": "ungünstig",
+              "effekt": { "vertrauen": -12, "erkenntnis": 0, "anspannung": 12 },
+              "warum": "Siegbehauptung (Kunstgriff 14) vor dem Test. Jetzt geht es um dein Rechthaben, und die Leitung wird den Test kritischer anschauen als nötig.",
+              "reaktion": [
+                { "text": "Das werden wir sehen.", "anspannung_bis": 59 },
+                { "text": "Abwarten.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_mittel"
+            },
+            {
+              "text": "Skeptisch sein ist okay. Und was müsste ich sehen, damit ich selbst sage, die alte Regel war besser?",
+              "bausteine": ["selbstcheck", "trojanisches_pferd"], "bewertung": "gut",
+              "effekt": { "vertrauen": 8, "erkenntnis": 8, "anspannung": -5 },
+              "warum": "Selbstcheck laut gemacht: Du bist bereit, dich vom Ergebnis überzeugen zu lassen. Das macht den Test fair und dich glaubwürdig.",
+              "reaktion": [
+                { "text": "Gute Frage. Das schreiben wir gleich mit auf.", "anspannung_bis": 59 },
+                { "text": "Hm. Fair. Das nehmen wir mit auf.", "anspannung_ab": 60 }
+              ],
+              "weiter": "ende_gut"
+            }
+          ]
+        },
+        {
+          "id": "ende_gut", "ende": true, "sterne": 3,
+          "sagt": [
+            { "text": "Dann probieren wir's. Ehrlich gesagt bin ich gespannt." },
+            { "text": "Gut. Vier Wochen. Und dann reden wir über die Zahlen, nicht über Gefühle." }
+          ],
+          "auswertung": {
+            "titel": "Das Trojanische Pferd ist drin",
+            "gut": "Du hast verstanden, was die Leitung schützen will, und einen kleinen, befristeten Test mit vereinbartem Maßstab vorgeschlagen. Die Entscheidung blieb bei ihr.",
+            "anders": "Halte dich an die Maßstäbe, auch wenn das Ergebnis anders ausfällt als erhofft. Das schafft Vertrauen für den nächsten Vorschlag.",
+            "selbstcheck": "Bin ich bereit, zur alten Regel zurückzukehren, wenn der Test das zeigt?"
+          }
+        },
+        {
+          "id": "ende_mittel", "ende": true, "sterne": 2,
+          "sagt": [
+            { "text": "(Die Leitung nickt knapp.) Wir werden sehen." }
+          ],
+          "auswertung": {
+            "titel": "Zusage mit Beigeschmack",
+            "gut": "Du hast einen Test durchgesetzt.",
+            "anders": "Die Siegbehauptung am Ende macht aus dem gemeinsamen Test einen Machtkampf. Ein einfaches Danke hätte gereicht.",
+            "selbstcheck": "Geht es mir um die Kinder oder ums Rechthaben?"
+          }
+        },
+        {
+          "id": "ende_vertagt", "ende": true, "sterne": 2,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Die fünf Minuten sind um. Die Tür ist nicht zu, aber auch nicht offen.)" }
+          ],
+          "auswertung": {
+            "titel": "Noch nicht",
+            "gut": "Die Arbeitsbeziehung ist intakt, und du kannst das Thema neu aufgreifen.",
+            "anders": "Bei Typ 3 hilft ein kleiner, befristeter Test mit klarem Maßstab und Plan B für Eltern und Personal. Das macht ein Ja leicht.",
+            "selbstcheck": "Welche Sorge der Leitung habe ich noch nicht beantwortet?"
+          }
+        },
+        {
+          "id": "ende_blockiert", "ende": true, "sterne": 1,
+          "erzaehler": true,
+          "sagt": [
+            { "text": "(Die Leitung wendet sich ihrem Bildschirm zu. Das Gespräch ist beendet, und das Thema für eine Weile auch.)" }
+          ],
+          "auswertung": {
+            "titel": "Machtkampf verloren",
+            "gut": "Du hast dich für eine bessere Lernzeit eingesetzt. Das Anliegen ist gut.",
+            "anders": "Bei Machtgefälle gewinnt man keinen Prinzipienstreit. Erst verstehen, was die Leitung schützen will, dann einen kleinen Test mit vereinbartem Maßstab anbieten.",
+            "selbstcheck": "Hat die Leitung einen Punkt, zum Beispiel beim Personal?"
+          }
+        }
+      ]
+    }
+  ]
+}

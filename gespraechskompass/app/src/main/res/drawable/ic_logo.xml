@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Logo für die Startseite: gleiches Motiv, abgerundetes Quadrat. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="@color/gk_icon_bg" android:pathData="M30,0 H78 A30,30 0 0 1 108,30 V78 A30,30 0 0 1 78,108 H30 A30,30 0 0 1 0,78 V30 A30,30 0 0 1 30,0 Z" />
+    <group android:scaleX="1.5" android:scaleY="1.5" android:pivotX="54" android:pivotY="54">
+        <path android:fillColor="@color/gk_bubble" android:pathData="M43,32 H65 A13,13 0 0 1 78,45 V57 A13,13 0 0 1 65,70 H43 A13,13 0 0 1 30,57 V45 A13,13 0 0 1 43,32 Z" />
+        <path android:fillColor="@color/gk_bubble" android:pathData="M37,63 L34,80 L50,69 Z" />
+        <path android:fillColor="@color/gk_teal" android:pathData="M62.04,41.42 L57.45,53.89 L50.55,48.11 Z" />
+        <path android:fillColor="@color/gk_coral" android:pathData="M45.96,60.58 L50.55,48.11 L57.45,53.89 Z" />
+        <path android:fillColor="@color/gk_ink" android:pathData="M51.6,51 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0" />
+    </group>
+</vector>

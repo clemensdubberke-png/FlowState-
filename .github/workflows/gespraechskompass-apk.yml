@@ -1,0 +1,54 @@
+# Baut bei jedem Push die Gesprächskompass-APK und stellt sie als Artefakt bereit.
+# Download: GitHub → Actions → letzter Lauf „Gesprächskompass APK“ → Artifacts.
+name: Gesprächskompass APK
+
+on:
+  push:
+    paths:
+      - "gespraechskompass/**"
+      - ".github/workflows/gespraechskompass-apk.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: gespraechskompass
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Szenarien prüfen
+        run: node scripts/validate-scenarios.mjs
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Tests und Debug-APK
+        run: ./gradlew --no-daemon testDebugUnitTest assembleDebug
+
+      - name: Release-APK (nur wenn Signatur-Secrets gesetzt sind)
+        env:
+          KS_B64: ${{ secrets.GK_KEYSTORE_BASE64 }}
+          GK_KEYSTORE_PASSWORD: ${{ secrets.GK_KEYSTORE_PASSWORD }}
+          GK_KEY_ALIAS: ${{ secrets.GK_KEY_ALIAS }}
+          GK_KEY_PASSWORD: ${{ secrets.GK_KEY_PASSWORD }}
+        if: ${{ env.KS_B64 != '' }}
+        run: |
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          GK_KEYSTORE_FILE="$RUNNER_TEMP/release.jks" ./gradlew --no-daemon assembleRelease
+          rm -f "$RUNNER_TEMP/release.jks"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gespraechskompass-apk
+          path: gespraechskompass/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error

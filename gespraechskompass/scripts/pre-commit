@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Git-Hook: prüft die Szenarien vor jedem Commit, sobald Dateien des Gesprächskompass betroffen sind.
+# Installation (einmalig, im Repo-Wurzelordner):  cp gespraechskompass/scripts/pre-commit .git/hooks/pre-commit
+set -euo pipefail
+root="$(git rev-parse --show-toplevel)"
+if git diff --cached --name-only | grep -q '^gespraechskompass/'; then
+  echo "▶ Gesprächskompass: prüfe Szenarien …"
+  node "$root/gespraechskompass/scripts/validate-scenarios.mjs" || {
+    echo "✗ Commit abgebrochen: Bitte die Fehler in data/scenarios.json beheben." >&2
+    exit 1
+  }
+fi

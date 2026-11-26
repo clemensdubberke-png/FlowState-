@@ -1,0 +1,17 @@
+.gradle/
+build/
+**/build/
+local.properties
+.idea/
+*.iml
+.kotlin/
+node_modules/
+# Signatur: niemals ins Repo
+keystore.properties
+*.jks
+*.keystore
+*.apk
+*.aab
+# Ausnahme: fester, ÖFFENTLICHER Debug-Schlüssel (Passwort "android"), damit lokale und
+# CI-Builds gleich signiert sind und sich Updates über die installierte App spielen lassen.
+!signing/debug.keystore

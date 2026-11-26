@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gk_background">#FFFFFF</color>
+    <color name="gk_ink">#1E2A3D</color>
+    <color name="gk_icon_bg">#1E2A3D</color>
+    <color name="gk_bubble">#F6F2EA</color>
+    <color name="gk_teal">#2A9D8F</color>
+    <color name="gk_coral">#E07A5F</color>
+</resources>

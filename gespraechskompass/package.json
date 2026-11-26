@@ -1,0 +1,10 @@
+{
+  "name": "gespraechskompass",
+  "private": true,
+  "description": "Hilfsskripte für die Gesprächskompass-App (keine Abhängigkeiten).",
+  "scripts": {
+    "validate": "node scripts/validate-scenarios.mjs",
+    "hook": "cp scripts/pre-commit ../.git/hooks/pre-commit && chmod +x ../.git/hooks/pre-commit"
+  },
+  "engines": { "node": ">=18" }
+}
