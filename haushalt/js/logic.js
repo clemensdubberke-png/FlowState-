@@ -29,9 +29,11 @@ export function now() {
   return v && v.since ? v.since : Date.now();
 }
 
-export function intervalDays(t) { return t.anytime ? 0 : Math.max(1, (t.freqN || 1) * UNIT_DAYS[t.freqUnit || 'd']); }
+// t.once: one-off task – due right away, disappears once done (kept as completion in the history)
+export function intervalDays(t) { return t.anytime || t.once ? 0 : Math.max(1, (t.freqN || 1) * UNIT_DAYS[t.freqUnit || 'd']); }
 export function freqText(t) {
   if (t.anytime) return 'Jederzeit';
+  if (t.once) return 'Einmalig';
   const n = t.freqN || 1;
   if (n === 1) return { d: 'Täglich', w: 'Wöchentlich', m: 'Monatlich' }[t.freqUnit];
   return `Alle ${n} ${UNIT_LABEL[t.freqUnit][1]}`;
@@ -43,7 +45,7 @@ export const MONTHS_SHORT = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', '
 export const MONTHS_LONG = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 export const SEASONS = [['Winter', [11, 12, 1, 2]], ['Frühling', [3, 4, 5]], ['Sommer', [5, 6, 7, 8, 9]], ['Herbst', [9, 10, 11]]];
 export function isSeasonal(t) { return !!(t && t.seasonal && Array.isArray(t.months) && t.months.length > 0 && t.months.length < 12); }
-export function activeAt(t, at = now()) { return !isSeasonal(t) || t.months.includes(new Date(at).getMonth() + 1); }
+export function activeAt(t, at = now()) { return !!t.once || !isSeasonal(t) || t.months.includes(new Date(at).getMonth() + 1); }
 /** first day of the current active streak (handles seasons over new year, e.g. Nov–Feb) */
 export function seasonStart(t, at = now()) {
   if (!isSeasonal(t) || !activeAt(t, at)) return 0;
@@ -82,7 +84,7 @@ export function effLast(t, at = now()) {
 
 export function dueAt(t, at = now()) { return effLast(t, at) + intervalDays(t) * DAY; }
 export function progress(t, at = now()) {
-  if (t.anytime || !activeAt(t, at)) return 0;
+  if (t.anytime || t.once || !activeAt(t, at)) return 0;
   return (at - effLast(t, at)) / (intervalDays(t) * DAY);
 }
 export function daysUntilDue(t, at = now()) { return Math.round((startOfDay(dueAt(t, at)) - startOfDay(at)) / DAY); }
@@ -90,6 +92,7 @@ export function daysUntilDue(t, at = now()) { return Math.round((startOfDay(dueA
 /** status: fresh | ok | soon | due | overdue | bad */
 export function status(t, at = now()) {
   if (t.anytime) return 'anytime';
+  if (t.once) return 'due';
   if (!activeAt(t, at)) return 'sleep';
   const d = daysUntilDue(t, at), p = progress(t, at);
   if (d > 0) return p < 0.6 ? 'fresh' : (d <= 1 ? 'soon' : 'ok');
@@ -100,6 +103,10 @@ export function isDue(t, at) { const s = status(t, at); return s === 'due' || s 
 
 export function dueText(t, at = now()) {
   if (t.anytime) return 'Jederzeit';
+  if (t.once) {
+    const d = Math.round((startOfDay(at) - startOfDay(t.createdAt || at)) / DAY);
+    return d <= 0 ? 'Einmalig · neu' : `Einmalig · offen seit ${d} Tg.`;
+  }
   if (!activeAt(t, at)) return `Schlummert bis ${MONTHS_SHORT[nextActiveMonth(t, at)]}.`;
   const d = daysUntilDue(t, at);
   if (d === 0) return 'Heute fällig';
@@ -231,9 +238,9 @@ export function pointsFor(t) {
   return t.effort || 1;
 }
 
-// Anti-cheat: the same task ticked off more than CHEAT_FREE times within CHEAT_WINDOW scores nothing from then on.
+// Anti-cheat: ticking the same task off again within CHEAT_WINDOW (from the 2nd time on) scores nothing.
 export const CHEAT_WINDOW = 5 * 60000;
-export const CHEAT_FREE = 3;
+export const CHEAT_FREE = 1;
 export function recentCompletions(t, at = Date.now()) {
   return store.all('completions').filter(c => c.taskId === t.id && c.at <= at && at - c.at < CHEAT_WINDOW).length;
 }
@@ -253,6 +260,7 @@ export function completeTask(t, personId, { kid = false } = {}) {
   lastComp = store.put('completions', rec);
   const patch = { id: t.id, lastDone: now(), mSince: Date.now(), seasonFrom: seasonStart(t), legacy: false };
   if (t.anytime) patch.anytimeCount = (todayCount(t) || 0) + 1;
+  if (t.once) { patch.doneOnce = true; patch.deleted = true; } // done for good – gone from all lists
   const s = store.settings();
   if (s.multiPerson && s.responsibility && s.rotation && (t.assignees || []).length > 1) {
     const a = [...t.assignees];
@@ -266,6 +274,8 @@ export function completeTask(t, personId, { kid = false } = {}) {
 
 export function undoCompletion(c, prevLastDone) {
   store.remove('completions', c.id);
+  const raw = store.raw('tasks')[c.taskId];
+  if (raw && raw.doneOnce) { store.put('tasks', { id: raw.id, deleted: false, doneOnce: false, lastDone: prevLastDone }); return; }
   const t = store.get('tasks', c.taskId);
   if (t) store.put('tasks', { id: t.id, lastDone: prevLastDone });
 }
@@ -320,7 +330,7 @@ export function setCondition(t, p) {
 
 // ---------------- monster race ----------------
 export function autoGoal() {
-  const tasks = store.all('tasks').filter(t => !t.anytime && activeAt(t));
+  const tasks = store.all('tasks').filter(t => !t.anytime && !t.once && activeAt(t));
   let sum = 0;
   tasks.forEach(t => { sum += (30 / intervalDays(t)) * (t.effort || 1); });
   return Math.max(10, Math.round(sum * 0.5));
@@ -342,7 +352,7 @@ export function monsterScan(at = Date.now()) {
   // at most one miss per task and month
   const hit = new Set(Object.values(known).filter(m => !m.deleted).map(m => `${m.taskId}|${monthKey(m.at)}`));
   for (const t of store.all('tasks')) {
-    if (t.anytime || !t.lastDone || !activeAt(t, nowT)) continue;
+    if (t.anytime || t.once || !t.lastDone || !activeAt(t, nowT)) continue;
     if (t.legacy) continue; // "Altlast": was already due when it was added – no points for Schmuddel until done once
     const iv = intervalDays(t) * DAY;
     const first = startOfDay(dueAt(t, nowT)) + DAY; // first moment the task counts as overdue
@@ -409,7 +419,7 @@ export function kidsRace(t = Date.now()) {
   const start = Math.min(end - DAY, Math.max(mStart, s.raceStart || 0));
   const frac = Math.min(1, Math.max(0, (t - start) / (end - start)));
   let sum = 0;
-  store.all('tasks').filter(x => kidIds.has(x.id) && !x.anytime && activeAt(x)).forEach(x => { sum += (30 / intervalDays(x)) * (x.effort || 1); });
+  store.all('tasks').filter(x => kidIds.has(x.id) && !x.anytime && !x.once && activeAt(x)).forEach(x => { sum += (30 / intervalDays(x)) * (x.effort || 1); });
   const g = kidIds.size ? Math.max(5, Math.round(sum * 0.5)) : 0;
   const f = DIFFICULTY[s.difficulty]?.f || 1;
   const base = Math.round(g * f * frac);

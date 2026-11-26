@@ -908,3 +908,12 @@ h2.sec:first-child { margin-top: 8px; }
 .group.pad .muted { color: rgba(255, 255, 255, .8); }
 .sort-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 12px 8px 0; color: var(--ink); font-size: 14px; }
 .sort-row .chip { padding: 5px 10px; font-size: 13px; }
+
+/* ---- Filter "Heute" & einmalige Aufgaben ---- */
+.filter-box { background: #fff; border-radius: 16px; padding: 4px 10px 10px; margin: 10px 0 0; }
+.filter-box .sort-row { margin: 8px 0 0; }
+.filter-box .sort-row > span { min-width: 64px; font-weight: 500; }
+.hidden-count { font-size: 13px; text-transform: none; letter-spacing: 0; opacity: .7; margin-left: 6px; }
+.anytime.once .count { font-size: 16px; }
+.anytime.once small { max-width: 90px; text-align: center; line-height: 1.15; }
+.kind-seg button { font-size: 14px; }

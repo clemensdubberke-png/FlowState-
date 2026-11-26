@@ -156,7 +156,9 @@ export function taskRow(t, { showArea = false, quick = false } = {}) {
     t.legacy && !t.anytime ? '<span class="season-tag" title="Altlast: zählt für Schmuddel erst, wenn sie einmal erledigt wurde">🕰️ Altlast</span>' : '',
   ].join('');
   const sleeping = !t.anytime && !L.activeAt(t);
-  const right = t.anytime
+  const right = t.once
+    ? `<div class="anytime once"><span class="count">1×</span><small>${esc(L.dueText(t))}</small></div>`
+    : t.anytime
     ? `<div class="anytime"><span class="count">${L.todayCount(t)}</span><small>Jederzeit</small></div>`
     : sleeping
       ? `<div class="cond sleep"><span class="zz">💤</span><small>${esc(L.dueText(t))}</small></div>`
@@ -182,11 +184,11 @@ export function doComplete(t, personId) {
   const s = store.settings();
   const who = personId && s.multiPerson ? store.get('persons', personId)?.name + ': ' : '';
   if (comp?.cheat) {
-    toast(`${who}Erledigt – aber 0 Pkt. 🕵️ Mehr als ${L.CHEAT_FREE}× in 5 Minuten zählt nicht.`, { action: 'Rückgängig', onAction: () => { L.undoCompletion(comp, prev); mascot.react('undo'); }, ms: 5000 });
+    toast(`${who}Erledigt – aber 0 Pkt. 🕵️ Dieselbe Aufgabe nochmal innerhalb von 5 Minuten zählt nicht.`, { action: 'Rückgängig', onAction: () => { L.undoCompletion(comp, prev); mascot.react('undo'); }, ms: 5000 });
     mascot.react('cheat', { delay: 250, force: true });
     return;
   }
-  toast(`${who}Erledigt! +${pts} Pkt.`, { action: 'Rückgängig', onAction: () => { L.undoCompletion(comp, prev); mascot.react('undo'); }, ms: 4000 });
+  toast(`${who}${t.once ? 'Einmalige Aufgabe erledigt – und weg! ' : 'Erledigt! '}+${pts} Pkt.`, { action: 'Rückgängig', onAction: () => { L.undoCompletion(comp, prev); mascot.react('undo'); }, ms: 4000 });
   // pick the most fitting reaction
   const r = L.race();
   const anyDue = store.all('tasks').some(x => !x.anytime && L.isDue(x));
@@ -219,13 +221,13 @@ export function taskSheet(id) {
   sheet(`<div class="task-sheet">
       <div class="ts-head" style="--c:${area?.color || '#1677f2'}"><small>${esc(area?.name || '')}</small><h3>${t.kid?.enabled ? esc(t.kid.emoji) + ' ' : ''}${esc(t.name)}</h3>
         <div class="ts-meta">${esc(L.freqText(t))} · ${L.EFFORT_LABEL[t.effort || 1]} (${L.pointsFor(t)} Pkt.)${L.isSeasonal(t) ? ` · 🗓️ ${esc(L.monthsText(t))}` : ''}</div></div>
-      ${t.anytime ? `<p class="muted">Heute ${L.todayCount(t)}× erledigt.</p>` : `<div class="ts-cond">${bar(t)}<span>${esc(L.dueText(t))}</span></div>`}
+      ${t.once ? `<p class="muted">Einmalige Aufgabe – nach dem Erledigen ist sie weg.</p>` : t.anytime ? `<p class="muted">Heute ${L.todayCount(t)}× erledigt.</p>` : `<div class="ts-cond">${bar(t)}<span>${esc(L.dueText(t))}</span></div>`}
       ${resp ? `<p class="muted">Zuständig: ${personChip(resp)}</p>` : ''}
       ${t.notes ? `<p class="notes">${esc(t.notes)}</p>` : ''}
       ${s.multiPerson && ps.length ? `<div class="who"><span class="muted">Wer hat's gemacht?</span><div class="chips">${ps.map(p => `<button class="pchip sel ${p.id === chosen ? 'on' : ''}" data-p="${p.id}" style="--pc:${L.personColor(p)}">${esc(p.emoji || '🙂')} ${esc(p.name)}</button>`).join('')}</div></div>` : ''}
       <button class="btn orange big" data-x="done">✓ Erledigt</button>
       <div class="btn-grid">
-        ${t.anytime ? '' : '<button class="btn light" data-x="later">Morgen erinnern</button><button class="btn light" data-x="cond">Zustand setzen</button>'}
+        ${t.anytime || t.once ? '' : '<button class="btn light" data-x="later">Morgen erinnern</button><button class="btn light" data-x="cond">Zustand setzen</button>'}
         <button class="btn light" data-x="edit">Bearbeiten</button>
       </div>
       ${hist.length ? `<h4>Zuletzt erledigt</h4><div class="hist">${hist.map(c => `<div class="hist-row"><span>${fmt(c.at)}</span><span>${c.personId ? personChip(c.personId, true) : ''}</span><span>+${c.points}</span></div>`).join('')}</div>` : ''}
@@ -306,33 +308,56 @@ export function areaView(id) {
 }
 
 // ---------------- today / todo ----------------
+const TYPE_FILTERS = [['rec', '🔁 Wiederkehrend'], ['once', '1️⃣ Einmalig'], ['any', '♾️ Jederzeit']];
+const typeOf = t => (t.anytime ? 'any' : t.once ? 'once' : 'rec');
+function dueFilters() {
+  const f = store.local().dueFilter || {};
+  const types = Array.isArray(f.types) ? f.types : ['rec', 'once'];
+  const efforts = Array.isArray(f.efforts) ? f.efforts : [1, 2, 3];
+  return { types, efforts };
+}
+
 export function todoView(filter = 'all') {
   const s = store.settings();
   const meId = L.me()?.id;
-  let tasks = store.all('tasks').filter(t => !t.anytime);
-  if (filter === 'mine' && meId) tasks = tasks.filter(t => !L.responsible(t) || L.responsible(t) === meId);
-  const sortDue = ['due', 'effort', 'effortAsc'].includes(s.sortDue) ? s.sortDue : 'due';
-  const withAnytime = !!s.dueShowAnytime;
-  const anytime = withAnytime ? store.all('tasks').filter(t => t.anytime && (filter !== 'mine' || !meId || !L.responsible(t) || L.responsible(t) === meId)) : [];
-  const due = L.sortTasks([...tasks.filter(t => L.isDue(t)), ...anytime], sortDue);
-  const soon = L.sortTasks(tasks.filter(t => L.activeAt(t) && !L.isDue(t) && L.daysUntilDue(t) <= 3), sortDue);
+  const { types, efforts } = dueFilters();
+  const mineOk = t => filter !== 'mine' || !meId || !L.responsible(t) || L.responsible(t) === meId;
+  const pass = t => types.includes(typeOf(t)) && efforts.includes(t.effort || 1) && mineOk(t);
+  const all = store.all('tasks');
+  const due = L.sortTasks(all.filter(t => pass(t) && (t.anytime || L.isDue(t))));
+  const soon = L.sortTasks(all.filter(t => pass(t) && !t.anytime && !t.once && L.activeAt(t) && !L.isDue(t) && L.daysUntilDue(t) <= 3));
+  const hidden = all.filter(t => mineOk(t) && (t.anytime || L.isDue(t)) && !pass(t)).length;
   const doneToday = store.all('completions').filter(c => c.at >= L.startOfDay(Date.now())).sort((a, b) => b.at - a.at);
   const showFilter = s.multiPerson && s.responsibility && meId;
+  const allTypes = types.length === TYPE_FILTERS.length, allEff = efforts.length === 3;
   return {
     html: `${appbar('Heute', { backTo: '/' })}
       <main class="content list-page">
         ${showFilter ? `<div class="seg"><button class="${filter === 'all' ? 'on' : ''}" data-go="/todo">Alle</button><button class="${filter === 'mine' ? 'on' : ''}" data-go="/todo/mine">Meine</button></div>` : ''}
-        <div class="sort-row"><span>Sortieren:</span>${[['due', 'Fälligkeit'], ['effort', 'Aufwand ↓'], ['effortAsc', 'Aufwand ↑']].map(([k, l]) => `<button class="chip ${sortDue === k ? 'on' : ''}" data-sortdue="${k}">${l}</button>`).join('')}<button class="chip ${withAnytime ? 'on' : ''}" data-anytime>${withAnytime ? '✓ ' : '＋ '}Jederzeit</button></div>
-        <h2 class="sec">${withAnytime ? 'Fällig & jederzeit' : 'Fällig'} (${due.length})</h2>
-        <div class="card-list">${due.length ? due.map(t => taskRow(t, { showArea: true, quick: true })).join('') : `<div class="empty-ok">${monsterSvg('sad', 'mini-mon', { tickle: true })}<p>Alles erledigt! ${MONSTER_NAME} ist beleidigt.</p></div>`}</div>
+        <div class="filter-box">
+          <div class="sort-row"><span>Art:</span>${TYPE_FILTERS.map(([k, l]) => `<button class="chip ${types.includes(k) ? 'on' : ''}" data-ftype="${k}">${l}</button>`).join('')}</div>
+          <div class="sort-row"><span>Aufwand:</span>${[1, 2, 3].map(e => `<button class="chip ${efforts.includes(e) ? 'on' : ''}" data-feff="${e}">${L.EFFORT_LABEL[e]}</button>`).join('')}${!allTypes || !allEff ? '<button class="linkbtn" data-freset>Alle zeigen</button>' : ''}</div>
+        </div>
+        <h2 class="sec">Fällig (${due.length})${hidden ? ` <small class="hidden-count">+${hidden} ausgeblendet</small>` : ''}</h2>
+        <div class="card-list">${due.length ? due.map(t => taskRow(t, { showArea: true, quick: true })).join('') : hidden ? `<div class="empty-ok"><p>Nichts passt zum Filter – ${hidden} Aufgabe${hidden === 1 ? ' ist' : 'n sind'} ausgeblendet.</p></div>` : `<div class="empty-ok">${monsterSvg('sad', 'mini-mon', { tickle: true })}<p>Alles erledigt! ${MONSTER_NAME} ist beleidigt.</p></div>`}</div>
         ${soon.length ? `<h2 class="sec">Bald fällig</h2><div class="card-list">${soon.map(t => taskRow(t, { showArea: true, quick: true })).join('')}</div>` : ''}
         ${doneToday.length ? `<h2 class="sec">Heute erledigt (${doneToday.length})</h2><div class="card-list done-list">${doneToday.map(c => `<div class="task-row slim"><span class="done-ic">${icons.done}</span><div class="task-main"><div class="task-name">${esc(c.taskName)}</div></div>${c.personId ? personChip(c.personId, true) : ''}<b class="pts">${c.cheat ? '🕵️ 0' : '+' + c.points}</b></div>`).join('')}</div>` : ''}
       </main>`,
     bind(root) {
       bindCommon(root); bindRows(root);
-      root.querySelectorAll('[data-sortdue]').forEach(b => (b.onclick = () => store.setSettings({ sortDue: b.dataset.sortdue })));
-      const at = root.querySelector('[data-anytime]');
-      if (at) at.onclick = () => store.setSettings({ dueShowAnytime: !s.dueShowAnytime });
+      const save = patch => store.setLocal({ dueFilter: { ...dueFilters(), ...patch } });
+      root.querySelectorAll('[data-ftype]').forEach(b => (b.onclick = () => {
+        const set = new Set(types);
+        set.has(b.dataset.ftype) ? set.delete(b.dataset.ftype) : set.add(b.dataset.ftype);
+        save({ types: TYPE_FILTERS.map(x => x[0]).filter(x => set.has(x)) });
+      }));
+      root.querySelectorAll('[data-feff]').forEach(b => (b.onclick = () => {
+        const e = Number(b.dataset.feff); const set = new Set(efforts);
+        set.has(e) ? set.delete(e) : set.add(e);
+        save({ efforts: [1, 2, 3].filter(x => set.has(x)) });
+      }));
+      const r = root.querySelector('[data-freset]');
+      if (r) r.onclick = () => save({ types: TYPE_FILTERS.map(x => x[0]), efforts: [1, 2, 3] });
     },
   };
 }

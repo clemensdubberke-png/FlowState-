@@ -128,10 +128,10 @@ export function taskEditView(id, areaId) {
         <label class="field"><small>Aufgabe</small><input data-f="name" value="${esc(t.name)}" placeholder="z. B. Fenster putzen" maxlength="60"></label>
         <label class="field"><small>Bereich</small><select data-f="areaId">${store.all('areas').sort((a, b) => (a.order || 0) - (b.order || 0)).map(a => `<option value="${a.id}" ${a.id === t.areaId ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select></label>
       </div>
-      <h2 class="sec">Frequenz</h2>
+      <h2 class="sec">Art der Aufgabe</h2>
       <div class="form-card">
-        <div class="row-between"><span>Aufgabe für jederzeit</span><label class="switch"><input type="checkbox" data-f="anytime" ${t.anytime ? 'checked' : ''}><span></span></label></div>
-        ${t.anytime ? '<p class="muted small">Jederzeit-Aufgaben haben keinen Rhythmus. Ihr zählt einfach, wie oft sie erledigt wurden (z. B. Geschirr spülen).</p>' : `
+        <div class="seg kind-seg">${[['rec', '🔁 Wiederkehrend'], ['any', '♾️ Jederzeit'], ['once', '1️⃣ Einmalig']].map(([k, l]) => `<button class="${(t.once ? 'once' : t.anytime ? 'any' : 'rec') === k ? 'on' : ''}" data-kind="${k}">${l}</button>`).join('')}</div>
+        ${t.once ? '<p class="muted small">Einmalige Aufgaben sind sofort fällig und erscheinen in „Heute“. Sobald sie erledigt sind, verschwinden sie (z. B. Keller entrümpeln, Lampe aufhängen). Schmuddel bekommt dafür keine Punkte – ihr schon.</p>' : t.anytime ? '<p class="muted small">Jederzeit-Aufgaben haben keinen Rhythmus. Ihr zählt einfach, wie oft sie erledigt wurden (z. B. Geschirr spülen).</p>' : `
         <div class="freq">
           <span>Alle</span>
           <div class="stepper"><button data-step="-1">−</button><b>${t.freqN}</b><button data-step="1">+</button></div>
@@ -140,15 +140,15 @@ export function taskEditView(id, areaId) {
       </div>
       <h2 class="sec">Aufwand</h2>
       <div class="seg">${[1, 2, 3].map(e => `<button class="${t.effort === e ? 'on' : ''}" data-effort="${e}">${L.EFFORT_LABEL[e]} · ${e} Pkt.</button>`).join('')}</div>
-      <h2 class="sec">🗓️ Saison</h2>
+      ${t.once ? '' : `<h2 class="sec">🗓️ Saison</h2>
       <div class="form-card">
         <div class="row-between"><span>Saisonale Aufgabe</span><label class="switch"><input type="checkbox" data-season ${t.seasonal ? 'checked' : ''}><span></span></label></div>
         ${t.seasonal ? `<p class="muted small">In welchen Monaten fällt die Aufgabe an? In den anderen Monaten schlummert sie 💤 – sie wird nicht fällig und Schmuddel bekommt keine Punkte dafür. Zu Saisonbeginn startet sie frisch.</p>
           <div class="month-grid">${L.MONTHS_SHORT.map((m, i) => `<button class="mchip ${(t.months || []).includes(i + 1) ? 'on' : ''}" data-month="${i + 1}">${m}</button>`).join('')}</div>
           <div class="chips season-presets">${L.SEASONS.map(([n, ms]) => `<button class="chip" data-preset="${ms.join(',')}">${n}</button>`).join('')}</div>
           <p class="season-sum">${(t.months || []).length ? `Aktiv: <b>${esc(L.monthsText(t))}</b>${L.activeAt(t) ? ' · gerade aktiv' : ` · schlummert gerade bis ${L.MONTHS_LONG[L.nextActiveMonth(t)]}`}` : 'Bitte Monate wählen'}</p>` : '<p class="muted small">Z. B. Schnee schieben nur im Winter oder Rasen mähen nur im Sommer.</p>'}
-      </div>
-      ${t.anytime || !L.activeAt(t) ? '' : `<h2 class="sec" data-cond-sec>Wie sieht es gerade aus?</h2>
+      </div>`}
+      ${t.anytime || t.once || !L.activeAt(t) ? '' : `<h2 class="sec" data-cond-sec>Wie sieht es gerade aus?</h2>
       <div class="form-card cond-card ${!cond ? 'need' : ''}">${conditionPicker(t, cond, 'task')}
         <p class="muted small">Daraus und aus der Frequenz ergibt sich, ob die Aufgabe heute fällig ist, noch Zeit hat oder überfällig ist.</p></div>`}
       ${s.multiPerson && s.responsibility && ps.length ? `<h2 class="sec">Zuständig ${s.rotation ? '(Rotation: der Erste ist dran)' : ''}</h2>
@@ -196,11 +196,18 @@ export function taskEditView(id, areaId) {
             if (f === 'name' && t.kid && !t.kid.enabled) t.kid.emoji = guessEmoji(t.name);
           };
         });
+        box.querySelectorAll('[data-kind]').forEach(b => (b.onclick = () => {
+          const k = b.dataset.kind;
+          t.anytime = k === 'any'; t.once = k === 'once';
+          if (t.once) { t.seasonal = false; }
+          redraw();
+        }));
         box.querySelectorAll('[data-step]').forEach(b => (b.onclick = () => { t.freqN = Math.min(99, Math.max(1, t.freqN + Number(b.dataset.step))); t.customFreq = true; redraw(); }));
         box.querySelectorAll('[data-unit]').forEach(b => (b.onclick = () => { t.freqUnit = b.dataset.unit; t.customFreq = true; redraw(); }));
         box.querySelectorAll('[data-effort]').forEach(b => (b.onclick = () => { t.effort = Number(b.dataset.effort); redraw(); }));
         bindConditionPickers(box, (_, key) => { cond = key; condChanged = true; redraw(); });
-        box.querySelector('[data-season]').onchange = e => { t.seasonal = e.target.checked; if (t.seasonal && !(t.months || []).length) t.months = [4, 5, 6, 7, 8, 9]; redraw(); };
+        const seasonSw = box.querySelector('[data-season]');
+        if (seasonSw) seasonSw.onchange = e => { t.seasonal = e.target.checked; if (t.seasonal && !(t.months || []).length) t.months = [4, 5, 6, 7, 8, 9]; redraw(); };
         box.querySelectorAll('[data-month]').forEach(b => (b.onclick = () => {
           const m = Number(b.dataset.month); const ms = new Set(t.months || []);
           ms.has(m) ? ms.delete(m) : ms.add(m); t.months = [...ms].sort((a, c) => a - c); redraw();
@@ -235,16 +242,17 @@ export function taskEditView(id, areaId) {
           t.name = (t.name || '').trim();
           if (!t.name) { toast('Bitte einen Namen eingeben'); return; }
           t.kid.steps = t.kid.steps.filter(x => x.text.trim());
-          if (!t.anytime && !cond && L.activeAt(t)) {
+          if (t.once) { t.lastDone = null; t.legacy = false; t.seasonal = false; }
+          if (!t.anytime && !t.once && !cond && L.activeAt(t)) {
             toast('Bitte wähle, wie es gerade aussieht');
             box.querySelector('[data-cond-sec]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
           }
           if (t.seasonal && !(t.months || []).length) { toast('Bitte mindestens einen Monat wählen'); return; }
-          if (!t.anytime && L.activeAt(t) && (condChanged || !existing || !t.lastDone)) { t.lastDone = L.lastDoneFor(t, cond); t.seasonFrom = L.seasonStart(t); }
-          if (!t.anytime && !L.activeAt(t) && !t.lastDone) t.lastDone = Date.now();
-          if (!existing && !t.anytime && L.isDue(t)) t.legacy = true;
-          if (existing && (condChanged || existing.freqN !== t.freqN || existing.freqUnit !== t.freqUnit || existing.anytime !== t.anytime)) t.mSince = Date.now();
+          if (!t.anytime && !t.once && L.activeAt(t) && (condChanged || !existing || !t.lastDone)) { t.lastDone = L.lastDoneFor(t, cond); t.seasonFrom = L.seasonStart(t); }
+          if (!t.anytime && !t.once && !L.activeAt(t) && !t.lastDone) t.lastDone = Date.now();
+          if (!existing && !t.anytime && !t.once && L.isDue(t)) t.legacy = true;
+          if (existing && (condChanged || existing.freqN !== t.freqN || existing.freqUnit !== t.freqUnit || existing.anytime !== t.anytime || !!existing.once !== !!t.once)) t.mSince = Date.now();
           const rec = store.put('tasks', t);
           // Schmuddel learns the (new) steps right away, so kids hear them in his voice – also offline later
           if (rec.kid?.enabled) {
@@ -282,7 +290,7 @@ export function managerView() {
     return `<h2 class="sec mgr-area" style="color:${a.color}">${esc(a.name)}</h2>
       <div class="mgr-card">${tasks.map(t => `<div class="mgr-row">
         <button class="mgr-name" data-edit="${t.id}">${esc(t.name)}</button>
-        <div class="mgr-ctrl">${t.anytime ? '<span class="mgr-any">Aufgabe für jederzeit</span>' : `
+        <div class="mgr-ctrl">${t.once ? '<span class="mgr-any">Einmalige Aufgabe</span>' : t.anytime ? '<span class="mgr-any">Aufgabe für jederzeit</span>' : `
           <div class="mgr-col"><b>${t.freqN}</b><div><button data-n="${t.id}" data-d="-1" ${t.freqN <= 1 ? 'disabled' : ''}>−</button><button data-n="${t.id}" data-d="1">+</button></div></div>
           <div class="mgr-col"><b>${L.UNIT_LABEL[t.freqUnit][t.freqN === 1 ? 0 : 1]}</b><div><button data-u="${t.id}" data-d="-1" ${t.freqUnit === 'd' ? 'disabled' : ''}>−</button><button data-u="${t.id}" data-d="1" ${t.freqUnit === 'm' ? 'disabled' : ''}>+</button></div></div>`}
         </div></div>`).join('')}</div>`;
