@@ -8,7 +8,8 @@ export const EFFORT_LABEL = { 1: 'Leicht', 2: 'Mittel', 3: 'Schwer' };
 // Schmuddel's steady pace: by month end he reaches goal × f
 export const DIFFICULTY = { leicht: { label: 'Leicht', f: 0.8 }, normal: { label: 'Normal', f: 1 }, schwer: { label: 'Schwer', f: 1.25 } };
 // his extra points for tasks left undone are capped at this share of the monthly goal
-export const MISS_CAP = 0.5;
+export const MISS_CAP = 0.5; // (no longer used: overdue tasks give Schmuddel no points)
+export const AUTO_GOAL_SHARE = 0.6;
 
 export function startOfDay(t) { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); }
 export function monthKey(t = Date.now()) { const d = new Date(t); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; }
@@ -333,7 +334,9 @@ export function autoGoal() {
   const tasks = store.all('tasks').filter(t => !t.anytime && !t.once && activeAt(t));
   let sum = 0;
   tasks.forEach(t => { sum += (30 / intervalDays(t)) * (t.effort || 1); });
-  return Math.max(10, Math.round(sum * 0.5));
+  // Schmuddel only scores his steady pace (no extra points for overdue tasks any more),
+  // so his monthly goal is 60 % of the household's full monthly workload.
+  return Math.max(10, Math.round(sum * AUTO_GOAL_SHARE));
 }
 export function goal() { const s = store.settings(); return s.goalAuto ? autoGoal() : (s.goal || 48); }
 
@@ -342,6 +345,8 @@ export function goal() { const s = store.settings(); return s.goalAuto ? autoGoa
 // full cycle it stays undone, Schmuddel scores the task's effort points (Leicht 1 · Mittel 2 · Schwer 3).
 // Records get deterministic ids, so two synced phones never count the same miss twice.
 export function monsterScan(at = Date.now()) {
+  return 0; // Schmuddel no longer scores for overdue tasks – only his steady pace counts
+  // eslint-disable-next-line no-unreachable
   const s = store.settings();
   if (!s.race) return 0;
   const nowT = s.vacation?.since || at;
@@ -386,10 +391,9 @@ export function race(t = Date.now()) {
   const g = goal();
   const f = DIFFICULTY[s.difficulty]?.f || 1;
   const base = Math.round(g * f * frac);                                   // steady pace
-  const missedRaw = monthMissed(t).reduce((a, m) => a + (m.points || 0), 0); // tasks left undone
-  const missCap = Math.round(g * MISS_CAP);
-  const missed = Math.min(missedRaw, missCap);
-  const monster = base + missed;
+  // only the steady pace counts (overdue tasks no longer give him points)
+  const missedRaw = 0, missCap = 0, missed = 0;
+  const monster = base;
   const user = monthCompletions(t).reduce((a, c) => a + (c.points || 0), 0);
   const day = new Date(t).getDate();
   return { goal: g, base, missed, missCap, missedRaw, monster, user, lead: user - monster, frac, day, monthLabel: new Date(t).toLocaleDateString('de-DE', { month: 'long' }) };
@@ -423,9 +427,9 @@ export function kidsRace(t = Date.now()) {
   const g = kidIds.size ? Math.max(5, Math.round(sum * 0.5)) : 0;
   const f = DIFFICULTY[s.difficulty]?.f || 1;
   const base = Math.round(g * f * frac);
-  const missed = Math.min(monthMissed(t).filter(m => kidIds.has(m.taskId)).reduce((a, m) => a + (m.points || 0), 0), Math.round(g * MISS_CAP));
+  const missed = 0; // kids race: also only Schmuddel's steady pace
   const user = monthCompletions(t).filter(c => kidIds.has(c.taskId)).reduce((a, c) => a + (c.points || 0), 0);
-  const monster = base + missed;
+  const monster = base;
   return { goal: g, base, missed, monster, user, lead: user - monster };
 }
 

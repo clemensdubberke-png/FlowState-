@@ -13,7 +13,7 @@ const INFO = {
   fair: 'FairShare zeigt, wie die Hausarbeit verteilt ist. Ihr legt fest, welchen Anteil jede Person übernehmen soll (z. B. 50 / 50 oder 60 / 40). Beim Abhaken schlägt die App automatisch die Person vor, die am weitesten unter ihrem Anteil liegt.',
   resp: 'Mit „Zuständigkeit“ teilt ihr Personen fest für bestimmte Aufgaben ein. Wer zuständig ist, steht direkt an der Aufgabe und in der Heute-Liste unter „Meine“.',
   rot: 'Rotation: Sind mehrere Personen für eine Aufgabe zuständig, wechselt die Zuständigkeit nach jedem Erledigen automatisch zur nächsten Person.',
-  race: `Jeden Monat tretet ihr gegen ${MONSTER_NAME} an. Ihr sammelt Punkte, indem ihr Aufgaben erledigt (Leicht 1 · Mittel 2 · Schwer 3). ${MONSTER_NAME} bewegt sich langsam, aber stetig – und bekommt Punkte für Aufgaben, die überfällig liegen bleiben (höchstens 1× pro Aufgabe und Monat, maximal die Hälfte des Monatsziels). Altlasten vom Start zählen für ihn erst, wenn ihr sie einmal erledigt habt. Wer am Monatsende vorne liegt, gewinnt; bei gleichem Stand ist es unentschieden.`,
+  race: `Jeden Monat tretet ihr gegen ${MONSTER_NAME} an. Ihr sammelt Punkte, indem ihr Aufgaben erledigt (Leicht 1 · Mittel 2 · Schwer 3). ${MONSTER_NAME} bewegt sich langsam, aber stetig: Er sammelt gleichmäßig über den Monat Punkte, bis er am Monatsende sein Ziel erreicht. Für liegengebliebene Aufgaben bekommt er nichts extra. Wer am Monatsende vorne liegt, gewinnt; bei gleichem Stand ist es unentschieden.`,
   comments: `${MONSTER_NAME} kommentiert euren Fortschritt mit frechen Sprüchen.`,
   vacation: 'Im Urlaubsmodus wird nichts schmutziger: Alle Zustände werden eingefroren. Beim Beenden werden alle Aufgaben um die Urlaubsdauer verschoben.',
   kids: 'Der Kindermodus zeigt Kindern ihre Aufgaben mit großen Bildern, einzelnen Schritten zum Abhaken und Vorlesefunktion. Jede erledigte Aufgabe zählt im Rennen gegen Schmuddel – Schmuddel turnt dabei in kleinen Szenen herum.',
@@ -266,7 +266,7 @@ export function monsterView() {
         ])}
         <h2 class="sec">Demo (Monatliches Rennen)</h2>
         <div class="demo-card">
-          <p>Ihr erzielt Punkte, indem ihr Aufgaben erledigt.<br>${MONSTER_NAME} bewegt sich langsam, aber stetig (unterer Balken) – und bekommt Extra-Punkte für jede Aufgabe, die überfällig liegen bleibt.</p>
+          <p>Ihr erzielt Punkte, indem ihr Aufgaben erledigt.<br>${MONSTER_NAME} bewegt sich langsam, aber stetig (unterer Balken) – Tag für Tag ein Stückchen weiter.</p>
           <div class="race-meta"><span>Tag ${demoDay}</span><span>${MONSTER_NAME} führt: 1 Pkt.</span></div>
           <div class="race-track demo"><div class="race-bar you"></div><div class="race-bar mon"></div></div>
         </div>

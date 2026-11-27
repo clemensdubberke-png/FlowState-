@@ -63,7 +63,7 @@ export function raceSheet() {
       <h3>Rennen im ${esc(r.monthLabel)}</h3>
       <div class="race-score"><div><b>${r.user}</b><span>Ihr</span></div><div class="vs">:</div><div><b>${r.monster}</b><span>${MONSTER_NAME}</span></div></div>
       <p class="muted">Monatsziel: ${r.goal} Pkt. · Schwierigkeit: ${L.DIFFICULTY[s.difficulty].label}<br>
-      ${MONSTER_NAME} bekommt Punkte auf zwei Wegen: <b>gleichmäßig</b> über den Monat – bis Monatsende ${Math.round(r.goal * L.DIFFICULTY[s.difficulty].f)} Pkt. (${L.DIFFICULTY[s.difficulty].label}), bisher ${r.base} – <b>und</b> für Aufgaben, die überfällig liegen bleiben (höchstens 1× pro Aufgabe und Monat, insgesamt max. ${r.missCap} Pkt.), bisher ${r.missed}. Altlasten, die schon beim Anlegen fällig waren, zählen für ihn erst, wenn ihr sie einmal erledigt habt. Gleicher Stand am Monatsende = Unentschieden.</p>
+      ${MONSTER_NAME} sammelt seine Punkte <b>gleichmäßig</b> über den Monat – bis Monatsende ${Math.round(r.goal * L.DIFFICULTY[s.difficulty].f)} Pkt. (${L.DIFFICULTY[s.difficulty].label}), bisher ${r.base}. Für liegengebliebene Aufgaben bekommt er nichts extra – ihr müsst einfach dranbleiben. Gleicher Stand am Monatsende = Unentschieden.</p>
       ${s.multiPerson && stats.length ? `<h4>Punkte diesen Monat</h4><div class="pts-list">${stats.map(x => `<div class="pts-row">${personChip(x.person.id)}<b>${x.points}</b></div>`).join('')}</div>` : ''}
       <h4>${icons.trophy} Gewonnen: ${wins} · Unentschieden: ${draws}</h4>
       <div class="hist">${hist.length ? hist.map(([k, h]) => `<div class="hist-row ${L.raceResult(h)}"><span>${esc(L.monthName(k))}</span><span>${h.points} : ${h.monster}</span><span>${L.RESULT_ICON[L.raceResult(h)]}</span></div>`).join('') : '<p class="muted">Noch keine abgeschlossenen Monate.</p>'}</div>
@@ -153,7 +153,6 @@ export function taskRow(t, { showArea = false, quick = false } = {}) {
     area ? `<span class="area-tag" style="--c:${area.color}">${esc(area.name)}</span>` : '',
     t.kid?.enabled ? `<span class="kid-tag" title="Kinder können mitmachen">${esc(t.kid.emoji || '⭐')}</span>` : '',
     L.isSeasonal(t) ? `<span class="season-tag">🗓️ ${esc(L.monthsText(t))}</span>` : '',
-    t.legacy && !t.anytime ? '<span class="season-tag" title="Altlast: zählt für Schmuddel erst, wenn sie einmal erledigt wurde">🕰️ Altlast</span>' : '',
   ].join('');
   const sleeping = !t.anytime && !L.activeAt(t);
   const right = t.once
