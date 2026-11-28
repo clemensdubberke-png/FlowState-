@@ -330,15 +330,19 @@ export function setCondition(t, p) {
 }
 
 // ---------------- monster race ----------------
-export function autoGoal() {
+// The higher share applies from December 2026 on – the month that was already running when the
+// rule changed keeps the old 50 %, so removing the overdue points really lowers Schmuddel's score.
+const SHARE_FROM = '2026-12';
+export function autoGoal(t = Date.now()) {
   const tasks = store.all('tasks').filter(t => !t.anytime && !t.once && activeAt(t));
   let sum = 0;
   tasks.forEach(t => { sum += (30 / intervalDays(t)) * (t.effort || 1); });
   // Schmuddel only scores his steady pace (no extra points for overdue tasks any more),
   // so his monthly goal is 60 % of the household's full monthly workload.
-  return Math.max(10, Math.round(sum * AUTO_GOAL_SHARE));
+  const share = monthKey(t) >= SHARE_FROM ? AUTO_GOAL_SHARE : 0.5;
+  return Math.max(10, Math.round(sum * share));
 }
-export function goal() { const s = store.settings(); return s.goalAuto ? autoGoal() : (s.goal || 48); }
+export function goal(t = Date.now()) { const s = store.settings(); return s.goalAuto ? autoGoal(t) : (s.goal || 48); }
 
 // ---------------- Schmuddel's points for tasks left undone ----------------
 // Every time a task becomes overdue (the day after its due day) and again after every further
@@ -388,7 +392,7 @@ export function race(t = Date.now()) {
   // the very first race starts when the household was set up, not on the 1st of the month
   const start = Math.min(end - DAY, Math.max(mStart, s.raceStart || 0));
   const frac = Math.min(1, Math.max(0, (t - start) / (end - start)));
-  const g = goal();
+  const g = goal(t);
   const f = DIFFICULTY[s.difficulty]?.f || 1;
   const base = Math.round(g * f * frac);                                   // steady pace
   // only the steady pace counts (overdue tasks no longer give him points)
