@@ -146,20 +146,27 @@ export function dirtLevel(t, at) {
 
 export function tasksOfArea(areaId) { return store.all('tasks').filter(t => t.areaId === areaId); }
 
+/** How dirty one task makes its room: 0 (clean) … 1 (very dirty).
+ *  Clean until 75 % of the interval, 0.4 on the due day, then rising to 1 at 60 % past due. */
+export function taskDirt(t, at = now()) {
+  const p = Math.max(0, progress(t, at));
+  let d = p < 0.75 ? 0 : p < 1 ? 0.4 * (p - 0.75) / 0.25 : Math.min(1, 0.4 + (p - 1));
+  if (isDue(t, at)) d = Math.max(d, 0.4);
+  return d;
+}
+// room traffic light: average dirt of the room's tasks (all tasks weigh the same)
+export const ROOM_GREEN = 0.15, ROOM_RED = 0.5;
+
+/** Room state: average of its recurring tasks – many clean tasks outweigh a few overdue ones.
+ *  One-off and anytime tasks say nothing about how clean a room is and are ignored. */
 export function areaState(areaId, at = now()) {
-  const tasks = tasksOfArea(areaId).filter(t => !t.anytime && activeAt(t, at));
-  if (!tasks.length) return { dot: 'none', dirt: 0, due: 0 };
-  let worst = 0, due = 0, dirt = 0;
-  const rank = { fresh: 0, ok: 0, soon: 1, due: 2, overdue: 3, bad: 4 };
-  tasks.forEach(t => {
-    const r = rank[status(t, at)];
-    worst = Math.max(worst, r);
-    if (r >= 2) due++;
-    dirt += Math.min(1.5, Math.max(0, progress(t, at)));
-  });
-  const dirtiness = dirt / tasks.length; // ~0..1.5
-  const dot = worst >= 3 ? 'red' : worst === 2 ? 'orange' : worst === 1 ? 'yellow' : 'green';
-  return { dot, due, dirt: Math.min(4, Math.round(dirtiness * 4)) };
+  const tasks = tasksOfArea(areaId).filter(t => !t.anytime && !t.once && activeAt(t, at));
+  if (!tasks.length) return { dot: 'none', dirt: 0, due: 0, score: 0 };
+  let sum = 0, due = 0;
+  tasks.forEach(t => { sum += taskDirt(t, at); if (isDue(t, at)) due++; });
+  const score = sum / tasks.length; // 0..1
+  const dot = score >= ROOM_RED ? 'red' : score >= ROOM_GREEN ? 'yellow' : 'green';
+  return { dot, due, score, clean: Math.round((1 - score) * 100), dirt: Math.min(4, Math.round(score * 4)) };
 }
 
 /** The dirtiest area that has overdue tasks (for Schmuddel's room jokes), or null */

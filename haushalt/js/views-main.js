@@ -300,6 +300,7 @@ export function areaView(id) {
         <button class="icon-btn" data-top aria-label="Nach oben">${icons.up}</button>
         <span>${done} <i class="ok">${icons.done}</i></span>
         <span>${due} ${splatSvg(0, 'foot-splat')}</span>
+        ${(() => { const st = L.areaState(a.id); return st.dot === 'none' ? '' : `<span class="foot-clean" title="Sauberkeit des Raums"><i class="dot ${st.dot}"></i>${st.clean} %</span>`; })()}
         <button class="sort-btn" data-sort>${s.sortArea === 'name' ? 'A–Z' : 'Fällig'}</button>
       </footer>`,
     bind(root) {

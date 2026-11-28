@@ -929,3 +929,5 @@ h2.sec:first-child { margin-top: 8px; }
 .dev-row .gright { text-align: right; }
 .about .linkbtn { margin-top: 4px; }
 .dev-row .muted, .dev-row small { color: rgba(255, 255, 255, .8); }
+.foot-clean { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.foot-clean .dot { position: static; width: 14px; height: 14px; border-width: 2px; display: inline-block; border-radius: 50%; border: 2px solid #fff; }
