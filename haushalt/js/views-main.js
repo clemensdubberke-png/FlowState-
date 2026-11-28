@@ -5,6 +5,7 @@ import { esc, icons, sheet, toast, vibrate, confetti } from './ui.js';
 import { go, back } from './router.js';
 import * as mascot from './mascot.js';
 import { taskTopic } from './lines.js';
+import * as devices from './devices.js';
 import * as voice from './voice.js';
 import { conditionPicker, bindConditionPickers } from './condition.js';
 
@@ -88,16 +89,20 @@ export function homeView() {
       ${splats}
     </button>`;
   }).join('');
+  const upd = devices.newerInHousehold();
+  const updBanner = upd ? `<button class="upd-banner" data-update>⬆️ Neue Version ${esc(upd.version)} verfügbar – jetzt installieren</button>` : '';
   const vac = s.vacation ? `<div class="vac-banner" data-go="/settings/vacation">🏖️ Urlaubsmodus aktiv – Aufgaben sind pausiert</div>` : '';
   return {
     html: `${appbar('Bereiche', { big: true, actions: s.kidsMode ? `<button class="icon-btn kids-btn" data-kids aria-label="Kindermodus">${icons.kids}<span>Kinder</span></button>` : '' })}
       <main class="content home">
-        ${vac}${areas.length ? raceBanner() : ''}
+        ${updBanner}${vac}${areas.length ? raceBanner() : ''}
         ${areas.length ? '' : `<div class="home-empty"><span class="he-ic">👇</span><p><b>Noch ist alles leer.</b><br>Tippe auf das <b>+</b>, um deinen ersten Bereich anzulegen – zum Beispiel die Küche.</p></div>`}
         <div class="tiles">${tiles}<button class="tile add ${areas.length ? '' : 'pulse'}" data-go="/area-new" aria-label="Bereich hinzufügen">${icons.plus}</button></div>
       </main>
       ${bottomNav()}`,
     bind(root) {
+      const ub = root.querySelector('[data-update]');
+      if (ub) ub.onclick = () => { const d = devices.newerInHousehold(); if (d) devices.installUpdate(d.versionCode, d.version); };
       bindCommon(root);
       const kb = root.querySelector('[data-kids]');
       if (kb) kb.onclick = () => import('./views-kids.js').then(m => m.enterKids());
@@ -269,7 +274,8 @@ function bindRows(root) {
     const t = store.get('tasks', b.dataset.quick);
     if (!t) return;
     const s = store.settings();
-    if (s.multiPerson && L.persons().length > 1) taskSheet(t.id);
+    // phone owner known → credited automatically; otherwise ask who did it
+    if (s.multiPerson && L.persons().length > 1 && !L.me()) taskSheet(t.id);
     else doComplete(t, L.suggestedPerson(t));
   }));
 }

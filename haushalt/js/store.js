@@ -1,7 +1,7 @@
 // Local-first data store. Every record has {id, updatedAt, deleted?}.
 // Records are merged per document (last write wins), which keeps two phones in sync safely.
 
-export const COLS = ['areas', 'tasks', 'persons', 'completions', 'settings', 'mpoints'];
+export const COLS = ['areas', 'tasks', 'persons', 'completions', 'settings', 'mpoints', 'devices'];
 const LS_KEY = 'blitzeblank.data.v1';
 const LS_LOCAL = 'blitzeblank.local.v1';
 

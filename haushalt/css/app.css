@@ -917,3 +917,15 @@ h2.sec:first-child { margin-top: 8px; }
 .anytime.once .count { font-size: 16px; }
 .anytime.once small { max-width: 90px; text-align: center; line-height: 1.15; }
 .kind-seg button { font-size: 14px; }
+
+/* ---- Geräte & Updates ---- */
+.upd-banner { display: block; width: 100%; text-align: left; background: #ff9500; color: #fff; border: 0; border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; font: inherit; font-weight: 600; box-shadow: 0 2px 6px rgba(0, 50, 80, .15); }
+.upd-sheet, .owner-sheet { text-align: center; }
+.upd-sheet .upd-ic { font-size: 44px; }
+.upd-bar { height: 12px; background: #e3edf5; border-radius: 6px; overflow: hidden; margin: 10px 0; }
+.upd-bar > div { height: 100%; background: #ff9500; transition: width .2s; }
+.owner-sheet .chips { justify-content: center; margin: 14px 0; }
+.dev-row .glabel { display: flex; gap: 10px; align-items: center; }
+.dev-row .gright { text-align: right; }
+.about .linkbtn { margin-top: 4px; }
+.dev-row .muted, .dev-row small { color: rgba(255, 255, 255, .8); }

@@ -12,6 +12,7 @@ import { timerView, startTimerWatcher } from './views-timer.js';
 import { intensityWidget, bindIntensity, intensityView } from './views-intensity.js';
 import * as mascot from './mascot.js';
 import * as voice from './voice.js';
+import * as devices from './devices.js';
 
 const routes = [
   [/^\/$/, () => homeView()],
@@ -28,6 +29,7 @@ const routes = [
   [/^\/settings$/, () => S.settingsView()],
   [/^\/settings\/persons$/, () => S.personsView()],
   [/^\/settings\/me$/, () => S.meView()],
+  [/^\/settings\/devices$/, () => S.devicesView()],
   [/^\/settings\/fairshare$/, () => S.fairshareView()],
   [/^\/settings\/responsibility$/, () => S.responsibilityView()],
   [/^\/settings\/monster$/, () => S.monsterView()],
@@ -120,12 +122,13 @@ function welcomeView() {
 
 // ---------------- boot ----------------
 store.load();
+const bootAt = Date.now();
 store.subscribe(() => render());
 window.addEventListener('hashchange', () => { document.getElementById('overlay-root').innerHTML = ''; render(true); });
 window.addEventListener('bb:render', () => render(true));
 // refresh dirt levels every minute and when the app comes back to the foreground
 setInterval(() => { if (!document.hidden) L.monsterScan(); if (!document.hidden && !current.view?.static) render(); }, 60000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { L.monsterScan(); L.finalizeRaces(); render(); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { L.monsterScan(); L.finalizeRaces(); render(); devices.registerDevice(); devices.maybePromptUpdate(); } });
 
 L.migrateKidDefaults();
 voice.migrateKey();
@@ -134,5 +137,10 @@ L.monsterScan();
 L.finalizeRaces();
 render(true);
 startTimerWatcher();
+devices.registerDevice();
 sync.start();
+// "Wem gehört dieses Handy?" and "Neue Version verfügbar" – after the greeting has settled
+setTimeout(() => { devices.maybeAskOwner(); devices.maybePromptUpdate(); }, 2500);
+// a newer version may only become known once the sync has delivered the other phones' records
+store.subscribe(() => { if (Date.now() - bootAt > 2500) devices.maybePromptUpdate(); });
 if (store.settings().setupDone && !sessionStorage.getItem('bb.kids')) mascot.greet();

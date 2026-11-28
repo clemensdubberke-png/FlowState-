@@ -1,6 +1,7 @@
 import * as store from './store.js';
 import * as L from './logic.js';
 import * as sync from './sync.js';
+import * as devices from './devices.js';
 import { monsterSvg, MONSTER_NAME } from './art.js';
 import { esc, icons, sheet, toast, confirmSheet, infoSheet, toggle, native } from './ui.js';
 import { go } from './router.js';
@@ -47,6 +48,7 @@ export function settingsView() {
         ${group('Haushalt', [
           row('Personen', s.multiPerson ? `${L.persons().length} Personen` : 'Aus', { go: '/settings/persons' }),
           row('Dieses Gerät gehört', me ? `${esc(me.emoji || '')} ${esc(me.name)}` : 'Niemand', { go: '/settings/me' }),
+          row('Geräte & Updates', esc(devices.versionLabel()), { go: '/settings/devices' }),
           row('Synchronisation', esc(sync.syncStatus()), { go: '/settings/sync' }),
         ])}
         ${group('Aufgaben', [
@@ -64,7 +66,7 @@ export function settingsView() {
           row('Daten importieren', '<input type="file" accept="application/json" data-import hidden>').replace('class="grow', 'data-act="import" class="grow'),
           row('<span class="red-text">Alles zurücksetzen</span>', '').replace('class="grow', 'data-act="reset" class="grow'),
         ], 'Blitzeblank speichert alles auf diesem Gerät. Mit der Synchronisation teilt ihr den Haushalt zwischen mehreren Handys.')}
-        <div class="about">${monsterSvg('wave', 'about-mon', { tickle: true })}<p><b>Blitzeblank</b> · Version 1.0<br><span class="muted">Ein Putzplan für die ganze Familie.</span></p></div>
+        <div class="about">${monsterSvg('wave', 'about-mon', { tickle: true })}<p><b>Blitzeblank</b> · Version ${esc(devices.versionLabel())}<br><span class="muted">Ein Putzplan für die ganze Familie.</span><br><button class="linkbtn" data-go="/settings/devices">Geräte & Updates</button></p></div>
       </main>`,
     bind(root) {
       bindSettings(root);
@@ -169,12 +171,12 @@ export function meView() {
   return {
     html: `${appbar('Dieses Gerät gehört', { backTo: '/settings' })}
       <main class="content settings">
-        <p class="group-foot">Wählt aus, wem dieses Handy gehört. Diese Person wird beim Abhaken vorausgewählt und sieht unter „Heute → Meine“ ihre Aufgaben. Die Einstellung gilt nur für dieses Gerät.</p>
+        <p class="group-foot">Wählt aus, wem dieses Handy gehört. Wird hier eine Aufgabe abgehakt, bekommt automatisch diese Person die Punkte (im Abhak-Fenster lässt sie sich trotzdem ändern, z. B. wenn ein Kind geholfen hat). Unter „Heute → Meine“ sieht sie ihre Aufgaben. Die Einstellung gilt nur für dieses Gerät.</p>
         <div class="group">${ps.length ? ps.map(p => `<div class="grow link" data-me="${p.id}"><span class="glabel"><span class="avatar" style="--pc:${L.personColor(p)}">${esc(p.emoji || '🙂')}</span> ${esc(p.name)}</span><span class="gright">${p.id === meId ? '✓' : ''}</span></div>`).join('') : `<div class="grow link" data-go="/settings/persons"><span class="glabel">Zuerst Personen anlegen</span><span class="gright"><span class="chev">›</span></span></div>`}</div>
       </main>`,
     bind(root) {
       bindSettings(root);
-      root.querySelectorAll('[data-me]').forEach(r => (r.onclick = () => { store.setLocal({ me: r.dataset.me }); toast('Gespeichert'); }));
+      root.querySelectorAll('[data-me]').forEach(r => (r.onclick = () => { store.setLocal({ me: r.dataset.me }); devices.registerDevice(); toast('Gespeichert'); }));
     },
   };
 }
@@ -554,5 +556,51 @@ export function statsView() {
         ${topTasks.length ? `<h2 class="sec">Häufigste Aufgaben</h2><div class="group">${topTasks.map(([n, c]) => `<div class="grow"><span class="glabel">${esc(n)}</span><span class="gright">${c}×</span></div>`).join('')}</div>` : ''}
       </main>`,
     bind: bindSettings,
+  };
+}
+
+// ---------------- devices & updates ----------------
+export function devicesView() {
+  const mine = devices.deviceId();
+  const myCode = devices.versionCode();
+  const list = devices.householdDevices();
+  const newer = devices.newerInHousehold();
+  const fmt = ts => ts ? new Date(ts).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) : '–';
+  return {
+    static: true,
+    html: `${appbar('Geräte & Updates', { backTo: '/settings' })}
+      <main class="content settings">
+        <div class="group pad"><div class="row-between"><b>Dieses Gerät</b><span>Version <b>${esc(devices.versionLabel())}</b></span></div>
+          ${newer ? `<p class="small">Auf einem anderen Handy läuft schon <b>${esc(newer.version)}</b>.</p><div class="btn-row"><button class="btn orange" data-inst="${newer.versionCode}" data-v="${esc(newer.version)}">Version ${esc(newer.version)} installieren</button></div>` : ''}
+          ${native ? '<div class="btn-row"><button class="btn light" data-check>Nach Updates suchen</button></div><p class="small" data-checkres></p>' : '<p class="muted small">Im Browser ist immer automatisch die neueste Version geladen.</p>'}
+        </div>
+        <h2 class="sec">Geräte im Haushalt</h2>
+        <div class="group">${list.length ? list.map(d => {
+          const owner = d.ownerId ? store.get('persons', d.ownerId) : null;
+          const same = d.platform === 'android' && d.versionCode === myCode;
+          const state = d.platform !== 'android' ? '🌐 Browser' : same ? '✓ gleiche Version' : (d.versionCode || 0) > myCode ? '⬆️ neuer' : '⬇️ älter';
+          return `<div class="grow dev-row"><span class="glabel"><span class="avatar" style="--pc:${owner ? L.personColor(owner) : '#9aa7ad'}">${esc(owner?.emoji || '📱')}</span>
+              <span><b>${esc(owner?.name || 'Unbekannt')}</b>${d.id === mine ? ' <small>(dieses Gerät)</small>' : ''}<br><small class="muted">${esc(d.model || '')} · zuletzt ${fmt(d.lastSeen)}</small></span></span>
+            <span class="gright"><b>${esc(d.version || '–')}</b><br><small>${state}</small></span></div>`;
+        }).join('') : '<div class="grow"><span class="glabel muted">Noch keine Geräte – mit der Synchronisation erscheinen hier alle Handys des Haushalts.</span></div>'}</div>
+        <p class="group-foot">Läuft auf einem Handy eine neuere Version, zeigen die anderen Handys beim Öffnen „Neue Version verfügbar“ – ein Tipp lädt sie herunter und installiert sie. Beim ersten Mal fragt Android einmalig, ob Blitzeblank Apps installieren darf.</p>
+      </main>`,
+    bind(root) {
+      bindSettings(root);
+      const inst = root.querySelector('[data-inst]');
+      if (inst) inst.onclick = () => devices.installUpdate(Number(inst.dataset.inst), inst.dataset.v);
+      const chk = root.querySelector('[data-check]');
+      if (chk) chk.onclick = async () => {
+        const out = root.querySelector('[data-checkres]');
+        out.textContent = 'Suche…';
+        try {
+          const r = await devices.latestRelease();
+          if (r.code > myCode) {
+            out.innerHTML = `Neu erschienen: <b>${esc(r.version)}</b> <button class="btn orange small" data-instgh>Installieren</button>`;
+            out.querySelector('[data-instgh]').onclick = () => devices.installUpdate(r.code, r.version);
+          } else out.textContent = 'Du hast die neueste Version ✓';
+        } catch (e) { out.textContent = 'Konnte nicht prüfen: ' + e.message; }
+      };
+    },
   };
 }

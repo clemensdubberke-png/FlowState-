@@ -222,6 +222,9 @@ export function fairStats(t = Date.now()) {
 
 /** Who should do this task? (used as default in the completion sheet) */
 export function suggestedPerson(t) {
+  // the owner of this phone did it (set under Einstellungen → Dieses Gerät gehört)
+  const owner = me();
+  if (owner) return owner.id;
   const s = store.settings();
   if (!s.multiPerson) return me()?.id || null;
   const resp = responsible(t);

@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> fileCallback;
     private TextToSpeech tts;
     private boolean ttsReady = false;
+    private Updater updater;
     private static java.lang.ref.WeakReference<MainActivity> current = new java.lang.ref.WeakReference<>(null);
 
     /** Hands a timer change from the watch to the web app (if it is open). */
@@ -60,6 +61,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (updater != null) updater.resume();
         current = new java.lang.ref.WeakReference<>(this);
         String pending = WearSync.prefs(this).getString("watchTimer", null);
         if (pending != null) deliverWatchTimer(pending);
@@ -133,6 +135,10 @@ public class MainActivity extends Activity {
         });
 
         current = new java.lang.ref.WeakReference<>(this);
+        updater = new Updater(this, (state, value) -> {
+            final String js = "window.__bbUpdate && window.__bbUpdate(" + org.json.JSONObject.quote(state) + "," + org.json.JSONObject.quote(value) + ")";
+            runOnUiThread(() -> web.evaluateJavascript(js, null));
+        });
         web.addJavascriptInterface(new Bridge(), "BlitzeblankAndroid");
 
         tts = new TextToSpeech(this, status -> {
@@ -373,6 +379,32 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public void setBarColor(String color) {
             runOnUiThread(() -> MainActivity.this.setBarColor(color));
+        }
+
+        /** versionCode of the installed app (= build number). */
+        @JavascriptInterface
+        public int versionCode() {
+            try {
+                android.content.pm.PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+                return (int) (Build.VERSION.SDK_INT >= 28 ? pi.getLongVersionCode() : pi.versionCode);
+            } catch (Exception e) {
+                return 0;
+            }
+        }
+
+        /** e.g. "Google Pixel 8" – shown in the household's device list. */
+        @JavascriptInterface
+        public String deviceModel() {
+            String m = Build.MODEL == null ? "" : Build.MODEL;
+            String b = Build.MANUFACTURER == null ? "" : Build.MANUFACTURER;
+            if (!b.isEmpty() && !m.toLowerCase(Locale.ROOT).startsWith(b.toLowerCase(Locale.ROOT))) m = b.substring(0, 1).toUpperCase(Locale.ROOT) + b.substring(1) + " " + m;
+            return m.trim();
+        }
+
+        /** Downloads the given Blitzeblank release APK and opens the Android installer. */
+        @JavascriptInterface
+        public void installUpdate(String url) {
+            runOnUiThread(() -> updater.start(url));
         }
 
         @JavascriptInterface
